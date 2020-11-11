@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package sherlock;
+
+message Coordinate {
+    int32 row = 1;
+    int32 column = 2;
+}
+
+message VerticalBorder {
+    int32 row = 1;
+    int32 left = 2;
+    int32 right = 3;
+}
+
+message HorizontalBorder {
+    int32 column = 1;
+    int32 top = 2;
+    int32 bottom = 3;
+}
+
+message Puzzle {
+    string name = 1;
+
+    message CrimeScene {
+        message Room {
+            int32 id = 1;
+            string name = 2;
+        }
+        repeated Room rooms = 1;
+
+        repeated int32 floor_plan = 2;
+
+        message Window {
+            oneof border {
+                VerticalBorder vertical_border = 1;
+                HorizontalBorder horizontal_border = 2;
+            }
+        }
+        repeated Window windows = 3;
+
+        message Furniture {
+            enum FurnitureType {
+                CHAIR = 0;
+                BED = 1;
+                CARPET = 2;
+                PLANT = 3;
+                TV = 4;
+                TABLE = 5;
+            }
+            FurnitureType type = 1;
+            bool occupiable = 2;
+            repeated Coordinate coordinates = 3;
+        }
+        repeated Furniture furniture = 4;
+    }
+    CrimeScene crime_scene = 2;
+
+    message Person {
+        int32 id = 1;
+        string name = 2;
+        enum PersonType {
+            SUSPECT = 0;
+            VICTIM = 1;
+        }
+        PersonType type = 3;
+    }
+    repeated Person people = 3;
+
+    message Clue {
+        message RoomClue {
+            int32 room_id = 1;
+            bool is_occupied = 2;
+        }
+        message PersonClue {
+            int32 person_id = 1;
+            bool negate = 2;
+            oneof type {
+                int32 room_id = 3;
+                bool beside_window = 4;
+                CrimeScene.Furniture.FurnitureType beside = 5;
+                CrimeScene.Furniture.FurnitureType on = 6;
+            }
+        }
+        oneof type {
+            RoomClue room_clue = 1;
+            PersonClue person_clue = 2;
+        }
+    }
+    repeated Clue clues = 4;
+}
