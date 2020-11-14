@@ -1,4 +1,18 @@
+from collections import namedtuple
+
 from puzzle_pb2 import Puzzle
+
+
+FurnitureData = namedtuple('FurnitureData', ['name', 'type', 'occupiable'])
+
+FURNITURE_DATA_DICT = {
+    'chair': FurnitureData('chair', Puzzle.CrimeScene.Furniture.CHAIR, True),
+    'bed': FurnitureData('bed', Puzzle.CrimeScene.Furniture.BED, True),
+    'carpet': FurnitureData('carpet', Puzzle.CrimeScene.Furniture.CARPET, True),
+    'plant': FurnitureData('plant', Puzzle.CrimeScene.Furniture.PLANT, False),
+    'tv': FurnitureData('tv', Puzzle.CrimeScene.Furniture.TV, False),
+    'table': FurnitureData('table', Puzzle.CrimeScene.Furniture.TABLE, False)
+}
 
 
 class PuzzleEncoder:
