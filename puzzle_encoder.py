@@ -56,5 +56,17 @@ class PuzzleEncoder:
             for row, column in coordinates
         ])
 
+    def set_people(self, suspect_names, victim_name):
+        del self._puzzle.people[:]
+        for suspect_id, suspect_name in enumerate(suspect_names):
+            _ = self._puzzle.people.add(
+                id=suspect_id, name=suspect_name, type=Puzzle.Person.SUSPECT)
+        _ = self._puzzle.people.add(
+            id=len(suspect_names), name=victim_name, type=Puzzle.Person.VICTIM)
+        self._people_ids = {
+            person_name.lower(): person_id 
+            for person_id, person_name in enumerate(suspect_names + [victim_name])
+        }
+
     def get_puzzle(self):
         return self._puzzle
