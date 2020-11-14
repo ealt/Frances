@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from puzzle_pb2 import Puzzle
+from puzzle_pb2 import Coordinate, Puzzle
 
 
 FurnitureData = namedtuple('FurnitureData', ['name', 'type', 'occupiable'])
@@ -46,6 +46,15 @@ class PuzzleEncoder:
                 window.horizontal_border.top = top
             if bottom is not None:
                 window.horizontal_border.bottom = bottom
+
+    def add_furniture(self, name, coordinates):
+        furniture_data = FURNITURE_DATA_DICT[name.lower()]
+        furniture = self._puzzle.crime_scene.furniture.add(
+            type=furniture_data.type, occupiable=furniture_data.occupiable)
+        furniture.coordinates.extend([
+            Coordinate(row=row, column=column)
+            for row, column in coordinates
+        ])
 
     def get_puzzle(self):
         return self._puzzle
