@@ -68,5 +68,15 @@ class PuzzleEncoder:
             for person_id, person_name in enumerate(suspect_names + [victim_name])
         }
 
+    def add_clue(self, raw_clue):
+        parsed_clue = self._parse_clue(raw_clue)
+        self._add_clue(parsed_clue)
+
+    def _parse_clue(self, raw_clue):
+        return None
+
+    def _add_clue(self, parsed_clue):
+        pass
+
     def get_puzzle(self):
         return self._puzzle
