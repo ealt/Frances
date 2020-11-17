@@ -1,4 +1,5 @@
 from collections import namedtuple
+import re
 
 from puzzle_pb2 import Coordinate, Puzzle
 
@@ -13,6 +14,9 @@ FURNITURE_DATA_DICT = {
     'tv': FurnitureData('tv', Puzzle.CrimeScene.Furniture.TV, False),
     'table': FurnitureData('table', Puzzle.CrimeScene.Furniture.TABLE, False)
 }
+
+ParsedClue = namedtuple(
+    'ParsedClue', ['subject', 'preposition', 'object'])
 
 
 class PuzzleEncoder:
@@ -73,7 +77,15 @@ class PuzzleEncoder:
         self._add_clue(parsed_clue)
 
     def _parse_clue(self, raw_clue):
-        return None
+        clue_pattern = self._generate_clue_pattern()
+        match = re.match(clue_pattern, raw_clue, re.IGNORECASE)
+        return ParsedClue(
+            subject='',
+            preposition='',
+            object='')
+
+    def _generate_clue_pattern(self):
+        return ''
 
     def _add_clue(self, parsed_clue):
         pass
