@@ -18,6 +18,13 @@ FURNITURE_DATA_DICT = {
 ParsedClue = namedtuple(
     'ParsedClue', ['subject', 'preposition', 'object'])
 
+CLUE_PATTERN = ('^(?P<subject>{people}) (is |was )?'
+    '(?P<preposition>on|beside|next to|in) (a |the )?'
+    '(?P<object>{furniture}|window|{rooms})\.?$')
+
+def stringify(messages):
+    return '|'.join([message.name.lower() for message in messages])
+
 
 class PuzzleEncoder:
     def __init__(self, name=''):
@@ -80,12 +87,15 @@ class PuzzleEncoder:
         clue_pattern = self._generate_clue_pattern()
         match = re.match(clue_pattern, raw_clue, re.IGNORECASE)
         return ParsedClue(
-            subject='',
-            preposition='',
-            object='')
+            subject=match.group('subject').lower(),
+            preposition=match.group('preposition').lower(),
+            object=match.group('object').lower())
 
     def _generate_clue_pattern(self):
-        return ''
+        return CLUE_PATTERN.format(
+            people=stringify(self._puzzle.people),
+            furniture=stringify(FURNITURE_DATA_DICT.values()),
+            rooms=stringify(self._puzzle.crime_scene.rooms))
 
     def _add_clue(self, parsed_clue):
         pass
