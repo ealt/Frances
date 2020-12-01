@@ -98,7 +98,21 @@ class PuzzleEncoder:
             rooms=stringify(self._puzzle.crime_scene.rooms))
 
     def _add_clue(self, parsed_clue):
-        pass
+        clue = self._puzzle.clues.add()
+        clue.person_clue.person_id = self._people_ids[parsed_clue.subject]
+        self._add_prepositional_phrase(clue, parsed_clue)
+
+    def _add_prepositional_phrase(self, clue, parsed_clue):
+        if parsed_clue.preposition == 'on':
+            clue.person_clue.on = FURNITURE_DATA_DICT[parsed_clue.object].type
+        elif parsed_clue.preposition in ('beside', 'next to'):
+            if parsed_clue.object == 'window':
+                clue.person_clue.beside_window = True
+            elif parsed_clue.object in FURNITURE_DATA_DICT.keys():
+                object_type = FURNITURE_DATA_DICT[parsed_clue.object].type
+                clue.person_clue.beside = object_type
+        elif parsed_clue.preposition == 'in':
+            clue.person_clue.room_id = self._room_ids[parsed_clue.object]
 
     def get_puzzle(self):
         return self._puzzle
