@@ -4,6 +4,7 @@ from puzzle_pb2 import Puzzle
 class Space:
     def __init__(self, room_id):
         self.room_id = room_id
+        self.on = None
         self.beside = set()
 
 
@@ -11,8 +12,10 @@ class Board:
     def __init__(self, n, crime_scene):
         self._n = n
         self._crime_scene = crime_scene
+        self._blocked_coordinates = []
         self._init_spaces()
         self._add_windows()
+        self._add_furniture()
 
     def _init_spaces(self):
         self._spaces = [[
@@ -48,6 +51,32 @@ class Board:
         if horizontal_border.bottom is not None:
             row = horizontal_border.bottom
             self._spaces[row][column].beside.add('window')
+
+    def _add_furniture(self):
+        for furniture in self._crime_scene.furniture:
+            coordinates = [
+                (coordinate.row, coordinate.column)
+                for coordinate in furniture.coordinates
+            ]
+            for row, column in coordinates:
+                self._spaces[row][column].on = furniture.type
+                for n_row, n_col in self._get_neighbors(row, column):
+                    if (n_row, n_col) not in coordinates:
+                        self._spaces[n_row][n_col].beside.add(furniture.type)
+            if not furniture.occupiable:
+                self._blocked_coordinates.extend(coordinates)
+
+    def _get_neighbors(self, row, column):
+        neighbors = []
+        if row > 0:
+            neighbors.append((row - 1, column))
+        if column > 0:
+            neighbors.append((row, column - 1))
+        if row < self._n - 1:
+            neighbors.append((row + 1, column))
+        if column < self._n - 1:
+            neighbors.append((row, column + 1))
+        return neighbors
 
 
 class PuzzleSolver:
