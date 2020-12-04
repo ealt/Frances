@@ -80,6 +80,9 @@ class Board:
             neighbors.append((row, column + 1))
         return neighbors
 
+    def get_blocked_coordinates(self):
+        return self._blocked_coordinates
+
 
 class PuzzleSolver:
     def __init__(self, puzzle):   
@@ -101,7 +104,16 @@ class PuzzleSolver:
             for person_id in range(len(self._puzzle.people))
         ]
         self._set_unique_rows_and_columns()
+        self._set_occupiable_constraints()
 
     def _set_unique_rows_and_columns(self):
         self._model.AddAllDifferent(self._rows)
         self._model.AddAllDifferent(self._columns)
+
+    def _set_occupiable_constraints(self):
+        for person_vars in self._get_people_vars():
+            self._model.AddForbiddenAssignments(
+                list(person_vars), self._board.get_blocked_coordinates())
+
+    def _get_people_vars(self):
+        return [(row, column) for row, column in zip(self._rows, self._columns)]
