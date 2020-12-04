@@ -100,3 +100,8 @@ class PuzzleSolver:
                 0, self._n-1, 'column_{person_id}'.format(person_id=person_id))
             for person_id in range(len(self._puzzle.people))
         ]
+        self._set_unique_rows_and_columns()
+
+    def _set_unique_rows_and_columns(self):
+        self._model.AddAllDifferent(self._rows)
+        self._model.AddAllDifferent(self._columns)
