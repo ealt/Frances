@@ -83,6 +83,9 @@ class Board:
     def get_blocked_coordinates(self):
         return self._blocked_coordinates
 
+    def get_spaces(self):
+            return self._spaces
+
 
 class PuzzleSolver:
     def __init__(self, puzzle):   
@@ -105,6 +108,7 @@ class PuzzleSolver:
         ]
         self._set_unique_rows_and_columns()
         self._set_occupiable_constraints()
+        self._set_clues()
 
     def _set_unique_rows_and_columns(self):
         self._model.AddAllDifferent(self._rows)
@@ -117,3 +121,34 @@ class PuzzleSolver:
 
     def _get_people_vars(self):
         return [(row, column) for row, column in zip(self._rows, self._columns)]
+
+    def _set_clues(self):
+        for clue in self._puzzle.clues:
+            if clue.HasField('person_clue'):
+                self._set_person_clue(clue.person_clue)
+
+    def _set_person_clue(self, person_clue):
+        person_vars = self._get_person_vars(person_clue.person_id)
+        coordinates = self._get_clue_coordinates(person_clue)
+        self._model.AddAllowedAssignments(list(person_vars), coordinates)    
+
+    def _get_person_vars(self, person_id):
+        return (self._rows[person_id], self._columns[person_id])
+
+    def _get_clue_coordinates(self, clue):
+        coordinates = []
+        for row, row_spaces in enumerate(self._board.get_spaces()):
+            for column, space in enumerate(row_spaces):
+                if self._evaluate_space_for_clue(space, clue):
+                    coordinates.append((row, column))
+        return coordinates
+
+    def _evaluate_space_for_clue(self, space, clue):
+        if type(clue) == Puzzle.Clue.RoomClue or clue.HasField('room_id'):
+            return clue.room_id == space.room_id
+        elif clue.HasField('beside_window'):
+            return clue.beside_window == ('window' in space.beside)
+        elif clue.HasField('beside'):
+            return clue.beside in space.beside
+        elif clue.HasField('on'):
+            return clue.on == space.on
