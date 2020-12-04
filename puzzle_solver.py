@@ -1,3 +1,5 @@
+from ortools.sat.python import cp_model
+
 from puzzle_pb2 import Puzzle
 
 
@@ -82,5 +84,19 @@ class Board:
 class PuzzleSolver:
     def __init__(self, puzzle):   
         self._puzzle = puzzle
-        n = len(self._puzzle.people)
-        self._board = Board(n, self._puzzle.crime_scene)
+        self._n = len(self._puzzle.people)
+        self._board = Board(self._n, self._puzzle.crime_scene)
+        self._create_model()
+
+    def _create_model(self):
+        self._model = cp_model.CpModel()
+        self._rows = [
+            self._model.NewIntVar(
+                0, self._n-1, 'row_{person_id}'.format(person_id=person_id))
+            for person_id in range(len(self._puzzle.people))
+        ]
+        self._columns = [
+            self._model.NewIntVar(
+                0, self._n-1, 'column_{person_id}'.format(person_id=person_id))
+            for person_id in range(len(self._puzzle.people))
+        ]
