@@ -152,3 +152,9 @@ class PuzzleSolver:
             return clue.beside in space.beside
         elif clue.HasField('on'):
             return clue.on == space.on
+
+    def solve(self):
+        self._solver = cp_model.CpSolver()
+        self._status = self._solver.Solve(self._model)
+        print('Solution status: {status}'.format(
+            status=self._solver.StatusName(self._status)))
