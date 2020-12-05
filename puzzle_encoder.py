@@ -17,7 +17,7 @@ FURNITURE_DATA_DICT = {
 ParsedPersonClue = namedtuple('ParsedPersonClue',
                               ['subject', 'exclusive', 'preposition', 'object'])
 
-PERSON_CLUE_PATTERN = ('^(?P<subject>{people}) (is |was )?'
+PERSON_CLUE_PATTERN = ('^(?P<subject>{people}) (is |was )?(standing )?'
                        '(?P<exclusive>the only person )?'
                        '(?P<preposition>on|beside|next to|in) (a |the )?'
                        '(?P<object>{furniture}|window|{rooms})\.?$')
