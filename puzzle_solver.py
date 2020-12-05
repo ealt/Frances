@@ -3,6 +3,12 @@ from ortools.sat.python import cp_model
 from puzzle_pb2 import Puzzle
 
 
+def get_name(messages, message_id):
+    for message in messages:
+        if message.id == message_id:
+            return message.name
+
+
 class Space:
     def __init__(self, room_id):
         self.room_id = room_id
@@ -198,3 +204,12 @@ class PuzzleSolver:
 
     def get_solution(self):
         return self._puzzle.solution
+
+    def verdict(self):
+        murderer_id = self._puzzle.solution.murderer_id
+        victim_id = self._get_victim_id()
+        room_id = self._get_room_of_person(victim_id)
+        print('{murderer} murdered {victim} in the {room}!'.format(
+            murderer=get_name(self._puzzle.people, murderer_id),
+            victim=get_name(self._puzzle.people, victim_id),
+            room=get_name(self._puzzle.crime_scene.rooms, room_id)))
