@@ -15,10 +15,10 @@ FURNITURE_DATA_DICT = {
     'table': FurnitureData('table', Puzzle.CrimeScene.Furniture.TABLE, False)
 }
 
-ParsedClue = namedtuple(
-    'ParsedClue', ['subject', 'preposition', 'object'])
+ParsedPersonClue = namedtuple(
+    'ParsedPersonClue', ['subject', 'preposition', 'object'])
 
-CLUE_PATTERN = ('^(?P<subject>{people}) (is |was )?'
+PERSON_CLUE_PATTERN = ('^(?P<subject>{people}) (is |was )?'
     '(?P<preposition>on|beside|next to|in) (a |the )?'
     '(?P<object>{furniture}|window|{rooms})\.?$')
 
@@ -80,39 +80,39 @@ class PuzzleEncoder:
         }
 
     def add_clue(self, raw_clue):
-        parsed_clue = self._parse_clue(raw_clue)
-        self._add_clue(parsed_clue)
+        parsed_person_clue = self._parse_person_clue(raw_clue)
+        self._add_person_clue(parsed_person_clue)
 
-    def _parse_clue(self, raw_clue):
-        clue_pattern = self._generate_clue_pattern()
-        match = re.match(clue_pattern, raw_clue, re.IGNORECASE)
-        return ParsedClue(
+    def _parse_person_clue(self, raw_clue):
+        person_clue_pattern = self._generate_person_clue_pattern()
+        match = re.match(person_clue_pattern, raw_clue, re.IGNORECASE)
+        return ParsedPersonClue(
             subject=match.group('subject').lower(),
             preposition=match.group('preposition').lower(),
             object=match.group('object').lower())
 
-    def _generate_clue_pattern(self):
-        return CLUE_PATTERN.format(
+    def _generate_person_clue_pattern(self):
+        return PERSON_CLUE_PATTERN.format(
             people=stringify(self._puzzle.people),
             furniture=stringify(FURNITURE_DATA_DICT.values()),
             rooms=stringify(self._puzzle.crime_scene.rooms))
 
-    def _add_clue(self, parsed_clue):
+    def _add_person_clue(self, parsed_person_clue):
         clue = self._puzzle.clues.add()
-        clue.person_clue.person_id = self._people_ids[parsed_clue.subject]
-        self._add_prepositional_phrase(clue, parsed_clue)
+        clue.person_clue.person_id = self._people_ids[parsed_person_clue.subject]
+        self._add_prepositional_phrase(clue, parsed_person_clue)
 
-    def _add_prepositional_phrase(self, clue, parsed_clue):
-        if parsed_clue.preposition == 'on':
-            clue.person_clue.on = FURNITURE_DATA_DICT[parsed_clue.object].type
-        elif parsed_clue.preposition in ('beside', 'next to'):
-            if parsed_clue.object == 'window':
+    def _add_prepositional_phrase(self, clue, parsed_person_clue):
+        if parsed_person_clue.preposition == 'on':
+            clue.person_clue.on = FURNITURE_DATA_DICT[parsed_person_clue.object].type
+        elif parsed_person_clue.preposition in ('beside', 'next to'):
+            if parsed_person_clue.object == 'window':
                 clue.person_clue.beside_window = True
-            elif parsed_clue.object in FURNITURE_DATA_DICT.keys():
-                object_type = FURNITURE_DATA_DICT[parsed_clue.object].type
+            elif parsed_person_clue.object in FURNITURE_DATA_DICT.keys():
+                object_type = FURNITURE_DATA_DICT[parsed_person_clue.object].type
                 clue.person_clue.beside = object_type
-        elif parsed_clue.preposition == 'in':
-            clue.person_clue.room_id = self._room_ids[parsed_clue.object]
+        elif parsed_person_clue.preposition == 'in':
+            clue.person_clue.room_id = self._room_ids[parsed_person_clue.object]
 
     def get_puzzle(self):
         return self._puzzle
