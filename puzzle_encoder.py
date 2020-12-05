@@ -94,7 +94,7 @@ class PuzzleEncoder:
         else:
             parsed_person_clue = self._parse_person_clue(raw_clue)
             if parsed_person_clue.exclusive:
-                self._add_exclusive_person_clus(parsed_person_clue)
+                self._add_exclusive_person_clue(parsed_person_clue)
             else:
                 self._add_person_clue(parsed_person_clue)
 
