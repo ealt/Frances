@@ -15,9 +15,10 @@ FURNITURE_DATA_DICT = {
 }
 
 ParsedPersonClue = namedtuple('ParsedPersonClue',
-                              ['subject', 'preposition', 'object'])
+                              ['subject', 'exclusive', 'preposition', 'object'])
 
 PERSON_CLUE_PATTERN = ('^(?P<subject>{people}) (is |was )?'
+                       '(?P<exclusive>the only person )?'
                        '(?P<preposition>on|beside|next to|in) (a |the )?'
                        '(?P<object>{furniture}|window|{rooms})\.?$')
 
@@ -92,7 +93,10 @@ class PuzzleEncoder:
             self._add_no_empty_room()
         else:
             parsed_person_clue = self._parse_person_clue(raw_clue)
-            self._add_person_clue(parsed_person_clue)
+            if parsed_person_clue.exclusive:
+                self._add_exclusive_person_clus(parsed_person_clue)
+            else:
+                self._add_person_clue(parsed_person_clue)
 
     def _add_no_empty_room(self):
         for room in self._puzzle.crime_scene.rooms:
@@ -104,6 +108,7 @@ class PuzzleEncoder:
         person_clue_pattern = self._generate_person_clue_pattern()
         match = re.match(person_clue_pattern, raw_clue, re.IGNORECASE)
         return ParsedPersonClue(subject=match.group('subject').lower(),
+                                exclusive=match.group('exclusive') != None,
                                 preposition=match.group('preposition').lower(),
                                 object=match.group('object').lower())
 
@@ -112,6 +117,14 @@ class PuzzleEncoder:
             people=stringify(self._puzzle.people),
             furniture=stringify(FURNITURE_DATA_DICT.values()),
             rooms=stringify(self._puzzle.crime_scene.rooms))
+
+    def _add_exclusive_person_clue(self, parsed_person_clue):
+        for person in self._puzzle.people:
+            clue = self._puzzle.clues.add()
+            clue.person_clue.person_id = person.id
+            self._add_prepositional_phrase(clue, parsed_person_clue)
+            clue.person_clue.negate = person.name.lower(
+            ) != parsed_person_clue.subject
 
     def _add_person_clue(self, parsed_person_clue):
         clue = self._puzzle.clues.add()
