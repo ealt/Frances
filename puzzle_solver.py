@@ -134,8 +134,23 @@ class PuzzleSolver:
 
     def _set_clues(self):
         for clue in self._puzzle.clues:
-            if clue.HasField('person_clue'):
+            if clue.HasField('room_clue'):
+                self._set_room_clue(clue.room_clue)
+            elif clue.HasField('person_clue'):
                 self._set_person_clue(clue.person_clue)
+
+    def _set_room_clue(self, room_clue):
+        people_vars = self._get_people_vars()
+        room_coordinates = self._get_clue_coordinates(room_clue)
+        if room_clue.is_occupied:
+            self._model.AddBoolOr([
+                person_vars in room_coordinates for person_vars in people_vars
+            ])
+        else:
+            self._model.AddBoolAnd([
+                person_vars not in room_coordinates
+                for person_vars in people_vars
+            ])
 
     def _set_person_clue(self, person_clue):
         person_vars = self._get_person_vars(person_clue.person_id)
