@@ -88,4 +88,14 @@ message Puzzle {
         }
     }
     repeated Clue clues = 4;
+
+    message Solution {
+        message Position {
+            int32 person_id = 1;
+            Coordinate coordinate = 2;
+        }
+        repeated Position positions = 1;
+        int32 murderer_id = 2;
+    }
+    Solution solution = 5;
 }
