@@ -86,6 +86,9 @@ class Board:
     def get_spaces(self):
             return self._spaces
 
+    def get_room_of_coordinate(self, coordinate):
+        return self._spaces[coordinate.row][coordinate.column].room_id
+
 
 class PuzzleSolver:
     def __init__(self, puzzle):   
@@ -158,3 +161,40 @@ class PuzzleSolver:
         self._status = self._solver.Solve(self._model)
         print('Solution status: {status}'.format(
             status=self._solver.StatusName(self._status)))
+        if self._status == cp_model.OPTIMAL:
+            self._set_solution()
+
+    def _set_solution(self):
+        self._set_positions()
+        self._set_murderer()
+
+    def _set_positions(self):
+        del self._puzzle.solution.positions[:]
+        for person_id, person_vals in enumerate(self._get_people_vars()):
+            row, column = person_vals
+            position = self._puzzle.solution.positions.add(person_id=person_id)
+            position.coordinate.row = self._solver.Value(row)
+            position.coordinate.column = self._solver.Value(column)
+        
+
+    def _set_murderer(self):
+        victim_id = self._get_victim_id()
+        murder_room_id = self._get_room_of_person(victim_id)
+        for person in self._puzzle.people:
+            if (person.type == Puzzle.Person.SUSPECT
+                and self._get_room_of_person(person.id) == murder_room_id):
+                self._puzzle.solution.murderer_id = person.id
+                break
+
+    def _get_victim_id(self):
+        for person in self._puzzle.people:
+            if person.type == Puzzle.Person.VICTIM:
+                return person.id
+
+    def _get_room_of_person(self, person_id):
+        coordinate = self._puzzle.solution.positions[person_id].coordinate
+        room_id = self._board.get_room_of_coordinate(coordinate)
+        return room_id
+
+    def get_solution(self):
+        return self._puzzle.solution
