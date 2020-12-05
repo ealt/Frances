@@ -10,6 +10,7 @@ def get_name(messages, message_id):
 
 
 class Space:
+
     def __init__(self, room_id):
         self.room_id = room_id
         self.on = None
@@ -17,6 +18,7 @@ class Space:
 
 
 class Board:
+
     def __init__(self, n, crime_scene):
         self._n = n
         self._crime_scene = crime_scene
@@ -27,9 +29,8 @@ class Board:
 
     def _init_spaces(self):
         self._spaces = [[
-            Space(self._get_room_id(row, column))
-            for column in range(self._n)]
-            for row in range(self._n)]
+            Space(self._get_room_id(row, column)) for column in range(self._n)
+        ] for row in range(self._n)]
 
     def _get_room_id(self, row, column):
         index = (self._n * row) + column
@@ -50,7 +51,7 @@ class Board:
         if vertical_border.right is not None:
             column = vertical_border.right
             self._spaces[row][column].beside.add('window')
-            
+
     def _add_horizontal_window(self, horizontal_border):
         column = horizontal_border.column
         if horizontal_border.top is not None:
@@ -62,10 +63,8 @@ class Board:
 
     def _add_furniture(self):
         for furniture in self._crime_scene.furniture:
-            coordinates = [
-                (coordinate.row, coordinate.column)
-                for coordinate in furniture.coordinates
-            ]
+            coordinates = [(coordinate.row, coordinate.column)
+                           for coordinate in furniture.coordinates]
             for row, column in coordinates:
                 self._spaces[row][column].on = furniture.type
                 for n_row, n_col in self._get_neighbors(row, column):
@@ -90,14 +89,15 @@ class Board:
         return self._blocked_coordinates
 
     def get_spaces(self):
-            return self._spaces
+        return self._spaces
 
     def get_room_of_coordinate(self, coordinate):
         return self._spaces[coordinate.row][coordinate.column].room_id
 
 
 class PuzzleSolver:
-    def __init__(self, puzzle):   
+
+    def __init__(self, puzzle):
         self._puzzle = puzzle
         self._n = len(self._puzzle.people)
         self._board = Board(self._n, self._puzzle.crime_scene)
@@ -106,13 +106,14 @@ class PuzzleSolver:
     def _create_model(self):
         self._model = cp_model.CpModel()
         self._rows = [
-            self._model.NewIntVar(
-                0, self._n-1, 'row_{person_id}'.format(person_id=person_id))
+            self._model.NewIntVar(0, self._n - 1,
+                                  'row_{person_id}'.format(person_id=person_id))
             for person_id in range(len(self._puzzle.people))
         ]
         self._columns = [
             self._model.NewIntVar(
-                0, self._n-1, 'column_{person_id}'.format(person_id=person_id))
+                0, self._n - 1,
+                'column_{person_id}'.format(person_id=person_id))
             for person_id in range(len(self._puzzle.people))
         ]
         self._set_unique_rows_and_columns()
@@ -139,7 +140,7 @@ class PuzzleSolver:
     def _set_person_clue(self, person_clue):
         person_vars = self._get_person_vars(person_clue.person_id)
         coordinates = self._get_clue_coordinates(person_clue)
-        self._model.AddAllowedAssignments(list(person_vars), coordinates)    
+        self._model.AddAllowedAssignments(list(person_vars), coordinates)
 
     def _get_person_vars(self, person_id):
         return (self._rows[person_id], self._columns[person_id])
@@ -181,14 +182,13 @@ class PuzzleSolver:
             position = self._puzzle.solution.positions.add(person_id=person_id)
             position.coordinate.row = self._solver.Value(row)
             position.coordinate.column = self._solver.Value(column)
-        
 
     def _set_murderer(self):
         victim_id = self._get_victim_id()
         murder_room_id = self._get_room_of_person(victim_id)
         for person in self._puzzle.people:
-            if (person.type == Puzzle.Person.SUSPECT
-                and self._get_room_of_person(person.id) == murder_room_id):
+            if (person.type == Puzzle.Person.SUSPECT and
+                    self._get_room_of_person(person.id) == murder_room_id):
                 self._puzzle.solution.murderer_id = person.id
                 break
 
