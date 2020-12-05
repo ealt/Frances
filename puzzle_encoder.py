@@ -88,8 +88,17 @@ class PuzzleEncoder:
         }
 
     def add_clue(self, raw_clue):
-        parsed_person_clue = self._parse_person_clue(raw_clue)
-        self._add_person_clue(parsed_person_clue)
+        if re.match('^There was no empty room\.?$', raw_clue, re.IGNORECASE):
+            self._add_no_empty_room()
+        else:
+            parsed_person_clue = self._parse_person_clue(raw_clue)
+            self._add_person_clue(parsed_person_clue)
+
+    def _add_no_empty_room(self):
+        for room in self._puzzle.crime_scene.rooms:
+            clue = self._puzzle.clues.add()
+            clue.room_clue.room_id = room.id
+            clue.room_clue.is_occupied = True
 
     def _parse_person_clue(self, raw_clue):
         person_clue_pattern = self._generate_person_clue_pattern()
