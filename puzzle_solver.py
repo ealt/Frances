@@ -155,7 +155,10 @@ class PuzzleSolver:
     def _set_person_clue(self, person_clue):
         person_vars = self._get_person_vars(person_clue.person_id)
         coordinates = self._get_clue_coordinates(person_clue)
-        self._model.AddAllowedAssignments(list(person_vars), coordinates)
+        if person_clue.negate:
+            self._model.AddForbiddenAssignments(list(person_vars), coordinates)
+        else:
+            self._model.AddAllowedAssignments(list(person_vars), coordinates)
 
     def _get_person_vars(self, person_id):
         return (self._rows[person_id], self._columns[person_id])
