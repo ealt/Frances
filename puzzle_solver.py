@@ -105,32 +105,48 @@ class PuzzleSolver:
 
     def _create_model(self):
         self._model = cp_model.CpModel()
-        self._rows = [
-            self._model.NewIntVar(0, self._n - 1,
-                                  'row_{person_id}'.format(person_id=person_id))
-            for person_id in range(len(self._puzzle.people))
+        unavailable = set(self._board.get_blocked_coordinates() +
+                          self._get_unoccupied_room_coordinates())
+        self._occupancies = [[[
+            self._model.NewConstant(0) if (row, col) in unavailable else
+            self._model.NewBoolVar(f'({person_id}, {row}, {col})')
+            for col in range(self._n)
         ]
-        self._columns = [
-            self._model.NewIntVar(
-                0, self._n - 1,
-                'column_{person_id}'.format(person_id=person_id))
-            for person_id in range(len(self._puzzle.people))
-        ]
-        self._set_unique_rows_and_columns()
-        self._set_occupiable_constraints()
+                              for row in range(self._n)]
+                             for person_id in range(self._n)]
+        self._set_uniqueness_constraints()
         self._set_clues()
 
-    def _set_unique_rows_and_columns(self):
-        self._model.AddAllDifferent(self._rows)
-        self._model.AddAllDifferent(self._columns)
+    def _get_unoccupied_room_coordinates(self):
+        unoccupied_room_coordinates = []
+        for clue in self._puzzle.clues:
+            if clue.HasField('room_clue') and not clue.room_clue.is_occupied:
+                unoccupied_room_coordinates.extend(
+                    self._get_clue_coordinates(clue))
+        return unoccupied_room_coordinates
 
-    def _set_occupiable_constraints(self):
-        for person_vars in self._get_people_vars():
-            self._model.AddForbiddenAssignments(
-                list(person_vars), self._board.get_blocked_coordinates())
-
-    def _get_people_vars(self):
-        return [(row, column) for row, column in zip(self._rows, self._columns)]
+    def _set_uniqueness_constraints(self):
+        for person_id in range(self._n):
+            self._model.Add(
+                sum([
+                    self._occupancies[person_id][col][row]
+                    for row in range(self._n)
+                    for col in range(self._n)
+                ]) == 1)
+        for row in range(self._n):
+            self._model.Add(
+                sum([
+                    self._occupancies[person_id][col][row]
+                    for person_id in range(self._n)
+                    for col in range(self._n)
+                ]) == 1)
+        for col in range(self._n):
+            self._model.Add(
+                sum([
+                    self._occupancies[person_id][col][row]
+                    for person_id in range(self._n)
+                    for row in range(self._n)
+                ]) == 1)
 
     def _set_clues(self):
         for clue in self._puzzle.clues:
@@ -140,28 +156,23 @@ class PuzzleSolver:
                 self._set_person_clue(clue.person_clue)
 
     def _set_room_clue(self, room_clue):
-        people_vars = self._get_people_vars()
-        room_coordinates = self._get_clue_coordinates(room_clue)
         if room_clue.is_occupied:
-            self._model.AddBoolOr([
-                person_vars in room_coordinates for person_vars in people_vars
-            ])
-        else:
-            self._model.AddBoolAnd([
-                person_vars not in room_coordinates
-                for person_vars in people_vars
-            ])
+            room_coordinates = self._get_clue_coordinates(room_clue)
+            self._model.Add(
+                sum([
+                    person_occupancy[row][col]
+                    for person_occupancy in self._occupancies
+                    for row, col in room_coordinates
+                ]) >= 1)
 
     def _set_person_clue(self, person_clue):
-        person_vars = self._get_person_vars(person_clue.person_id)
         coordinates = self._get_clue_coordinates(person_clue)
-        if person_clue.negate:
-            self._model.AddForbiddenAssignments(list(person_vars), coordinates)
-        else:
-            self._model.AddAllowedAssignments(list(person_vars), coordinates)
-
-    def _get_person_vars(self, person_id):
-        return (self._rows[person_id], self._columns[person_id])
+        value = 0 if person_clue.negate else 1
+        self._model.Add(
+            sum([
+                self._occupancies[person_clue.person_id][row][col]
+                for row, col in coordinates
+            ]) == value)
 
     def _get_clue_coordinates(self, clue):
         coordinates = []
@@ -195,11 +206,18 @@ class PuzzleSolver:
 
     def _set_positions(self):
         del self._puzzle.solution.positions[:]
-        for person_id, person_vals in enumerate(self._get_people_vars()):
-            row, column = person_vals
+        for person_id in range(self._n):
+            row, column = self._get_position(person_id)
             position = self._puzzle.solution.positions.add(person_id=person_id)
-            position.coordinate.row = self._solver.Value(row)
-            position.coordinate.column = self._solver.Value(column)
+            position.coordinate.row = row
+            position.coordinate.column = column
+
+    def _get_position(self, person_id):
+        for row in range(self._n):
+            for col in range(self._n):
+                if self._solver.Value(self._occupancies[person_id][row][col]):
+                    return (row, col)
+        return (-1, -1)
 
     def _set_murderer(self):
         victim_id = self._get_victim_id()
