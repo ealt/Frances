@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package sherlock;
+package frances;
 
 message Coordinate {
     int32 row = 1;

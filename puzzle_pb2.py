@@ -15,18 +15,18 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='puzzle.proto',
-  package='sherlock',
+  package='frances',
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0cpuzzle.proto\x12\x08sherlock\")\n\nCoordinate\x12\x0b\n\x03row\x18\x01 \x01(\x05\x12\x0e\n\x06\x63olumn\x18\x02 \x01(\x05\":\n\x0eVerticalBorder\x12\x0b\n\x03row\x18\x01 \x01(\x05\x12\x0c\n\x04left\x18\x02 \x01(\x05\x12\r\n\x05right\x18\x03 \x01(\x05\"?\n\x10HorizontalBorder\x12\x0e\n\x06\x63olumn\x18\x01 \x01(\x05\x12\x0b\n\x03top\x18\x02 \x01(\x05\x12\x0e\n\x06\x62ottom\x18\x03 \x01(\x05\"\xcb\x0b\n\x06Puzzle\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x30\n\x0b\x63rime_scene\x18\x02 \x01(\x0b\x32\x1b.sherlock.Puzzle.CrimeScene\x12\'\n\x06people\x18\x03 \x03(\x0b\x32\x17.sherlock.Puzzle.Person\x12$\n\x05\x63lues\x18\x04 \x03(\x0b\x32\x15.sherlock.Puzzle.Clue\x12+\n\x08solution\x18\x05 \x01(\x0b\x32\x19.sherlock.Puzzle.Solution\x1a\xc4\x04\n\nCrimeScene\x12/\n\x05rooms\x18\x01 \x03(\x0b\x32 .sherlock.Puzzle.CrimeScene.Room\x12\x12\n\nfloor_plan\x18\x02 \x03(\x05\x12\x33\n\x07windows\x18\x03 \x03(\x0b\x32\".sherlock.Puzzle.CrimeScene.Window\x12\x38\n\tfurniture\x18\x04 \x03(\x0b\x32%.sherlock.Puzzle.CrimeScene.Furniture\x1a \n\x04Room\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x1a\x80\x01\n\x06Window\x12\x33\n\x0fvertical_border\x18\x01 \x01(\x0b\x32\x18.sherlock.VerticalBorderH\x00\x12\x37\n\x11horizontal_border\x18\x02 \x01(\x0b\x32\x1a.sherlock.HorizontalBorderH\x00\x42\x08\n\x06\x62order\x1a\xdc\x01\n\tFurniture\x12\x41\n\x04type\x18\x01 \x01(\x0e\x32\x33.sherlock.Puzzle.CrimeScene.Furniture.FurnitureType\x12\x12\n\noccupiable\x18\x02 \x01(\x08\x12)\n\x0b\x63oordinates\x18\x03 \x03(\x0b\x32\x14.sherlock.Coordinate\"M\n\rFurnitureType\x12\t\n\x05\x43HAIR\x10\x00\x12\x07\n\x03\x42\x45\x44\x10\x01\x12\n\n\x06\x43\x41RPET\x10\x02\x12\t\n\x05PLANT\x10\x03\x12\x06\n\x02TV\x10\x04\x12\t\n\x05TABLE\x10\x05\x1a{\n\x06Person\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x30\n\x04type\x18\x03 \x01(\x0e\x32\".sherlock.Puzzle.Person.PersonType\"%\n\nPersonType\x12\x0b\n\x07SUSPECT\x10\x00\x12\n\n\x06VICTIM\x10\x01\x1a\x9e\x03\n\x04\x43lue\x12\x33\n\troom_clue\x18\x01 \x01(\x0b\x32\x1e.sherlock.Puzzle.Clue.RoomClueH\x00\x12\x37\n\x0bperson_clue\x18\x02 \x01(\x0b\x32 .sherlock.Puzzle.Clue.PersonClueH\x00\x1a\x30\n\x08RoomClue\x12\x0f\n\x07room_id\x18\x01 \x01(\x05\x12\x13\n\x0bis_occupied\x18\x02 \x01(\x08\x1a\xed\x01\n\nPersonClue\x12\x11\n\tperson_id\x18\x01 \x01(\x05\x12\x0e\n\x06negate\x18\x02 \x01(\x08\x12\x11\n\x07room_id\x18\x03 \x01(\x05H\x00\x12\x17\n\rbeside_window\x18\x04 \x01(\x08H\x00\x12\x45\n\x06\x62\x65side\x18\x05 \x01(\x0e\x32\x33.sherlock.Puzzle.CrimeScene.Furniture.FurnitureTypeH\x00\x12\x41\n\x02on\x18\x06 \x01(\x0e\x32\x33.sherlock.Puzzle.CrimeScene.Furniture.FurnitureTypeH\x00\x42\x06\n\x04typeB\x06\n\x04type\x1a\x9f\x01\n\x08Solution\x12\x35\n\tpositions\x18\x01 \x03(\x0b\x32\".sherlock.Puzzle.Solution.Position\x12\x13\n\x0bmurderer_id\x18\x02 \x01(\x05\x1aG\n\x08Position\x12\x11\n\tperson_id\x18\x01 \x01(\x05\x12(\n\ncoordinate\x18\x02 \x01(\x0b\x32\x14.sherlock.Coordinateb\x06proto3'
+  serialized_pb=b'\n\x0cpuzzle.proto\x12\x07\x66rances\")\n\nCoordinate\x12\x0b\n\x03row\x18\x01 \x01(\x05\x12\x0e\n\x06\x63olumn\x18\x02 \x01(\x05\":\n\x0eVerticalBorder\x12\x0b\n\x03row\x18\x01 \x01(\x05\x12\x0c\n\x04left\x18\x02 \x01(\x05\x12\r\n\x05right\x18\x03 \x01(\x05\"?\n\x10HorizontalBorder\x12\x0e\n\x06\x63olumn\x18\x01 \x01(\x05\x12\x0b\n\x03top\x18\x02 \x01(\x05\x12\x0e\n\x06\x62ottom\x18\x03 \x01(\x05\"\xb8\x0b\n\x06Puzzle\x12\x0c\n\x04name\x18\x01 \x01(\t\x12/\n\x0b\x63rime_scene\x18\x02 \x01(\x0b\x32\x1a.frances.Puzzle.CrimeScene\x12&\n\x06people\x18\x03 \x03(\x0b\x32\x16.frances.Puzzle.Person\x12#\n\x05\x63lues\x18\x04 \x03(\x0b\x32\x14.frances.Puzzle.Clue\x12*\n\x08solution\x18\x05 \x01(\x0b\x32\x18.frances.Puzzle.Solution\x1a\xbc\x04\n\nCrimeScene\x12.\n\x05rooms\x18\x01 \x03(\x0b\x32\x1f.frances.Puzzle.CrimeScene.Room\x12\x12\n\nfloor_plan\x18\x02 \x03(\x05\x12\x32\n\x07windows\x18\x03 \x03(\x0b\x32!.frances.Puzzle.CrimeScene.Window\x12\x37\n\tfurniture\x18\x04 \x03(\x0b\x32$.frances.Puzzle.CrimeScene.Furniture\x1a \n\x04Room\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x1a~\n\x06Window\x12\x32\n\x0fvertical_border\x18\x01 \x01(\x0b\x32\x17.frances.VerticalBorderH\x00\x12\x36\n\x11horizontal_border\x18\x02 \x01(\x0b\x32\x19.frances.HorizontalBorderH\x00\x42\x08\n\x06\x62order\x1a\xda\x01\n\tFurniture\x12@\n\x04type\x18\x01 \x01(\x0e\x32\x32.frances.Puzzle.CrimeScene.Furniture.FurnitureType\x12\x12\n\noccupiable\x18\x02 \x01(\x08\x12(\n\x0b\x63oordinates\x18\x03 \x03(\x0b\x32\x13.frances.Coordinate\"M\n\rFurnitureType\x12\t\n\x05\x43HAIR\x10\x00\x12\x07\n\x03\x42\x45\x44\x10\x01\x12\n\n\x06\x43\x41RPET\x10\x02\x12\t\n\x05PLANT\x10\x03\x12\x06\n\x02TV\x10\x04\x12\t\n\x05TABLE\x10\x05\x1az\n\x06Person\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12/\n\x04type\x18\x03 \x01(\x0e\x32!.frances.Puzzle.Person.PersonType\"%\n\nPersonType\x12\x0b\n\x07SUSPECT\x10\x00\x12\n\n\x06VICTIM\x10\x01\x1a\x9a\x03\n\x04\x43lue\x12\x32\n\troom_clue\x18\x01 \x01(\x0b\x32\x1d.frances.Puzzle.Clue.RoomClueH\x00\x12\x36\n\x0bperson_clue\x18\x02 \x01(\x0b\x32\x1f.frances.Puzzle.Clue.PersonClueH\x00\x1a\x30\n\x08RoomClue\x12\x0f\n\x07room_id\x18\x01 \x01(\x05\x12\x13\n\x0bis_occupied\x18\x02 \x01(\x08\x1a\xeb\x01\n\nPersonClue\x12\x11\n\tperson_id\x18\x01 \x01(\x05\x12\x0e\n\x06negate\x18\x02 \x01(\x08\x12\x11\n\x07room_id\x18\x03 \x01(\x05H\x00\x12\x17\n\rbeside_window\x18\x04 \x01(\x08H\x00\x12\x44\n\x06\x62\x65side\x18\x05 \x01(\x0e\x32\x32.frances.Puzzle.CrimeScene.Furniture.FurnitureTypeH\x00\x12@\n\x02on\x18\x06 \x01(\x0e\x32\x32.frances.Puzzle.CrimeScene.Furniture.FurnitureTypeH\x00\x42\x06\n\x04typeB\x06\n\x04type\x1a\x9d\x01\n\x08Solution\x12\x34\n\tpositions\x18\x01 \x03(\x0b\x32!.frances.Puzzle.Solution.Position\x12\x13\n\x0bmurderer_id\x18\x02 \x01(\x05\x1a\x46\n\x08Position\x12\x11\n\tperson_id\x18\x01 \x01(\x05\x12\'\n\ncoordinate\x18\x02 \x01(\x0b\x32\x13.frances.Coordinateb\x06proto3'
 )
 
 
 
 _PUZZLE_CRIMESCENE_FURNITURE_FURNITURETYPE = _descriptor.EnumDescriptor(
   name='FurnitureType',
-  full_name='sherlock.Puzzle.CrimeScene.Furniture.FurnitureType',
+  full_name='frances.Puzzle.CrimeScene.Furniture.FurnitureType',
   filename=None,
   file=DESCRIPTOR,
   create_key=_descriptor._internal_create_key,
@@ -64,14 +64,14 @@ _PUZZLE_CRIMESCENE_FURNITURE_FURNITURETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=897,
-  serialized_end=974,
+  serialized_start=884,
+  serialized_end=961,
 )
 _sym_db.RegisterEnumDescriptor(_PUZZLE_CRIMESCENE_FURNITURE_FURNITURETYPE)
 
 _PUZZLE_PERSON_PERSONTYPE = _descriptor.EnumDescriptor(
   name='PersonType',
-  full_name='sherlock.Puzzle.Person.PersonType',
+  full_name='frances.Puzzle.Person.PersonType',
   filename=None,
   file=DESCRIPTOR,
   create_key=_descriptor._internal_create_key,
@@ -89,29 +89,29 @@ _PUZZLE_PERSON_PERSONTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1062,
-  serialized_end=1099,
+  serialized_start=1048,
+  serialized_end=1085,
 )
 _sym_db.RegisterEnumDescriptor(_PUZZLE_PERSON_PERSONTYPE)
 
 
 _COORDINATE = _descriptor.Descriptor(
   name='Coordinate',
-  full_name='sherlock.Coordinate',
+  full_name='frances.Coordinate',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='row', full_name='sherlock.Coordinate.row', index=0,
+      name='row', full_name='frances.Coordinate.row', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='column', full_name='sherlock.Coordinate.column', index=1,
+      name='column', full_name='frances.Coordinate.column', index=1,
       number=2, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -129,35 +129,35 @@ _COORDINATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=26,
-  serialized_end=67,
+  serialized_start=25,
+  serialized_end=66,
 )
 
 
 _VERTICALBORDER = _descriptor.Descriptor(
   name='VerticalBorder',
-  full_name='sherlock.VerticalBorder',
+  full_name='frances.VerticalBorder',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='row', full_name='sherlock.VerticalBorder.row', index=0,
+      name='row', full_name='frances.VerticalBorder.row', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='left', full_name='sherlock.VerticalBorder.left', index=1,
+      name='left', full_name='frances.VerticalBorder.left', index=1,
       number=2, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='right', full_name='sherlock.VerticalBorder.right', index=2,
+      name='right', full_name='frances.VerticalBorder.right', index=2,
       number=3, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -175,35 +175,35 @@ _VERTICALBORDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=69,
-  serialized_end=127,
+  serialized_start=68,
+  serialized_end=126,
 )
 
 
 _HORIZONTALBORDER = _descriptor.Descriptor(
   name='HorizontalBorder',
-  full_name='sherlock.HorizontalBorder',
+  full_name='frances.HorizontalBorder',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='column', full_name='sherlock.HorizontalBorder.column', index=0,
+      name='column', full_name='frances.HorizontalBorder.column', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='top', full_name='sherlock.HorizontalBorder.top', index=1,
+      name='top', full_name='frances.HorizontalBorder.top', index=1,
       number=2, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='bottom', full_name='sherlock.HorizontalBorder.bottom', index=2,
+      name='bottom', full_name='frances.HorizontalBorder.bottom', index=2,
       number=3, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -221,28 +221,28 @@ _HORIZONTALBORDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=129,
-  serialized_end=192,
+  serialized_start=128,
+  serialized_end=191,
 )
 
 
 _PUZZLE_CRIMESCENE_ROOM = _descriptor.Descriptor(
   name='Room',
-  full_name='sherlock.Puzzle.CrimeScene.Room',
+  full_name='frances.Puzzle.CrimeScene.Room',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='sherlock.Puzzle.CrimeScene.Room.id', index=0,
+      name='id', full_name='frances.Puzzle.CrimeScene.Room.id', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='name', full_name='sherlock.Puzzle.CrimeScene.Room.name', index=1,
+      name='name', full_name='frances.Puzzle.CrimeScene.Room.name', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -260,27 +260,27 @@ _PUZZLE_CRIMESCENE_ROOM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=588,
-  serialized_end=620,
+  serialized_start=580,
+  serialized_end=612,
 )
 
 _PUZZLE_CRIMESCENE_WINDOW = _descriptor.Descriptor(
   name='Window',
-  full_name='sherlock.Puzzle.CrimeScene.Window',
+  full_name='frances.Puzzle.CrimeScene.Window',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='vertical_border', full_name='sherlock.Puzzle.CrimeScene.Window.vertical_border', index=0,
+      name='vertical_border', full_name='frances.Puzzle.CrimeScene.Window.vertical_border', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='horizontal_border', full_name='sherlock.Puzzle.CrimeScene.Window.horizontal_border', index=1,
+      name='horizontal_border', full_name='frances.Puzzle.CrimeScene.Window.horizontal_border', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -298,39 +298,39 @@ _PUZZLE_CRIMESCENE_WINDOW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='border', full_name='sherlock.Puzzle.CrimeScene.Window.border',
+      name='border', full_name='frances.Puzzle.CrimeScene.Window.border',
       index=0, containing_type=None,
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=623,
-  serialized_end=751,
+  serialized_start=614,
+  serialized_end=740,
 )
 
 _PUZZLE_CRIMESCENE_FURNITURE = _descriptor.Descriptor(
   name='Furniture',
-  full_name='sherlock.Puzzle.CrimeScene.Furniture',
+  full_name='frances.Puzzle.CrimeScene.Furniture',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='type', full_name='sherlock.Puzzle.CrimeScene.Furniture.type', index=0,
+      name='type', full_name='frances.Puzzle.CrimeScene.Furniture.type', index=0,
       number=1, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='occupiable', full_name='sherlock.Puzzle.CrimeScene.Furniture.occupiable', index=1,
+      name='occupiable', full_name='frances.Puzzle.CrimeScene.Furniture.occupiable', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='coordinates', full_name='sherlock.Puzzle.CrimeScene.Furniture.coordinates', index=2,
+      name='coordinates', full_name='frances.Puzzle.CrimeScene.Furniture.coordinates', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -349,41 +349,41 @@ _PUZZLE_CRIMESCENE_FURNITURE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=754,
-  serialized_end=974,
+  serialized_start=743,
+  serialized_end=961,
 )
 
 _PUZZLE_CRIMESCENE = _descriptor.Descriptor(
   name='CrimeScene',
-  full_name='sherlock.Puzzle.CrimeScene',
+  full_name='frances.Puzzle.CrimeScene',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='rooms', full_name='sherlock.Puzzle.CrimeScene.rooms', index=0,
+      name='rooms', full_name='frances.Puzzle.CrimeScene.rooms', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='floor_plan', full_name='sherlock.Puzzle.CrimeScene.floor_plan', index=1,
+      name='floor_plan', full_name='frances.Puzzle.CrimeScene.floor_plan', index=1,
       number=2, type=5, cpp_type=1, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='windows', full_name='sherlock.Puzzle.CrimeScene.windows', index=2,
+      name='windows', full_name='frances.Puzzle.CrimeScene.windows', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='furniture', full_name='sherlock.Puzzle.CrimeScene.furniture', index=3,
+      name='furniture', full_name='frances.Puzzle.CrimeScene.furniture', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -401,34 +401,34 @@ _PUZZLE_CRIMESCENE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=394,
-  serialized_end=974,
+  serialized_start=389,
+  serialized_end=961,
 )
 
 _PUZZLE_PERSON = _descriptor.Descriptor(
   name='Person',
-  full_name='sherlock.Puzzle.Person',
+  full_name='frances.Puzzle.Person',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='sherlock.Puzzle.Person.id', index=0,
+      name='id', full_name='frances.Puzzle.Person.id', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='name', full_name='sherlock.Puzzle.Person.name', index=1,
+      name='name', full_name='frances.Puzzle.Person.name', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='type', full_name='sherlock.Puzzle.Person.type', index=2,
+      name='type', full_name='frances.Puzzle.Person.type', index=2,
       number=3, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -447,27 +447,27 @@ _PUZZLE_PERSON = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=976,
-  serialized_end=1099,
+  serialized_start=963,
+  serialized_end=1085,
 )
 
 _PUZZLE_CLUE_ROOMCLUE = _descriptor.Descriptor(
   name='RoomClue',
-  full_name='sherlock.Puzzle.Clue.RoomClue',
+  full_name='frances.Puzzle.Clue.RoomClue',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='room_id', full_name='sherlock.Puzzle.Clue.RoomClue.room_id', index=0,
+      name='room_id', full_name='frances.Puzzle.Clue.RoomClue.room_id', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='is_occupied', full_name='sherlock.Puzzle.Clue.RoomClue.is_occupied', index=1,
+      name='is_occupied', full_name='frances.Puzzle.Clue.RoomClue.is_occupied', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -485,55 +485,55 @@ _PUZZLE_CLUE_ROOMCLUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1220,
-  serialized_end=1268,
+  serialized_start=1204,
+  serialized_end=1252,
 )
 
 _PUZZLE_CLUE_PERSONCLUE = _descriptor.Descriptor(
   name='PersonClue',
-  full_name='sherlock.Puzzle.Clue.PersonClue',
+  full_name='frances.Puzzle.Clue.PersonClue',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='person_id', full_name='sherlock.Puzzle.Clue.PersonClue.person_id', index=0,
+      name='person_id', full_name='frances.Puzzle.Clue.PersonClue.person_id', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='negate', full_name='sherlock.Puzzle.Clue.PersonClue.negate', index=1,
+      name='negate', full_name='frances.Puzzle.Clue.PersonClue.negate', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='room_id', full_name='sherlock.Puzzle.Clue.PersonClue.room_id', index=2,
+      name='room_id', full_name='frances.Puzzle.Clue.PersonClue.room_id', index=2,
       number=3, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='beside_window', full_name='sherlock.Puzzle.Clue.PersonClue.beside_window', index=3,
+      name='beside_window', full_name='frances.Puzzle.Clue.PersonClue.beside_window', index=3,
       number=4, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='beside', full_name='sherlock.Puzzle.Clue.PersonClue.beside', index=4,
+      name='beside', full_name='frances.Puzzle.Clue.PersonClue.beside', index=4,
       number=5, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='on', full_name='sherlock.Puzzle.Clue.PersonClue.on', index=5,
+      name='on', full_name='frances.Puzzle.Clue.PersonClue.on', index=5,
       number=6, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -551,32 +551,32 @@ _PUZZLE_CLUE_PERSONCLUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='type', full_name='sherlock.Puzzle.Clue.PersonClue.type',
+      name='type', full_name='frances.Puzzle.Clue.PersonClue.type',
       index=0, containing_type=None,
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1271,
-  serialized_end=1508,
+  serialized_start=1255,
+  serialized_end=1490,
 )
 
 _PUZZLE_CLUE = _descriptor.Descriptor(
   name='Clue',
-  full_name='sherlock.Puzzle.Clue',
+  full_name='frances.Puzzle.Clue',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='room_clue', full_name='sherlock.Puzzle.Clue.room_clue', index=0,
+      name='room_clue', full_name='frances.Puzzle.Clue.room_clue', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='person_clue', full_name='sherlock.Puzzle.Clue.person_clue', index=1,
+      name='person_clue', full_name='frances.Puzzle.Clue.person_clue', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -594,32 +594,32 @@ _PUZZLE_CLUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='type', full_name='sherlock.Puzzle.Clue.type',
+      name='type', full_name='frances.Puzzle.Clue.type',
       index=0, containing_type=None,
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1102,
-  serialized_end=1516,
+  serialized_start=1088,
+  serialized_end=1498,
 )
 
 _PUZZLE_SOLUTION_POSITION = _descriptor.Descriptor(
   name='Position',
-  full_name='sherlock.Puzzle.Solution.Position',
+  full_name='frances.Puzzle.Solution.Position',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='person_id', full_name='sherlock.Puzzle.Solution.Position.person_id', index=0,
+      name='person_id', full_name='frances.Puzzle.Solution.Position.person_id', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='coordinate', full_name='sherlock.Puzzle.Solution.Position.coordinate', index=1,
+      name='coordinate', full_name='frances.Puzzle.Solution.Position.coordinate', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -637,27 +637,27 @@ _PUZZLE_SOLUTION_POSITION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1607,
-  serialized_end=1678,
+  serialized_start=1588,
+  serialized_end=1658,
 )
 
 _PUZZLE_SOLUTION = _descriptor.Descriptor(
   name='Solution',
-  full_name='sherlock.Puzzle.Solution',
+  full_name='frances.Puzzle.Solution',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='positions', full_name='sherlock.Puzzle.Solution.positions', index=0,
+      name='positions', full_name='frances.Puzzle.Solution.positions', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='murderer_id', full_name='sherlock.Puzzle.Solution.murderer_id', index=1,
+      name='murderer_id', full_name='frances.Puzzle.Solution.murderer_id', index=1,
       number=2, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -675,48 +675,48 @@ _PUZZLE_SOLUTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1519,
-  serialized_end=1678,
+  serialized_start=1501,
+  serialized_end=1658,
 )
 
 _PUZZLE = _descriptor.Descriptor(
   name='Puzzle',
-  full_name='sherlock.Puzzle',
+  full_name='frances.Puzzle',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='sherlock.Puzzle.name', index=0,
+      name='name', full_name='frances.Puzzle.name', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='crime_scene', full_name='sherlock.Puzzle.crime_scene', index=1,
+      name='crime_scene', full_name='frances.Puzzle.crime_scene', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='people', full_name='sherlock.Puzzle.people', index=2,
+      name='people', full_name='frances.Puzzle.people', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='clues', full_name='sherlock.Puzzle.clues', index=3,
+      name='clues', full_name='frances.Puzzle.clues', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='solution', full_name='sherlock.Puzzle.solution', index=4,
+      name='solution', full_name='frances.Puzzle.solution', index=4,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -734,8 +734,8 @@ _PUZZLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=195,
-  serialized_end=1678,
+  serialized_start=194,
+  serialized_end=1658,
 )
 
 _PUZZLE_CRIMESCENE_ROOM.containing_type = _PUZZLE_CRIMESCENE
@@ -801,21 +801,21 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 Coordinate = _reflection.GeneratedProtocolMessageType('Coordinate', (_message.Message,), {
   'DESCRIPTOR' : _COORDINATE,
   '__module__' : 'puzzle_pb2'
-  # @@protoc_insertion_point(class_scope:sherlock.Coordinate)
+  # @@protoc_insertion_point(class_scope:frances.Coordinate)
   })
 _sym_db.RegisterMessage(Coordinate)
 
 VerticalBorder = _reflection.GeneratedProtocolMessageType('VerticalBorder', (_message.Message,), {
   'DESCRIPTOR' : _VERTICALBORDER,
   '__module__' : 'puzzle_pb2'
-  # @@protoc_insertion_point(class_scope:sherlock.VerticalBorder)
+  # @@protoc_insertion_point(class_scope:frances.VerticalBorder)
   })
 _sym_db.RegisterMessage(VerticalBorder)
 
 HorizontalBorder = _reflection.GeneratedProtocolMessageType('HorizontalBorder', (_message.Message,), {
   'DESCRIPTOR' : _HORIZONTALBORDER,
   '__module__' : 'puzzle_pb2'
-  # @@protoc_insertion_point(class_scope:sherlock.HorizontalBorder)
+  # @@protoc_insertion_point(class_scope:frances.HorizontalBorder)
   })
 _sym_db.RegisterMessage(HorizontalBorder)
 
@@ -826,33 +826,33 @@ Puzzle = _reflection.GeneratedProtocolMessageType('Puzzle', (_message.Message,),
     'Room' : _reflection.GeneratedProtocolMessageType('Room', (_message.Message,), {
       'DESCRIPTOR' : _PUZZLE_CRIMESCENE_ROOM,
       '__module__' : 'puzzle_pb2'
-      # @@protoc_insertion_point(class_scope:sherlock.Puzzle.CrimeScene.Room)
+      # @@protoc_insertion_point(class_scope:frances.Puzzle.CrimeScene.Room)
       })
     ,
 
     'Window' : _reflection.GeneratedProtocolMessageType('Window', (_message.Message,), {
       'DESCRIPTOR' : _PUZZLE_CRIMESCENE_WINDOW,
       '__module__' : 'puzzle_pb2'
-      # @@protoc_insertion_point(class_scope:sherlock.Puzzle.CrimeScene.Window)
+      # @@protoc_insertion_point(class_scope:frances.Puzzle.CrimeScene.Window)
       })
     ,
 
     'Furniture' : _reflection.GeneratedProtocolMessageType('Furniture', (_message.Message,), {
       'DESCRIPTOR' : _PUZZLE_CRIMESCENE_FURNITURE,
       '__module__' : 'puzzle_pb2'
-      # @@protoc_insertion_point(class_scope:sherlock.Puzzle.CrimeScene.Furniture)
+      # @@protoc_insertion_point(class_scope:frances.Puzzle.CrimeScene.Furniture)
       })
     ,
     'DESCRIPTOR' : _PUZZLE_CRIMESCENE,
     '__module__' : 'puzzle_pb2'
-    # @@protoc_insertion_point(class_scope:sherlock.Puzzle.CrimeScene)
+    # @@protoc_insertion_point(class_scope:frances.Puzzle.CrimeScene)
     })
   ,
 
   'Person' : _reflection.GeneratedProtocolMessageType('Person', (_message.Message,), {
     'DESCRIPTOR' : _PUZZLE_PERSON,
     '__module__' : 'puzzle_pb2'
-    # @@protoc_insertion_point(class_scope:sherlock.Puzzle.Person)
+    # @@protoc_insertion_point(class_scope:frances.Puzzle.Person)
     })
   ,
 
@@ -861,19 +861,19 @@ Puzzle = _reflection.GeneratedProtocolMessageType('Puzzle', (_message.Message,),
     'RoomClue' : _reflection.GeneratedProtocolMessageType('RoomClue', (_message.Message,), {
       'DESCRIPTOR' : _PUZZLE_CLUE_ROOMCLUE,
       '__module__' : 'puzzle_pb2'
-      # @@protoc_insertion_point(class_scope:sherlock.Puzzle.Clue.RoomClue)
+      # @@protoc_insertion_point(class_scope:frances.Puzzle.Clue.RoomClue)
       })
     ,
 
     'PersonClue' : _reflection.GeneratedProtocolMessageType('PersonClue', (_message.Message,), {
       'DESCRIPTOR' : _PUZZLE_CLUE_PERSONCLUE,
       '__module__' : 'puzzle_pb2'
-      # @@protoc_insertion_point(class_scope:sherlock.Puzzle.Clue.PersonClue)
+      # @@protoc_insertion_point(class_scope:frances.Puzzle.Clue.PersonClue)
       })
     ,
     'DESCRIPTOR' : _PUZZLE_CLUE,
     '__module__' : 'puzzle_pb2'
-    # @@protoc_insertion_point(class_scope:sherlock.Puzzle.Clue)
+    # @@protoc_insertion_point(class_scope:frances.Puzzle.Clue)
     })
   ,
 
@@ -882,17 +882,17 @@ Puzzle = _reflection.GeneratedProtocolMessageType('Puzzle', (_message.Message,),
     'Position' : _reflection.GeneratedProtocolMessageType('Position', (_message.Message,), {
       'DESCRIPTOR' : _PUZZLE_SOLUTION_POSITION,
       '__module__' : 'puzzle_pb2'
-      # @@protoc_insertion_point(class_scope:sherlock.Puzzle.Solution.Position)
+      # @@protoc_insertion_point(class_scope:frances.Puzzle.Solution.Position)
       })
     ,
     'DESCRIPTOR' : _PUZZLE_SOLUTION,
     '__module__' : 'puzzle_pb2'
-    # @@protoc_insertion_point(class_scope:sherlock.Puzzle.Solution)
+    # @@protoc_insertion_point(class_scope:frances.Puzzle.Solution)
     })
   ,
   'DESCRIPTOR' : _PUZZLE,
   '__module__' : 'puzzle_pb2'
-  # @@protoc_insertion_point(class_scope:sherlock.Puzzle)
+  # @@protoc_insertion_point(class_scope:frances.Puzzle)
   })
 _sym_db.RegisterMessage(Puzzle)
 _sym_db.RegisterMessage(Puzzle.CrimeScene)
