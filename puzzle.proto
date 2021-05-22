@@ -82,6 +82,7 @@ message Puzzle {
                 CrimeScene.Furniture.FurnitureType on = 6;
                 CrimeScene.Furniture.FurnitureType same_row = 7;
                 CrimeScene.Furniture.FurnitureType same_column = 8;
+                bool in_corner = 9;
             }
         }
         oneof type {

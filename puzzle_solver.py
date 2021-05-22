@@ -1,6 +1,9 @@
+from itertools import chain
 from ortools.sat.python import cp_model
 
 from puzzle_pb2 import Puzzle
+
+CORNER = set(['vertical_wall', 'horizontal_wall'])
 
 
 def get_name(messages, message_id):
@@ -24,6 +27,7 @@ class Board:
         self._crime_scene = crime_scene
         self._blocked_coordinates = []
         self._init_spaces()
+        self._add_walls()
         self._add_windows()
         self._add_furniture()
 
@@ -37,6 +41,28 @@ class Board:
     def _get_room_id(self, row, column):
         index = (self._n * row) + column
         return self._crime_scene.floor_plan[index]
+
+    def _add_walls(self):
+        self._add_vertical_walls()
+        self._add_horizontal_walls()
+
+    def _add_vertical_walls(self):
+        for spaces_row in self._spaces:
+            spaces_row[0].beside.add('vertical_wall')
+            spaces_row[-1].beside.add('vertical_wall')
+            for left, right in zip(spaces_row, spaces_row[1:]):
+                if left.room_id != right.room_id:
+                    left.beside.add('vertical_wall')
+                    right.beside.add('vertical_wall')
+
+    def _add_horizontal_walls(self):
+        for space in chain(self._spaces[0], self._spaces[-1]):
+            space.beside.add('horizontal_wall')
+        for row in range(1, self._n):
+            for top, bottom in zip(self._spaces[row - 1], self._spaces[row]):
+                if top.room_id != bottom.room_id:
+                    top.beside.add('horizontal_wall')
+                    bottom.beside.add('horizontal_wall')
 
     def _add_windows(self):
         for window in self._crime_scene.windows:
@@ -224,6 +250,8 @@ class PuzzleSolver:
             return clue.beside in space.beside
         elif clue.HasField('on'):
             return clue.on == space.on
+        elif clue.HasField('in_corner'):
+            return clue.in_corner == space.beside.issuperset(CORNER)
 
     def solve(self):
         self._solver = cp_model.CpSolver()
