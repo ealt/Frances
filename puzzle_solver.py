@@ -74,14 +74,16 @@ class Board:
                 self._blocked_coordinates.extend(coordinates)
 
     def _get_neighbors(self, row, column):
+        room_id = self._get_room_id(row, column)
         neighbors = []
-        if row > 0:
+        if row > 0 and self._get_room_id(row - 1, column) == room_id:
             neighbors.append((row - 1, column))
-        if column > 0:
+        if column > 0 and self._get_room_id(row, column - 1) == room_id:
             neighbors.append((row, column - 1))
-        if row < self._n - 1:
+        if row < self._n - 1 and self._get_room_id(row + 1, column) == room_id:
             neighbors.append((row + 1, column))
-        if column < self._n - 1:
+        if column < self._n - 1 and self._get_room_id(row,
+                                                      column + 1) == room_id:
             neighbors.append((row, column + 1))
         return neighbors
 
