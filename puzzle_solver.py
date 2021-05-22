@@ -31,6 +31,8 @@ class Board:
         self._spaces = [[
             Space(self._get_room_id(row, column)) for column in range(self._n)
         ] for row in range(self._n)]
+        self._rowwise_furniture = [set() for _ in range(self._n)]
+        self._columwise_furniture = [set() for _ in range(self._n)]
 
     def _get_room_id(self, row, column):
         index = (self._n * row) + column
@@ -45,6 +47,7 @@ class Board:
 
     def _add_vertical_window(self, vertical_border):
         row = vertical_border.row
+        self._rowwise_furniture[row].add('window')
         if vertical_border.left is not None:
             column = vertical_border.left
             self._spaces[row][column].beside.add('window')
@@ -54,6 +57,7 @@ class Board:
 
     def _add_horizontal_window(self, horizontal_border):
         column = horizontal_border.column
+        self._columwise_furniture[column].add('window')
         if horizontal_border.top is not None:
             row = horizontal_border.top
             self._spaces[row][column].beside.add('window')
@@ -67,6 +71,8 @@ class Board:
                            for coordinate in furniture.coordinates]
             for row, column in coordinates:
                 self._spaces[row][column].on = furniture.type
+                self._rowwise_furniture[row].add(furniture.type)
+                self._columwise_furniture[column].add(furniture.type)
                 for n_row, n_col in self._get_neighbors(row, column):
                     if (n_row, n_col) not in coordinates:
                         self._spaces[n_row][n_col].beside.add(furniture.type)
@@ -92,6 +98,12 @@ class Board:
 
     def get_spaces(self):
         return self._spaces
+
+    def get_rowwise_furniture(self):
+        return self._rowwise_furniture
+
+    def get_columnwise_furniture(self):
+        return self._columwise_furniture
 
     def get_room_of_coordinate(self, coordinate):
         return self._spaces[coordinate.row][coordinate.column].room_id
@@ -168,13 +180,32 @@ class PuzzleSolver:
                 ]) >= 1)
 
     def _set_person_clue(self, person_clue):
-        coordinates = self._get_clue_coordinates(person_clue)
-        value = 0 if person_clue.negate else 1
-        self._model.Add(
-            sum([
-                self._occupancies[person_clue.person_id][row][col]
-                for row, col in coordinates
-            ]) == value)
+        if person_clue.HasField('same_row'):
+            for row, furnuture in enumerate(
+                    self._board.get_rowwise_furniture()):
+                if person_clue.same_row not in furnuture:
+                    self._model.Add(
+                        sum([
+                            self._occupancies[person_clue.person_id][row]
+                            [column] for column in range(self._n)
+                        ]) == 0)
+        elif person_clue.HasField('same_column'):
+            for column, furnuture in enumerate(
+                    self._board.get_columnwise_furniture()):
+                if person_clue.same_column not in furnuture:
+                    self._model.Add(
+                        sum([
+                            self._occupancies[person_clue.person_id][row]
+                            [column] for row in range(self._n)
+                        ]) == 0)
+        else:
+            coordinates = self._get_clue_coordinates(person_clue)
+            value = 0 if person_clue.negate else 1
+            self._model.Add(
+                sum([
+                    self._occupancies[person_clue.person_id][row][col]
+                    for row, col in coordinates
+                ]) == value)
 
     def _get_clue_coordinates(self, clue):
         coordinates = []

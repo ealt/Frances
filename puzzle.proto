@@ -80,6 +80,8 @@ message Puzzle {
                 bool beside_window = 4;
                 CrimeScene.Furniture.FurnitureType beside = 5;
                 CrimeScene.Furniture.FurnitureType on = 6;
+                CrimeScene.Furniture.FurnitureType same_row = 7;
+                CrimeScene.Furniture.FurnitureType same_column = 8;
             }
         }
         oneof type {

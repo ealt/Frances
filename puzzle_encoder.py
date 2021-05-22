@@ -20,7 +20,8 @@ ParsedPersonClue = namedtuple('ParsedPersonClue',
 PERSON_CLUE_PATTERN = ('^(?P<subject>{people}) (is |was )?'
                        '(?P<exclusive>the only person (in the house )?|alone )?'
                        '(that was )?(standing |sitting )?'
-                       '(?P<preposition>on|beside|next to|in) (a |the )?'
+                       '(?P<preposition>on|beside|next to|in'
+                       '( the same (row|column) as)?) (a |the )?'
                        '(?P<object>{furniture}|window|{rooms})\.?$')
 
 
@@ -144,6 +145,12 @@ class PuzzleEncoder:
                 object_type = FURNITURE_DATA_DICT[
                     parsed_person_clue.object].type
                 clue.person_clue.beside = object_type
+        elif parsed_person_clue.preposition == 'in the same row as':
+            object_type = FURNITURE_DATA_DICT[parsed_person_clue.object].type
+            clue.person_clue.same_row = object_type
+        elif parsed_person_clue.preposition == 'in the same column as':
+            object_type = FURNITURE_DATA_DICT[parsed_person_clue.object].type
+            clue.person_clue.same_column = object_type
         elif parsed_person_clue.preposition == 'in':
             clue.person_clue.room_id = self._room_ids[parsed_person_clue.object]
 
