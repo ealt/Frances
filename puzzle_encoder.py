@@ -18,7 +18,7 @@ ParsedPersonClue = namedtuple('ParsedPersonClue',
                               ['subject', 'exclusive', 'preposition', 'object'])
 
 PERSON_CLUE_PATTERN = ('^(?P<subject>{people}) (is |was )?(standing )?'
-                       '(?P<exclusive>the only person |alone )?'
+                       '(?P<exclusive>the only person (in the house )?|alone )?'
                        '(?P<preposition>on|beside|next to|in) (a |the )?'
                        '(?P<object>{furniture}|window|{rooms})\.?$')
 
