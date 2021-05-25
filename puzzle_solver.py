@@ -174,21 +174,21 @@ class PuzzleSolver:
         for person_id in range(self._n):
             self._model.Add(
                 sum([
-                    self._occupancies[person_id][col][row]
+                    self._occupancies[person_id][row][col]
                     for row in range(self._n)
                     for col in range(self._n)
                 ]) == 1)
         for row in range(self._n):
             self._model.Add(
                 sum([
-                    self._occupancies[person_id][col][row]
+                    self._occupancies[person_id][row][col]
                     for person_id in range(self._n)
                     for col in range(self._n)
                 ]) == 1)
         for col in range(self._n):
             self._model.Add(
                 sum([
-                    self._occupancies[person_id][col][row]
+                    self._occupancies[person_id][row][col]
                     for person_id in range(self._n)
                     for row in range(self._n)
                 ]) == 1)
