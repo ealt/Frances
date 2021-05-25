@@ -28,10 +28,20 @@ class Board:
         self._n = n
         self._crime_scene = crime_scene
         self._blocked_coordinates = []
+        self._get_room_coordinates()
         self._init_spaces()
         self._add_walls()
         self._add_windows()
         self._add_furniture()
+
+    def _get_room_coordinates(self):
+        self._room_coordinates = [
+            [] for _ in range(len(self._crime_scene.rooms))
+        ]
+        for index, room_id in enumerate(self._crime_scene.floor_plan):
+            row = index // self._n
+            col = index % self._n
+            self._room_coordinates[room_id].append((row, col))
 
     def _init_spaces(self) -> None:
         self._spaces = [[
@@ -128,6 +138,9 @@ class Board:
     def get_spaces(self) -> List[List[Space]]:
         return self._spaces
 
+    def get_coordinates_of_room(self, room_id):
+        return self._room_coordinates[room_id]
+
     def get_rowwise_furniture(
             self) -> List[Union[Set[int], Set[Union[int, str]]]]:
         return self._rowwise_furniture
@@ -167,7 +180,7 @@ class PuzzleSolver:
         for clue in self._puzzle.clues:
             if clue.HasField('room_clue') and not clue.room_clue.is_occupied:
                 unoccupied_room_coordinates.extend(
-                    self._get_clue_coordinates(clue))
+                    self._board.get_coordinates_of_room(clue.room_clue.room_id))
         return unoccupied_room_coordinates
 
     def _set_uniqueness_constraints(self) -> None:
@@ -202,7 +215,8 @@ class PuzzleSolver:
 
     def _set_room_clue(self, room_clue: Puzzle.Clue.RoomClue) -> None:
         if room_clue.is_occupied:
-            room_coordinates = self._get_clue_coordinates(room_clue)
+            room_coordinates = self._board.get_coordinates_of_room(
+                room_clue.room_id)
             self._model.Add(
                 sum([
                     person_occupancy[row][col]
@@ -239,17 +253,18 @@ class PuzzleSolver:
                 ]) == value)
 
     def _get_clue_coordinates(self, clue: Puzzle.Clue) -> List[Tuple[int, int]]:
-        coordinates = []
-        for row, row_spaces in enumerate(self._board.get_spaces()):
-            for column, space in enumerate(row_spaces):
-                if self._evaluate_space_for_clue(space, clue):
-                    coordinates.append((row, column))
-        return coordinates
+        if clue.HasField('room_id'):
+            return self._board._get_room_coordinates(clue.room_id)
+        else:
+            coordinates = []
+            for row, row_spaces in enumerate(self._board.get_spaces()):
+                for column, space in enumerate(row_spaces):
+                    if self._evaluate_space_for_clue(space, clue):
+                        coordinates.append((row, column))
+            return coordinates
 
     def _evaluate_space_for_clue(self, space: Space, clue: Puzzle.Clue) -> bool:
-        if type(clue) == Puzzle.Clue.RoomClue or clue.HasField('room_id'):
-            return clue.room_id == space.room_id
-        elif clue.HasField('beside_window'):
+        if clue.HasField('beside_window'):
             return clue.beside_window == ('window' in space.beside)
         elif clue.HasField('beside'):
             return clue.beside in space.beside
