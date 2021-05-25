@@ -244,7 +244,7 @@ class PuzzleSolver:
                             [column] for row in range(self._n)
                         ]) == 0)
         else:
-            coordinates = self._get_clue_coordinates(person_clue)
+            coordinates = self._get_person_clue_coordinates(person_clue)
             value = 0 if person_clue.negate else 1
             self._model.Add(
                 sum([
@@ -252,14 +252,15 @@ class PuzzleSolver:
                     for row, col in coordinates
                 ]) == value)
 
-    def _get_clue_coordinates(self, clue: Puzzle.Clue) -> List[Tuple[int, int]]:
-        if clue.HasField('room_id'):
-            return self._board._get_room_coordinates(clue.room_id)
+    def _get_person_clue_coordinates(
+            self, person_clue: Puzzle.Clue.PersonClue) -> List[Tuple[int, int]]:
+        if person_clue.HasField('room_id'):
+            return self._board._get_room_coordinates(person_clue.room_id)
         else:
             coordinates = []
             for row, row_spaces in enumerate(self._board.get_spaces()):
                 for column, space in enumerate(row_spaces):
-                    if self._evaluate_space_for_clue(space, clue):
+                    if self._evaluate_space_for_clue(space, person_clue):
                         coordinates.append((row, column))
             return coordinates
 
