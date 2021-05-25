@@ -257,6 +257,7 @@ class PuzzleSolver:
             return clue.on == space.on
         elif clue.HasField('in_corner'):
             return clue.in_corner == space.beside.issuperset(CORNER)
+        raise AttributeError
 
     def solve(self) -> None:
         self._solver = cp_model.CpSolver()
@@ -283,7 +284,7 @@ class PuzzleSolver:
             for col in range(self._n):
                 if self._solver.Value(self._occupancies[person_id][row][col]):
                     return (row, col)
-        return (-1, -1)
+        raise AttributeError
 
     def _set_murderer(self) -> None:
         victim_id = self._get_victim_id()
@@ -298,6 +299,7 @@ class PuzzleSolver:
         for person in self._puzzle.people:
             if person.type == Puzzle.Person.VICTIM:
                 return person.id
+        raise AttributeError
 
     def _get_room_of_person(self, person_id: int) -> int:
         coordinate = self._puzzle.solution.positions[person_id].coordinate
