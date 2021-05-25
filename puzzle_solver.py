@@ -255,7 +255,7 @@ class PuzzleSolver:
     def _get_person_clue_coordinates(
             self, person_clue: Puzzle.Clue.PersonClue) -> List[Tuple[int, int]]:
         if person_clue.HasField('room_id'):
-            return self._board._get_room_coordinates(person_clue.room_id)
+            return self._board.get_coordinates_of_room(person_clue.room_id)
         else:
             coordinates = []
             for row, row_spaces in enumerate(self._board.get_spaces()):
