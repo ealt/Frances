@@ -164,25 +164,24 @@ class PuzzleSolver:
         self._board = Board(self._n, self._puzzle.crime_scene)
         self._create_model()
 
-    def solve(self) -> None:
+    def solve(self) -> str:
         self._solver = cp_model.CpSolver()
         self._status = self._solver.Solve(self._model)
-        print('Solution status: {status}'.format(
-            status=self._solver.StatusName(self._status)))
         if self._status == cp_model.OPTIMAL:
             self._set_solution()
+        return self._solver.StatusName(self._status)
 
     def get_solution(self) -> Puzzle.Solution:
         return self._puzzle.solution
 
-    def verdict(self) -> None:
+    def verdict(self) -> str:
         murderer_id = self._puzzle.solution.murderer_id
         victim_id = self._get_victim_id()
         room_id = self._get_room_of_person(victim_id)
-        print('{murderer} murdered {victim} in the {room}!'.format(
+        return '{murderer} murdered {victim} in the {room}!'.format(
             murderer=get_name(self._puzzle.people, murderer_id),
             victim=get_name(self._puzzle.people, victim_id),
-            room=get_name(self._puzzle.crime_scene.rooms, room_id)))
+            room=get_name(self._puzzle.crime_scene.rooms, room_id))
 
     def _create_model(self) -> None:
         self._model = cp_model.CpModel()
