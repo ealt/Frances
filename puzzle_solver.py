@@ -34,6 +34,29 @@ class Board:
         self._add_windows()
         self._add_furniture()
 
+    @property
+    def blocked_coordinates(self) -> List[Tuple[int, int]]:
+        return self._blocked_coordinates
+
+    @property
+    def spaces(self) -> List[List[Space]]:
+        return self._spaces
+
+    @property
+    def rowwise_furniture(self) -> List[Union[Set[int], Set[Union[int, str]]]]:
+        return self._rowwise_furniture
+
+    @property
+    def columnwise_furniture(
+            self) -> List[Union[Set[int], Set[Union[int, str]]]]:
+        return self._columwise_furniture
+
+    def get_coordinates_of_room(self, room_id):
+        return self._room_coordinates[room_id]
+
+    def get_room_of_coordinate(self, coordinate: Coordinate) -> int:
+        return self._spaces[coordinate.row][coordinate.column].room_id
+
     def _get_room_coordinates(self):
         self._room_coordinates = [
             [] for _ in range(len(self._crime_scene.rooms))
@@ -132,29 +155,6 @@ class Board:
             neighbors.append((row, column + 1))
         return neighbors
 
-    @property
-    def blocked_coordinates(self) -> List[Tuple[int, int]]:
-        return self._blocked_coordinates
-
-    @property
-    def spaces(self) -> List[List[Space]]:
-        return self._spaces
-
-    def get_coordinates_of_room(self, room_id):
-        return self._room_coordinates[room_id]
-
-    @property
-    def rowwise_furniture(self) -> List[Union[Set[int], Set[Union[int, str]]]]:
-        return self._rowwise_furniture
-
-    @property
-    def columnwise_furniture(
-            self) -> List[Union[Set[int], Set[Union[int, str]]]]:
-        return self._columwise_furniture
-
-    def get_room_of_coordinate(self, coordinate: Coordinate) -> int:
-        return self._spaces[coordinate.row][coordinate.column].room_id
-
 
 class PuzzleSolver:
 
@@ -163,6 +163,26 @@ class PuzzleSolver:
         self._n = len(self._puzzle.people)
         self._board = Board(self._n, self._puzzle.crime_scene)
         self._create_model()
+
+    def solve(self) -> None:
+        self._solver = cp_model.CpSolver()
+        self._status = self._solver.Solve(self._model)
+        print('Solution status: {status}'.format(
+            status=self._solver.StatusName(self._status)))
+        if self._status == cp_model.OPTIMAL:
+            self._set_solution()
+
+    def get_solution(self) -> Puzzle.Solution:
+        return self._puzzle.solution
+
+    def verdict(self) -> None:
+        murderer_id = self._puzzle.solution.murderer_id
+        victim_id = self._get_victim_id()
+        room_id = self._get_room_of_person(victim_id)
+        print('{murderer} murdered {victim} in the {room}!'.format(
+            murderer=get_name(self._puzzle.people, murderer_id),
+            victim=get_name(self._puzzle.people, victim_id),
+            room=get_name(self._puzzle.crime_scene.rooms, room_id)))
 
     def _create_model(self) -> None:
         self._model = cp_model.CpModel()
@@ -277,14 +297,6 @@ class PuzzleSolver:
             return clue.in_corner == space.beside.issuperset(CORNER)
         raise AttributeError
 
-    def solve(self) -> None:
-        self._solver = cp_model.CpSolver()
-        self._status = self._solver.Solve(self._model)
-        print('Solution status: {status}'.format(
-            status=self._solver.StatusName(self._status)))
-        if self._status == cp_model.OPTIMAL:
-            self._set_solution()
-
     def _set_solution(self) -> None:
         self._set_positions()
         self._set_murderer()
@@ -323,15 +335,3 @@ class PuzzleSolver:
         coordinate = self._puzzle.solution.positions[person_id].coordinate
         room_id = self._board.get_room_of_coordinate(coordinate)
         return room_id
-
-    def get_solution(self) -> Puzzle.Solution:
-        return self._puzzle.solution
-
-    def verdict(self) -> None:
-        murderer_id = self._puzzle.solution.murderer_id
-        victim_id = self._get_victim_id()
-        room_id = self._get_room_of_person(victim_id)
-        print('{murderer} murdered {victim} in the {room}!'.format(
-            murderer=get_name(self._puzzle.people, murderer_id),
-            victim=get_name(self._puzzle.people, victim_id),
-            room=get_name(self._puzzle.crime_scene.rooms, room_id)))
