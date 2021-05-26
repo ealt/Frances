@@ -132,20 +132,23 @@ class Board:
             neighbors.append((row, column + 1))
         return neighbors
 
-    def get_blocked_coordinates(self) -> List[Tuple[int, int]]:
+    @property
+    def blocked_coordinates(self) -> List[Tuple[int, int]]:
         return self._blocked_coordinates
 
-    def get_spaces(self) -> List[List[Space]]:
+    @property
+    def spaces(self) -> List[List[Space]]:
         return self._spaces
 
     def get_coordinates_of_room(self, room_id):
         return self._room_coordinates[room_id]
 
-    def get_rowwise_furniture(
-            self) -> List[Union[Set[int], Set[Union[int, str]]]]:
+    @property
+    def rowwise_furniture(self) -> List[Union[Set[int], Set[Union[int, str]]]]:
         return self._rowwise_furniture
 
-    def get_columnwise_furniture(
+    @property
+    def columnwise_furniture(
             self) -> List[Union[Set[int], Set[Union[int, str]]]]:
         return self._columwise_furniture
 
@@ -163,7 +166,7 @@ class PuzzleSolver:
 
     def _create_model(self) -> None:
         self._model = cp_model.CpModel()
-        unavailable = set(self._board.get_blocked_coordinates() +
+        unavailable = set(self._board.blocked_coordinates +
                           self._get_unoccupied_room_coordinates())
         self._occupancies = [[[
             self._model.NewConstant(0) if (row, col) in unavailable else
@@ -226,8 +229,7 @@ class PuzzleSolver:
 
     def _set_person_clue(self, person_clue: Puzzle.Clue.PersonClue) -> None:
         if person_clue.HasField('same_row'):
-            for row, furnuture in enumerate(
-                    self._board.get_rowwise_furniture()):
+            for row, furnuture in enumerate(self._board.rowwise_furniture):
                 if person_clue.same_row not in furnuture:
                     self._model.Add(
                         sum([
@@ -236,7 +238,7 @@ class PuzzleSolver:
                         ]) == 0)
         elif person_clue.HasField('same_column'):
             for column, furnuture in enumerate(
-                    self._board.get_columnwise_furniture()):
+                    self._board.columnwise_furniture):
                 if person_clue.same_column not in furnuture:
                     self._model.Add(
                         sum([
@@ -258,7 +260,7 @@ class PuzzleSolver:
             return self._board.get_coordinates_of_room(person_clue.room_id)
         else:
             coordinates = []
-            for row, row_spaces in enumerate(self._board.get_spaces()):
+            for row, row_spaces in enumerate(self._board.spaces):
                 for column, space in enumerate(row_spaces):
                     if self._evaluate_space_for_clue(space, person_clue):
                         coordinates.append((row, column))
