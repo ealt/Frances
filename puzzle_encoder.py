@@ -36,6 +36,10 @@ class PuzzleEncoder:
     def __init__(self, name: str = '') -> None:
         self._puzzle = Puzzle(name=name)
 
+    @property
+    def puzzle(self) -> Puzzle:
+        return self._puzzle
+
     def set_rooms(self, room_names: List[str]) -> None:
         del self._puzzle.crime_scene.rooms[:]
         for room_id, room_name in enumerate(room_names):
@@ -160,6 +164,3 @@ class PuzzleEncoder:
             clue.person_clue.in_corner = True
         elif parsed_person_clue.preposition == 'in':
             clue.person_clue.room_id = self._room_ids[parsed_person_clue.object]
-
-    def get_puzzle(self) -> Puzzle:
-        return self._puzzle
