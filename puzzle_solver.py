@@ -171,7 +171,8 @@ class PuzzleSolver:
             self._set_solution()
         return self._solver.StatusName(self._status)
 
-    def get_solution(self) -> Puzzle.Solution:
+    @property
+    def solution(self) -> Puzzle.Solution:
         return self._puzzle.solution
 
     def verdict(self) -> str:
