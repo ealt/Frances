@@ -2,7 +2,7 @@ from itertools import chain
 from ortools.sat.python import cp_model
 
 from puzzle_pb2 import Coordinate, HorizontalBorder, VerticalBorder, Puzzle
-from typing import Any, List, Set, Tuple, Union
+from typing import Any, List, Tuple
 from ortools.sat.python.cp_model import IntVar
 
 CORNER = set(['vertical_wall', 'horizontal_wall'])
