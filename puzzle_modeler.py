@@ -36,7 +36,6 @@ class PuzzleModeler:
         return self._spaces[coordinate.row][coordinate.column].room_id
 
     def _init_board(self):
-        self._blocked_coordinates = []
         self._get_room_coordinates()
         self._init_spaces()
         self._add_walls()
@@ -114,6 +113,7 @@ class PuzzleModeler:
             self._spaces[row][column].beside.add('window')
 
     def _add_furniture(self) -> None:
+        self._blocked_coordinates = []
         for furniture in self._puzzle.crime_scene.furniture:
             coordinates = [(coordinate.row, coordinate.column)
                            for coordinate in furniture.coordinates]
