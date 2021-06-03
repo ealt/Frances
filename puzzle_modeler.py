@@ -1,19 +1,20 @@
+from dataclasses import dataclass, field
 from itertools import chain
 from ortools.sat.python import cp_model
 
 from puzzle_pb2 import Coordinate, HorizontalBorder, VerticalBorder, Puzzle
-from typing import Any, List, Tuple
+from typing import Any, List, Optional, Set, Tuple, Union
 from ortools.sat.python.cp_model import IntVar
 
 CORNER = set(['vertical_wall', 'horizontal_wall'])
 
 
+@dataclass
 class Space:
 
-    def __init__(self, room_id: int) -> None:
-        self.room_id = room_id
-        self.on = None
-        self.beside = set()
+    room_id: int
+    on: Optional[Union[int, str]] = None
+    beside: Set[Union[int, str]] = field(default_factory=set)
 
 
 class PuzzleModeler:
