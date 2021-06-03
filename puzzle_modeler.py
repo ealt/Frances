@@ -3,7 +3,7 @@ from itertools import chain
 from ortools.sat.python import cp_model
 
 from puzzle_pb2 import Coordinate, HorizontalBorder, VerticalBorder, Puzzle
-from typing import Any, List, Optional, Set, Tuple, Union
+from typing import List, Optional, Set, Tuple, Union
 from ortools.sat.python.cp_model import IntVar
 
 CORNER = set(['vertical_wall', 'horizontal_wall'])
@@ -156,7 +156,7 @@ class PuzzleModeler:
         self._set_uniqueness_constraints()
         self._set_clues()
 
-    def _get_unoccupied_room_coordinates(self) -> List[Any]:
+    def _get_unoccupied_room_coordinates(self) -> List[Tuple[int, int]]:
         unoccupied_room_coordinates = []
         for clue in self._puzzle.clues:
             if clue.HasField('room_clue') and not clue.room_clue.is_occupied:
