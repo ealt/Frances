@@ -1,10 +1,14 @@
 from dataclasses import dataclass, field
-from itertools import chain
+from itertools import chain, product, repeat
 from ortools.sat.python import cp_model
 
 from puzzle_pb2 import Coordinate, HorizontalBorder, VerticalBorder, Puzzle
-from typing import List, Optional, Set, Tuple, Union
+from typing import Callable, List, Optional, Set, Tuple, Union
 from ortools.sat.python.cp_model import IntVar
+
+OCCUPIED = lambda total_occupancy: total_occupancy >= 1
+UNOCCUPIED = lambda total_occupancy: total_occupancy == 0
+UNIQUELY_OCCUPIED = lambda total_occupancy: total_occupancy == 1
 
 CORNER = set(['vertical_wall', 'horizontal_wall'])
 
@@ -153,6 +157,10 @@ class PuzzleModeler:
         ]
                               for row in range(self._n)]
                              for person_id in range(self._n)]
+        self._row_indexes = lambda row: list(
+            zip(repeat(row, self._n), range(self._n)))
+        self._col_indexes = lambda col: list(
+            zip(range(self._n), repeat(col, self._n)))
         self._set_uniqueness_constraints()
         self._set_clues()
 
@@ -167,28 +175,30 @@ class PuzzleModeler:
     def _get_coordinates_of_room(self, room_id: int) -> List[Tuple[int, int]]:
         return self._room_coordinates[room_id]
 
+    def _add_constraint(self, constraint_function: Callable[[int], bool],
+                        people_ids: List[int],
+                        space_indexes: List[Tuple[int, int]]) -> None:
+        self._model.Add(
+            constraint_function(
+                sum([
+                    self._occupancies[person_id][row][col]
+                    for person_id in people_ids
+                    for row, col in space_indexes
+                ])))
+
     def _set_uniqueness_constraints(self) -> None:
         for person_id in range(self._n):
-            self._model.Add(
-                sum([
-                    self._occupancies[person_id][row][col]
-                    for row in range(self._n)
-                    for col in range(self._n)
-                ]) == 1)
+            people_ids = [person_id]
+            space_indexes = list(product(range(self._n), repeat=2))
+            self._add_constraint(UNIQUELY_OCCUPIED, people_ids, space_indexes)
         for row in range(self._n):
-            self._model.Add(
-                sum([
-                    self._occupancies[person_id][row][col]
-                    for person_id in range(self._n)
-                    for col in range(self._n)
-                ]) == 1)
+            people_ids = list(range(self._n))
+            space_indexes = self._row_indexes(row)
+            self._add_constraint(UNIQUELY_OCCUPIED, people_ids, space_indexes)
         for col in range(self._n):
-            self._model.Add(
-                sum([
-                    self._occupancies[person_id][row][col]
-                    for person_id in range(self._n)
-                    for row in range(self._n)
-                ]) == 1)
+            people_ids = list(range(self._n))
+            space_indexes = self._col_indexes(col)
+            self._add_constraint(UNIQUELY_OCCUPIED, people_ids, space_indexes)
 
     def _set_clues(self) -> None:
         for clue in self._puzzle.clues:
@@ -199,39 +209,26 @@ class PuzzleModeler:
 
     def _set_room_clue(self, room_clue: Puzzle.Clue.RoomClue) -> None:
         if room_clue.is_occupied:
-            room_coordinates = self._get_coordinates_of_room(room_clue.room_id)
-            self._model.Add(
-                sum([
-                    person_occupancy[row][col]
-                    for person_occupancy in self._occupancies
-                    for row, col in room_coordinates
-                ]) >= 1)
+            people_ids = list(range(self._n))
+            space_indexes = self._get_coordinates_of_room(room_clue.room_id)
+            self._add_constraint(OCCUPIED, people_ids, space_indexes)
 
     def _set_person_clue(self, person_clue: Puzzle.Clue.PersonClue) -> None:
+        people_ids = [person_clue.person_id]
         if person_clue.HasField('same_row'):
             for row, furnuture in enumerate(self._rowwise_furniture):
                 if person_clue.same_row not in furnuture:
-                    self._model.Add(
-                        sum([
-                            self._occupancies[person_clue.person_id][row]
-                            [column] for column in range(self._n)
-                        ]) == 0)
+                    space_indexes = self._row_indexes(row)
+                    self._add_constraint(UNOCCUPIED, people_ids, space_indexes)
         elif person_clue.HasField('same_column'):
             for column, furnuture in enumerate(self._columnwise_furniture):
                 if person_clue.same_column not in furnuture:
-                    self._model.Add(
-                        sum([
-                            self._occupancies[person_clue.person_id][row]
-                            [column] for row in range(self._n)
-                        ]) == 0)
+                    space_indexes = self._col_indexes(column)
+                    self._add_constraint(UNOCCUPIED, people_ids, space_indexes)
         else:
-            coordinates = self._get_person_clue_coordinates(person_clue)
-            value = 0 if person_clue.negate else 1
-            self._model.Add(
-                sum([
-                    self._occupancies[person_clue.person_id][row][col]
-                    for row, col in coordinates
-                ]) == value)
+            constraint_function = UNOCCUPIED if person_clue.negate else UNIQUELY_OCCUPIED
+            space_indexes = self._get_person_clue_coordinates(person_clue)
+            self._add_constraint(constraint_function, people_ids, space_indexes)
 
     def _get_person_clue_coordinates(
             self, person_clue: Puzzle.Clue.PersonClue) -> List[Tuple[int, int]]:
