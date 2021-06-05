@@ -9,14 +9,12 @@ message Coordinate {
 
 message VerticalBorder {
     int32 row = 1;
-    int32 left = 2;
-    int32 right = 3;
+    int32 right = 2;
 }
 
 message HorizontalBorder {
     int32 column = 1;
-    int32 top = 2;
-    int32 bottom = 3;
+    int32 bottom = 2;
 }
 
 message Puzzle {
