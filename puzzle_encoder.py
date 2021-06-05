@@ -3,7 +3,7 @@ import re
 
 from puzzle_pb2 import Coordinate, Puzzle
 from google.protobuf.pyext._message import RepeatedCompositeContainer
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 FurnitureData = namedtuple('FurnitureData', ['name', 'type', 'occupiable'])
 
@@ -53,27 +53,15 @@ class PuzzleEncoder:
     def set_floor_plan(self, floor_plan: List[int]) -> None:
         self._puzzle.crime_scene.floor_plan[:] = floor_plan
 
-    def add_window(self,
-                   row: Optional[int] = None,
-                   column: Optional[int] = None,
-                   top: Optional[int] = None,
-                   bottom: Optional[int] = None,
-                   left: Optional[int] = None,
-                   right: Optional[int] = None,
-                   **kwargs) -> None:
+    def add_vertical_window(self, row: int, right: int) -> None:
         window = self._puzzle.crime_scene.windows.add()
-        if row is not None:
-            window.vertical_border.row = row
-            if left is not None:
-                window.vertical_border.left = left
-            if right is not None:
-                window.vertical_border.right = right
-        if column is not None:
-            window.horizontal_border.column = column
-            if top is not None:
-                window.horizontal_border.top = top
-            if bottom is not None:
-                window.horizontal_border.bottom = bottom
+        window.vertical_border.row = row
+        window.vertical_border.right = right
+
+    def add_horizontal_window(self, bottom: int, column: int) -> None:
+        window = self._puzzle.crime_scene.windows.add()
+        window.horizontal_border.column = column
+        window.horizontal_border.bottom = bottom
 
     def add_furniture(self, name: str, coordinates: List[Tuple[int,
                                                                int]]) -> None:
