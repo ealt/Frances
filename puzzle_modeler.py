@@ -60,6 +60,9 @@ class PuzzleModeler:
         self._spaces = [[
             Space(self._get_room_id(row, column)) for column in range(self._n)
         ] for row in range(self._n)]
+        self._roomwise_furniture = [
+            set() for _ in range(len(self._puzzle.crime_scene.rooms))
+        ]
         self._rowwise_furniture = [set() for _ in range(self._n)]
         self._columwise_furniture = [set() for _ in range(self._n)]
 
@@ -101,9 +104,13 @@ class PuzzleModeler:
         self._rowwise_furniture[row].add('window')
         if vertical_border.left is not None:
             column = vertical_border.left
+            room_id = self._get_room_id(row, column)
+            self._roomwise_furniture[room_id].add('window')
             self._spaces[row][column].beside.add('window')
         if vertical_border.right is not None:
             column = vertical_border.right
+            room_id = self._get_room_id(row, column)
+            self._roomwise_furniture[room_id].add('window')
             self._spaces[row][column].beside.add('window')
 
     def _add_horizontal_window(self,
@@ -112,9 +119,13 @@ class PuzzleModeler:
         self._columwise_furniture[column].add('window')
         if horizontal_border.top is not None:
             row = horizontal_border.top
+            room_id = self._get_room_id(row, column)
+            self._roomwise_furniture[room_id].add('window')
             self._spaces[row][column].beside.add('window')
         if horizontal_border.bottom is not None:
             row = horizontal_border.bottom
+            room_id = self._get_room_id(row, column)
+            self._roomwise_furniture[room_id].add('window')
             self._spaces[row][column].beside.add('window')
 
     def _add_furniture(self) -> None:
@@ -126,6 +137,8 @@ class PuzzleModeler:
                 self._spaces[row][column].on = furniture.type
                 self._rowwise_furniture[row].add(furniture.type)
                 self._columwise_furniture[column].add(furniture.type)
+                room_id = self._get_room_id(row, column)
+                self._roomwise_furniture[room_id].add(furniture.type)
                 for n_row, n_col in self._get_neighbors(row, column):
                     if (n_row, n_col) not in coordinates:
                         self._spaces[n_row][n_col].beside.add(furniture.type)
@@ -224,6 +237,11 @@ class PuzzleModeler:
             for column, furnuture in enumerate(self._columnwise_furniture):
                 if person_clue.same_column not in furnuture:
                     space_indexes = self._col_indexes(column)
+                    self._add_constraint(UNOCCUPIED, people_ids, space_indexes)
+        elif person_clue.HasField('same_room'):
+            for room_id, furnuture in enumerate(self._roomwise_furniture):
+                if person_clue.same_room not in furnuture:
+                    space_indexes = self._room_coordinates[room_id]
                     self._add_constraint(UNOCCUPIED, people_ids, space_indexes)
         else:
             constraint_function = UNOCCUPIED if person_clue.negate else UNIQUELY_OCCUPIED
