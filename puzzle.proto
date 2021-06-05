@@ -57,11 +57,11 @@ message Puzzle {
     message Person {
         int32 id = 1;
         string name = 2;
-        enum PersonType {
+        enum Role {
             SUSPECT = 0;
             VICTIM = 1;
         }
-        PersonType type = 3;
+        Role role = 3;
     }
     repeated Person people = 3;
 

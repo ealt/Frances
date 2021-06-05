@@ -68,14 +68,14 @@ class PuzzleSolver:
         victim_id = self._get_victim_id()
         murder_room_id = self._get_room_of_person(victim_id)
         for person in self._puzzle.people:
-            if (person.type == Puzzle.Person.SUSPECT and
+            if (person.role == Puzzle.Person.SUSPECT and
                     self._get_room_of_person(person.id) == murder_room_id):
                 self._puzzle.solution.murderer_id = person.id
                 break
 
     def _get_victim_id(self) -> int:
         for person in self._puzzle.people:
-            if person.type == Puzzle.Person.VICTIM:
+            if person.role == Puzzle.Person.VICTIM:
                 return person.id
         raise AttributeError
 

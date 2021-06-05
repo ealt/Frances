@@ -76,10 +76,10 @@ class PuzzleEncoder:
         for suspect_id, suspect_name in enumerate(suspect_names):
             _ = self._puzzle.people.add(id=suspect_id,
                                         name=suspect_name,
-                                        type=Puzzle.Person.SUSPECT)
+                                        role=Puzzle.Person.SUSPECT)
         _ = self._puzzle.people.add(id=len(suspect_names),
                                     name=victim_name,
-                                    type=Puzzle.Person.VICTIM)
+                                    role=Puzzle.Person.VICTIM)
         self._people_ids = {
             person_name.lower(): person_id
             for person_id, person_name in enumerate(suspect_names +
