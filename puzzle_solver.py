@@ -24,11 +24,16 @@ class PuzzleSolver:
         self._status = self._solver.Solve(self._modeler.model)
         if self._status == cp_model.OPTIMAL:
             self._set_solution()
+            self._set_occupancy_repr()
         return self._solver.StatusName(self._status)
 
     @property
     def solution(self) -> Puzzle.Solution:
         return self._puzzle.solution
+
+    @property
+    def occupancy_repr(self) -> Tuple[str]:
+        return self._occupancy_repr
 
     def verdict(self) -> str:
         murderer_id = self._puzzle.solution.murderer_id
@@ -78,3 +83,20 @@ class PuzzleSolver:
         coordinate = self._puzzle.solution.positions[person_id].coordinate
         room_id = self._modeler.get_room_of_coordinate(coordinate)
         return room_id
+
+    def _set_occupancy_repr(self) -> None:
+        self._occupancy_repr = (self._person_occupancy_repr(person_id)
+                                for person_id in range(self._n))
+
+    def _person_occupancy_repr(self, person_id: int) -> str:
+        col_labels = '   ' + ' '.join([str(col) for col in range(self._n)])
+        upper_border = '  \u250C' + '\u2500' * (self._n * 2 - 1) + '\u2510'
+        lower_border = '  \u2514' + '\u2500' * (self._n * 2 - 1) + '\u2518'
+        rows = [
+            f'{row} \u2502' + ' '.join([
+                chr(ord('A') + person_id) if self._solver.Value(
+                    self._modeler.occupancies[person_id][row][col]) == 1 else
+                ' ' for col in range(self._n)
+            ]) + '\u2502' for row in range(self._n)
+        ]
+        return '\n'.join([col_labels, upper_border] + rows + [lower_border])
