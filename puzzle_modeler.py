@@ -102,12 +102,12 @@ class PuzzleModeler:
     def _add_vertical_window(self, vertical_border: VerticalBorder) -> None:
         row = vertical_border.row
         self._rowwise_furniture[row].add('window')
-        if vertical_border.left is not None:
-            column = vertical_border.left
+        if vertical_border.right > 0:
+            column = vertical_border.right - 1
             room_id = self._get_room_id(row, column)
             self._roomwise_furniture[room_id].add('window')
             self._spaces[row][column].beside.add('window')
-        if vertical_border.right is not None:
+        if vertical_border.right < self._n:
             column = vertical_border.right
             room_id = self._get_room_id(row, column)
             self._roomwise_furniture[room_id].add('window')
@@ -117,12 +117,12 @@ class PuzzleModeler:
                                horizontal_border: HorizontalBorder) -> None:
         column = horizontal_border.column
         self._columwise_furniture[column].add('window')
-        if horizontal_border.top is not None:
-            row = horizontal_border.top
+        if horizontal_border.bottom > 0:
+            row = horizontal_border.bottom - 1
             room_id = self._get_room_id(row, column)
             self._roomwise_furniture[room_id].add('window')
             self._spaces[row][column].beside.add('window')
-        if horizontal_border.bottom is not None:
+        if horizontal_border.bottom < self._n:
             row = horizontal_border.bottom
             room_id = self._get_room_id(row, column)
             self._roomwise_furniture[room_id].add('window')
