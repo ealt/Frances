@@ -19,12 +19,13 @@ FURNITURE_DATA_DICT = {
 ParsedPersonClue = namedtuple('ParsedPersonClue',
                               ['subject', 'exclusive', 'preposition', 'object'])
 
-PERSON_CLUE_PATTERN = ('^(?P<subject>{people}) (is |was )?'
-                       '(?P<exclusive>the only person (in the house )?|alone )?'
-                       '(that was )?(standing |sitting )?'
-                       '(?P<preposition>on|beside|next to|in'
-                       '( the (same (row|column) as|corner of))?) (a |the )?'
-                       '(?P<object>{furniture}|window|{rooms}|room)\.?$')
+PERSON_CLUE_PATTERN = (
+    '^(?P<subject>{people}) (is |was )?'
+    '(?P<exclusive>the only person (in the house )?|alone )?'
+    '(that was )?(standing |sitting )?'
+    '(?P<preposition>on|beside|next to|in'
+    '( the (same (row|column|room) as|corner of))?) (a |the )?'
+    '(?P<object>{furniture}|window|{rooms}|room)\.?$')
 
 
 def stringify(messages: RepeatedCompositeContainer) -> str:
@@ -160,6 +161,9 @@ class PuzzleEncoder:
         elif parsed_person_clue.preposition == 'in the same column as':
             object_type = FURNITURE_DATA_DICT[parsed_person_clue.object].type
             clue.person_clue.same_column = object_type
+        elif parsed_person_clue.preposition == 'in the same room as':
+            object_type = FURNITURE_DATA_DICT[parsed_person_clue.object].type
+            clue.person_clue.same_room = object_type
         elif parsed_person_clue.preposition == 'in the corner of':
             clue.person_clue.in_corner = True
         elif parsed_person_clue.preposition == 'in':
