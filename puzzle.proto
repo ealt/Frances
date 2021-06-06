@@ -58,8 +58,9 @@ message Puzzle {
         int32 id = 1;
         string name = 2;
         enum Role {
-            SUSPECT = 0;
-            VICTIM = 1;
+            UNSPECIFIED = 0;
+            SUSPECT = 1;
+            VICTIM = 2;
         }
         Role role = 3;
     }
