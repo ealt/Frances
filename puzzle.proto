@@ -12,7 +12,7 @@ enum FurnitureType {
 }
 
 enum Role {
-    UNSPECIFIED = 0;
+    UNSPECIFIED_ROLE = 0;
     SUSPECT = 1;
     VICTIM = 2;
 }
