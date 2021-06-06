@@ -1,9 +1,14 @@
 from collections import namedtuple
 import re
 
-from puzzle_pb2 import Clue, Coordinate, FurnitureType, Role, Puzzle
+from puzzle_pb2 import Clue, Coordinate, FurnitureType, Gender, Role, Puzzle
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import List, Tuple
+
+GENDER_DICT = {
+    'female': Gender.FEMALE,
+    'male': Gender.MALE,
+}
 
 FurnitureData = namedtuple('FurnitureData', ['name', 'type', 'occupiable'])
 
@@ -71,19 +76,27 @@ class PuzzleEncoder:
         furniture.coordinates.extend(
             [Coordinate(row=row, column=column) for row, column in coordinates])
 
-    def set_people(self, suspect_names: List[str], victim_name: str) -> None:
+    def set_people(self, suspects: List[Tuple[str, str]],
+                   victim: Tuple[str, str]) -> None:
         del self._puzzle.people[:]
-        for suspect_id, suspect_name in enumerate(suspect_names):
+        for suspect_id, suspect in enumerate(suspects):
+            suspect_name, suspect_gender = suspect
             _ = self._puzzle.people.add(id=suspect_id,
                                         name=suspect_name,
+                                        gender=GENDER_DICT.get(
+                                            suspect_gender.lower(),
+                                            Gender.UNSPECIFIED_GENDER),
                                         role=Role.SUSPECT)
-        _ = self._puzzle.people.add(id=len(suspect_names),
+        victim_name, victim_gender = victim
+        _ = self._puzzle.people.add(id=len(suspects),
                                     name=victim_name,
+                                    gender=GENDER_DICT.get(
+                                        victim_gender.lower(),
+                                        Gender.UNSPECIFIED_GENDER),
                                     role=Role.VICTIM)
         self._people_ids = {
-            person_name.lower(): person_id
-            for person_id, person_name in enumerate(suspect_names +
-                                                    [victim_name])
+            person[0].lower(): person_id
+            for person_id, person in enumerate(suspects + [victim])
         }
 
     def add_clue(self, raw_clue: str) -> None:

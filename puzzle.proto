@@ -11,6 +11,12 @@ enum FurnitureType {
     TABLE = 5;
 }
 
+enum Gender {
+    UNSPECIFIED_GENDER = 0;
+    FEMALE = 1;
+    MALE = 2;
+}
+
 enum Role {
     UNSPECIFIED_ROLE = 0;
     SUSPECT = 1;
@@ -65,7 +71,8 @@ message CrimeScene {
 message Person {
     int32 id = 1;
     string name = 2;
-    Role role = 3;
+    Gender gender = 3;
+    Role role = 4;
 }
 
 message RoomClue {
