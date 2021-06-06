@@ -94,9 +94,11 @@ class PuzzleSolver:
         lower_border = '  \u2514' + '\u2500' * (self._n * 2 - 1) + '\u2518'
         rows = [
             f'{row} \u2502' + ' '.join([
-                chr(ord('A') + person_id) if self._solver.Value(
-                    self._modeler.occupancies[person_id][row][col]) == 1 else
-                ' ' for col in range(self._n)
-            ]) + '\u2502' for row in range(self._n)
+                get_name(self._puzzle.people, person_id)[0]
+                if self._solver.Value(self._modeler.occupancies[person_id][row]
+                                      [col]) == 1 else ' '
+                for col in range(self._n)
+            ]) + '\u2502'
+            for row in range(self._n)
         ]
         return '\n'.join([col_labels, upper_border] + rows + [lower_border])
