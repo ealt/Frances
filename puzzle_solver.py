@@ -1,7 +1,7 @@
 from ortools.sat.python import cp_model
 
 from puzzle_modeler import PuzzleModeler
-from puzzle_pb2 import Puzzle
+from puzzle_pb2 import Puzzle, Role, Solution
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import Tuple
 
@@ -28,7 +28,7 @@ class PuzzleSolver:
         return self._solver.StatusName(self._status)
 
     @property
-    def solution(self) -> Puzzle.Solution:
+    def solution(self) -> Solution:
         return self._puzzle.solution
 
     @property
@@ -68,14 +68,14 @@ class PuzzleSolver:
         victim_id = self._get_victim_id()
         murder_room_id = self._get_room_of_person(victim_id)
         for person in self._puzzle.people:
-            if (person.role == Puzzle.Person.SUSPECT and
+            if (person.role == Role.SUSPECT and
                     self._get_room_of_person(person.id) == murder_room_id):
                 self._puzzle.solution.murderer_id = person.id
                 break
 
     def _get_victim_id(self) -> int:
         for person in self._puzzle.people:
-            if person.role == Puzzle.Person.VICTIM:
+            if person.role == Role.VICTIM:
                 return person.id
         raise AttributeError
 

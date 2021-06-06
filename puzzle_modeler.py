@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from itertools import chain, product, repeat
 from ortools.sat.python import cp_model
 
-from puzzle_pb2 import Coordinate, HorizontalBorder, VerticalBorder, Puzzle
+from puzzle_pb2 import Clue, Coordinate, HorizontalBorder, PersonClue, Puzzle, RoomClue, VerticalBorder
 from typing import Callable, List, Optional, Set, Tuple, Union
 from ortools.sat.python.cp_model import IntVar
 
@@ -220,13 +220,13 @@ class PuzzleModeler:
             elif clue.HasField('person_clue'):
                 self._set_person_clue(clue.person_clue)
 
-    def _set_room_clue(self, room_clue: Puzzle.Clue.RoomClue) -> None:
+    def _set_room_clue(self, room_clue: RoomClue) -> None:
         if room_clue.is_occupied:
             people_ids = list(range(self._n))
             space_indexes = self._get_coordinates_of_room(room_clue.room_id)
             self._add_constraint(OCCUPIED, people_ids, space_indexes)
 
-    def _set_person_clue(self, person_clue: Puzzle.Clue.PersonClue) -> None:
+    def _set_person_clue(self, person_clue: PersonClue) -> None:
         people_ids = [person_clue.person_id]
         if person_clue.HasField('same_row'):
             for row, furnuture in enumerate(self._rowwise_furniture):
@@ -249,7 +249,7 @@ class PuzzleModeler:
             self._add_constraint(constraint_function, people_ids, space_indexes)
 
     def _get_person_clue_coordinates(
-            self, person_clue: Puzzle.Clue.PersonClue) -> List[Tuple[int, int]]:
+            self, person_clue: PersonClue) -> List[Tuple[int, int]]:
         if person_clue.HasField('room_id'):
             return self._get_coordinates_of_room(person_clue.room_id)
         else:
@@ -260,7 +260,7 @@ class PuzzleModeler:
                         coordinates.append((row, column))
             return coordinates
 
-    def _evaluate_space_for_clue(self, space: Space, clue: Puzzle.Clue) -> bool:
+    def _evaluate_space_for_clue(self, space: Space, clue: Clue) -> bool:
         if clue.HasField('beside_window'):
             return clue.beside_window == ('window' in space.beside)
         elif clue.HasField('beside'):

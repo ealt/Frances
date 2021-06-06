@@ -1,19 +1,19 @@
 from collections import namedtuple
 import re
 
-from puzzle_pb2 import Coordinate, Puzzle
+from puzzle_pb2 import Clue, Coordinate, FurnitureType, Role, Puzzle
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import List, Tuple
 
 FurnitureData = namedtuple('FurnitureData', ['name', 'type', 'occupiable'])
 
 FURNITURE_DATA_DICT = {
-    'chair': FurnitureData('chair', Puzzle.CrimeScene.Furniture.CHAIR, True),
-    'bed': FurnitureData('bed', Puzzle.CrimeScene.Furniture.BED, True),
-    'carpet': FurnitureData('carpet', Puzzle.CrimeScene.Furniture.CARPET, True),
-    'plant': FurnitureData('plant', Puzzle.CrimeScene.Furniture.PLANT, False),
-    'tv': FurnitureData('tv', Puzzle.CrimeScene.Furniture.TV, False),
-    'table': FurnitureData('table', Puzzle.CrimeScene.Furniture.TABLE, False)
+    'chair': FurnitureData('chair', FurnitureType.CHAIR, True),
+    'bed': FurnitureData('bed', FurnitureType.BED, True),
+    'carpet': FurnitureData('carpet', FurnitureType.CARPET, True),
+    'plant': FurnitureData('plant', FurnitureType.PLANT, False),
+    'tv': FurnitureData('tv', FurnitureType.TV, False),
+    'table': FurnitureData('table', FurnitureType.TABLE, False)
 }
 
 ParsedPersonClue = namedtuple('ParsedPersonClue',
@@ -76,10 +76,10 @@ class PuzzleEncoder:
         for suspect_id, suspect_name in enumerate(suspect_names):
             _ = self._puzzle.people.add(id=suspect_id,
                                         name=suspect_name,
-                                        role=Puzzle.Person.SUSPECT)
+                                        role=Role.SUSPECT)
         _ = self._puzzle.people.add(id=len(suspect_names),
                                     name=victim_name,
-                                    role=Puzzle.Person.VICTIM)
+                                    role=Role.VICTIM)
         self._people_ids = {
             person_name.lower(): person_id
             for person_id, person_name in enumerate(suspect_names +
@@ -131,7 +131,7 @@ class PuzzleEncoder:
             parsed_person_clue.subject]
         self._add_prepositional_phrase(clue, parsed_person_clue)
 
-    def _add_prepositional_phrase(self, clue: Puzzle.Clue,
+    def _add_prepositional_phrase(self, clue: Clue,
                                   parsed_person_clue: ParsedPersonClue) -> None:
         if parsed_person_clue.preposition == 'on':
             clue.person_clue.on = FURNITURE_DATA_DICT[

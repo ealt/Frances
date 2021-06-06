@@ -2,6 +2,21 @@ syntax = "proto3";
 
 package frances;
 
+enum FurnitureType {
+    CHAIR = 0;
+    BED = 1;
+    CARPET = 2;
+    PLANT = 3;
+    TV = 4;
+    TABLE = 5;
+}
+
+enum Role {
+    UNSPECIFIED = 0;
+    SUSPECT = 1;
+    VICTIM = 2;
+}
+
 message Coordinate {
     int32 row = 1;
     int32 column = 2;
@@ -17,88 +32,78 @@ message HorizontalBorder {
     int32 bottom = 2;
 }
 
+message Position {
+    int32 person_id = 1;
+    Coordinate coordinate = 2;
+}
+
+message Room {
+    int32 id = 1;
+    string name = 2;
+}
+
+message Window {
+    oneof border {
+        VerticalBorder vertical_border = 1;
+        HorizontalBorder horizontal_border = 2;
+    }
+}
+
+message Furniture {
+    FurnitureType type = 1;
+    bool occupiable = 2;
+    repeated Coordinate coordinates = 3;
+}
+
+message CrimeScene {
+    repeated Room rooms = 1;
+    repeated int32 floor_plan = 2;
+    repeated Window windows = 3;
+    repeated Furniture furniture = 4;
+}
+
+message Person {
+    int32 id = 1;
+    string name = 2;
+    Role role = 3;
+}
+
+message RoomClue {
+    int32 room_id = 1;
+    bool is_occupied = 2;
+}
+
+message PersonClue {
+    int32 person_id = 1;
+    bool negate = 2;
+    oneof type {
+        int32 room_id = 3;
+        bool beside_window = 4;
+        FurnitureType beside = 5;
+        FurnitureType on = 6;
+        FurnitureType same_row = 7;
+        FurnitureType same_column = 8;
+        FurnitureType same_room = 9;
+        bool in_corner = 10;
+    }
+}
+
+message Clue {
+    oneof type {
+        RoomClue room_clue = 1;
+        PersonClue person_clue = 2;
+    }
+}
+
+message Solution {
+    repeated Position positions = 1;
+    int32 murderer_id = 2;
+}
+
 message Puzzle {
     string name = 1;
-
-    message CrimeScene {
-        message Room {
-            int32 id = 1;
-            string name = 2;
-        }
-        repeated Room rooms = 1;
-
-        repeated int32 floor_plan = 2;
-
-        message Window {
-            oneof border {
-                VerticalBorder vertical_border = 1;
-                HorizontalBorder horizontal_border = 2;
-            }
-        }
-        repeated Window windows = 3;
-
-        message Furniture {
-            enum FurnitureType {
-                CHAIR = 0;
-                BED = 1;
-                CARPET = 2;
-                PLANT = 3;
-                TV = 4;
-                TABLE = 5;
-            }
-            FurnitureType type = 1;
-            bool occupiable = 2;
-            repeated Coordinate coordinates = 3;
-        }
-        repeated Furniture furniture = 4;
-    }
     CrimeScene crime_scene = 2;
-
-    message Person {
-        int32 id = 1;
-        string name = 2;
-        enum Role {
-            UNSPECIFIED = 0;
-            SUSPECT = 1;
-            VICTIM = 2;
-        }
-        Role role = 3;
-    }
     repeated Person people = 3;
-
-    message Clue {
-        message RoomClue {
-            int32 room_id = 1;
-            bool is_occupied = 2;
-        }
-        message PersonClue {
-            int32 person_id = 1;
-            bool negate = 2;
-            oneof type {
-                int32 room_id = 3;
-                bool beside_window = 4;
-                CrimeScene.Furniture.FurnitureType beside = 5;
-                CrimeScene.Furniture.FurnitureType on = 6;
-                CrimeScene.Furniture.FurnitureType same_row = 7;
-                CrimeScene.Furniture.FurnitureType same_column = 8;
-                CrimeScene.Furniture.FurnitureType same_room = 9;
-                bool in_corner = 10;
-            }
-        }
-        oneof type {
-            RoomClue room_clue = 1;
-            PersonClue person_clue = 2;
-        }
-    }
     repeated Clue clues = 4;
-
-    message Solution {
-        message Position {
-            int32 person_id = 1;
-            Coordinate coordinate = 2;
-        }
-        repeated Position positions = 1;
-        int32 murderer_id = 2;
-    }
     Solution solution = 5;
 }
