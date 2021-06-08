@@ -12,6 +12,20 @@ def get_name(messages: RepeatedCompositeContainer, message_id: int) -> str:
             return message.name
 
 
+class SolutionCounter(cp_model.CpSolverSolutionCallback):
+
+    def __init__(self) -> None:
+        cp_model.CpSolverSolutionCallback.__init__(self)
+        self._solution_count = 0
+
+    @property
+    def solution_count(self) -> int:
+        return self._solution_count
+
+    def on_solution_callback(self) -> None:
+        self._solution_count += 1
+
+
 class PuzzleSolver:
 
     def __init__(self, puzzle: Puzzle) -> None:
@@ -19,13 +33,16 @@ class PuzzleSolver:
         self._n = len(self._puzzle.people)
         self._modeler = PuzzleModeler(puzzle)
 
-    def solve(self) -> str:
+    def solve(self) -> Tuple[str, int]:
         self._solver = cp_model.CpSolver()
-        self._status = self._solver.Solve(self._modeler.model)
+        self._callback = SolutionCounter()
+        self._status = self._solver.SearchForAllSolutions(
+            self._modeler.model, self._callback)
         if self._status == cp_model.OPTIMAL:
             self._set_solution()
             self._set_occupancy_repr()
-        return self._solver.StatusName(self._status)
+        return (self._solver.StatusName(self._status),
+                self._callback.solution_count)
 
     @property
     def solution(self) -> Solution:
