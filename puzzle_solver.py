@@ -1,4 +1,4 @@
-from ortools.sat.python import cp_model
+from ortools.sat.python.cp_model import CpSolver, CpSolverSolutionCallback, OPTIMAL
 
 from puzzle_modeler import PuzzleModeler
 from puzzle_pb2 import Puzzle, Role, Solution
@@ -12,10 +12,10 @@ def get_name(messages: RepeatedCompositeContainer, message_id: int) -> str:
             return message.name
 
 
-class SolutionCounter(cp_model.CpSolverSolutionCallback):
+class SolutionCounter(CpSolverSolutionCallback):
 
     def __init__(self) -> None:
-        cp_model.CpSolverSolutionCallback.__init__(self)
+        CpSolverSolutionCallback.__init__(self)
         self._solution_count = 0
 
     @property
@@ -34,11 +34,11 @@ class PuzzleSolver:
         self._modeler = PuzzleModeler(puzzle)
 
     def solve(self) -> Tuple[str, int]:
-        self._solver = cp_model.CpSolver()
+        self._solver = CpSolver()
         self._callback = SolutionCounter()
         self._status = self._solver.SearchForAllSolutions(
             self._modeler.model, self._callback)
-        if self._status == cp_model.OPTIMAL:
+        if self._status == OPTIMAL:
             self._set_solution()
             self._set_occupancy_repr()
         return (self._solver.StatusName(self._status),

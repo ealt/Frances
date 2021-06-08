@@ -1,10 +1,9 @@
 from dataclasses import dataclass, field
 from itertools import chain, product, repeat
-from ortools.sat.python import cp_model
+from ortools.sat.python.cp_model import CpModel, IntVar
 
 from puzzle_pb2 import Clue, Coordinate, HorizontalBorder, PersonClue, Puzzle, RoomClue, VerticalBorder
 from typing import Callable, List, Optional, Set, Tuple, Union
-from ortools.sat.python.cp_model import IntVar
 
 OCCUPIED = lambda total_occupancy: total_occupancy >= 1
 UNOCCUPIED = lambda total_occupancy: total_occupancy == 0
@@ -30,7 +29,7 @@ class PuzzleModeler:
         self._create_model()
 
     @property
-    def model(self) -> cp_model.CpModel:
+    def model(self) -> CpModel:
         return self._model
 
     @property
@@ -160,7 +159,7 @@ class PuzzleModeler:
         return neighbors
 
     def _create_model(self) -> None:
-        self._model = cp_model.CpModel()
+        self._model = CpModel()
         unavailable = set(self._blocked_coordinates +
                           self._get_unoccupied_room_coordinates())
         self._occupancies = [[[
