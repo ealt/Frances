@@ -50,10 +50,9 @@ class PuzzleModeler:
         self._room_coordinates = [
             [] for _ in range(len(self._puzzle.crime_scene.rooms))
         ]
-        for index, room_id in enumerate(self._puzzle.crime_scene.floor_plan):
-            row = index // self._n
-            col = index % self._n
-            self._room_coordinates[room_id].append((row, col))
+        for r, row in enumerate(self._puzzle.crime_scene.floor_plan):
+            for c, room_id in enumerate(row.values):
+                self._room_coordinates[room_id].append((r, c))
 
     def _init_spaces(self) -> None:
         self._spaces = [[
@@ -66,8 +65,7 @@ class PuzzleModeler:
         self._columwise_furniture = [set() for _ in range(self._n)]
 
     def _get_room_id(self, row: int, column: int) -> int:
-        index = (self._n * row) + column
-        return self._puzzle.crime_scene.floor_plan[index]
+        return self._puzzle.crime_scene.floor_plan[row].values[column]
 
     def _add_walls(self) -> None:
         self._add_vertical_walls()

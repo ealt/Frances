@@ -23,6 +23,10 @@ enum Role {
     VICTIM = 2;
 }
 
+message IntArray {
+    repeated int32 values = 1;
+}
+
 message Coordinate {
     int32 row = 1;
     int32 column = 2;
@@ -63,7 +67,7 @@ message Furniture {
 
 message CrimeScene {
     repeated Room rooms = 1;
-    repeated int32 floor_plan = 2;
+    repeated IntArray floor_plan = 2;
     repeated Window windows = 3;
     repeated Furniture furniture = 4;
 }

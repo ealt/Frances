@@ -1,7 +1,7 @@
 from collections import namedtuple
 import re
 
-from puzzle_pb2 import Clue, Coordinate, FurnitureType, Gender, Role, Puzzle
+from puzzle_pb2 import Clue, Coordinate, FurnitureType, Gender, IntArray, Role, Puzzle
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import List, Tuple
 
@@ -55,8 +55,12 @@ class PuzzleEncoder:
             for room_id, room_name in enumerate(room_names)
         }
 
-    def set_floor_plan(self, floor_plan: List[int]) -> None:
-        self._puzzle.crime_scene.floor_plan[:] = floor_plan
+    def set_floor_plan(self, floor_plan: List[List[int]]) -> None:
+        del self._puzzle.crime_scene.floor_plan[:]
+        for row_values in floor_plan:
+            row = IntArray()
+            row.values.extend(row_values)
+            self._puzzle.crime_scene.floor_plan.append(row)
 
     def add_vertical_window(self, row: int, right: int) -> None:
         window = self._puzzle.crime_scene.windows.add()

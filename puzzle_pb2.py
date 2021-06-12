@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0cpuzzle.proto\x12\x07\x66rances\")\n\nCoordinate\x12\x0b\n\x03row\x18\x01 \x01(\x05\x12\x0e\n\x06\x63olumn\x18\x02 \x01(\x05\",\n\x0eVerticalBorder\x12\x0b\n\x03row\x18\x01 \x01(\x05\x12\r\n\x05right\x18\x02 \x01(\x05\"2\n\x10HorizontalBorder\x12\x0e\n\x06\x63olumn\x18\x01 \x01(\x05\x12\x0e\n\x06\x62ottom\x18\x02 \x01(\x05\"F\n\x08Position\x12\x11\n\tperson_id\x18\x01 \x01(\x05\x12\'\n\ncoordinate\x18\x02 \x01(\x0b\x32\x13.frances.Coordinate\" \n\x04Room\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"~\n\x06Window\x12\x32\n\x0fvertical_border\x18\x01 \x01(\x0b\x32\x17.frances.VerticalBorderH\x00\x12\x36\n\x11horizontal_border\x18\x02 \x01(\x0b\x32\x19.frances.HorizontalBorderH\x00\x42\x08\n\x06\x62order\"o\n\tFurniture\x12$\n\x04type\x18\x01 \x01(\x0e\x32\x16.frances.FurnitureType\x12\x12\n\noccupiable\x18\x02 \x01(\x08\x12(\n\x0b\x63oordinates\x18\x03 \x03(\x0b\x32\x13.frances.Coordinate\"\x87\x01\n\nCrimeScene\x12\x1c\n\x05rooms\x18\x01 \x03(\x0b\x32\r.frances.Room\x12\x12\n\nfloor_plan\x18\x02 \x03(\x05\x12 \n\x07windows\x18\x03 \x03(\x0b\x32\x0f.frances.Window\x12%\n\tfurniture\x18\x04 \x03(\x0b\x32\x12.frances.Furniture\"`\n\x06Person\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x1f\n\x06gender\x18\x03 \x01(\x0e\x32\x0f.frances.Gender\x12\x1b\n\x04role\x18\x04 \x01(\x0e\x32\r.frances.Role\"0\n\x08RoomClue\x12\x0f\n\x07room_id\x18\x01 \x01(\x05\x12\x13\n\x0bis_occupied\x18\x02 \x01(\x08\"\xd0\x02\n\nPersonClue\x12\x11\n\tperson_id\x18\x01 \x01(\x05\x12\x0e\n\x06negate\x18\x02 \x01(\x08\x12\x11\n\x07room_id\x18\x03 \x01(\x05H\x00\x12\x17\n\rbeside_window\x18\x04 \x01(\x08H\x00\x12(\n\x06\x62\x65side\x18\x05 \x01(\x0e\x32\x16.frances.FurnitureTypeH\x00\x12$\n\x02on\x18\x06 \x01(\x0e\x32\x16.frances.FurnitureTypeH\x00\x12*\n\x08same_row\x18\x07 \x01(\x0e\x32\x16.frances.FurnitureTypeH\x00\x12-\n\x0bsame_column\x18\x08 \x01(\x0e\x32\x16.frances.FurnitureTypeH\x00\x12+\n\tsame_room\x18\t \x01(\x0e\x32\x16.frances.FurnitureTypeH\x00\x12\x13\n\tin_corner\x18\n \x01(\x08H\x00\x42\x06\n\x04type\"b\n\x04\x43lue\x12&\n\troom_clue\x18\x01 \x01(\x0b\x32\x11.frances.RoomClueH\x00\x12*\n\x0bperson_clue\x18\x02 \x01(\x0b\x32\x13.frances.PersonClueH\x00\x42\x06\n\x04type\"E\n\x08Solution\x12$\n\tpositions\x18\x01 \x03(\x0b\x32\x11.frances.Position\x12\x13\n\x0bmurderer_id\x18\x02 \x01(\x05\"\xa4\x01\n\x06Puzzle\x12\x0c\n\x04name\x18\x01 \x01(\t\x12(\n\x0b\x63rime_scene\x18\x02 \x01(\x0b\x32\x13.frances.CrimeScene\x12\x1f\n\x06people\x18\x03 \x03(\x0b\x32\x0f.frances.Person\x12\x1c\n\x05\x63lues\x18\x04 \x03(\x0b\x32\r.frances.Clue\x12#\n\x08solution\x18\x05 \x01(\x0b\x32\x11.frances.Solution*M\n\rFurnitureType\x12\t\n\x05\x43HAIR\x10\x00\x12\x07\n\x03\x42\x45\x44\x10\x01\x12\n\n\x06\x43\x41RPET\x10\x02\x12\t\n\x05PLANT\x10\x03\x12\x06\n\x02TV\x10\x04\x12\t\n\x05TABLE\x10\x05*6\n\x06Gender\x12\x16\n\x12UNSPECIFIED_GENDER\x10\x00\x12\n\n\x06\x46\x45MALE\x10\x01\x12\x08\n\x04MALE\x10\x02*5\n\x04Role\x12\x14\n\x10UNSPECIFIED_ROLE\x10\x00\x12\x0b\n\x07SUSPECT\x10\x01\x12\n\n\x06VICTIM\x10\x02\x62\x06proto3'
+  serialized_pb=b'\n\x0cpuzzle.proto\x12\x07\x66rances\"\x1a\n\x08IntArray\x12\x0e\n\x06values\x18\x01 \x03(\x05\")\n\nCoordinate\x12\x0b\n\x03row\x18\x01 \x01(\x05\x12\x0e\n\x06\x63olumn\x18\x02 \x01(\x05\",\n\x0eVerticalBorder\x12\x0b\n\x03row\x18\x01 \x01(\x05\x12\r\n\x05right\x18\x02 \x01(\x05\"2\n\x10HorizontalBorder\x12\x0e\n\x06\x63olumn\x18\x01 \x01(\x05\x12\x0e\n\x06\x62ottom\x18\x02 \x01(\x05\"F\n\x08Position\x12\x11\n\tperson_id\x18\x01 \x01(\x05\x12\'\n\ncoordinate\x18\x02 \x01(\x0b\x32\x13.frances.Coordinate\" \n\x04Room\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"~\n\x06Window\x12\x32\n\x0fvertical_border\x18\x01 \x01(\x0b\x32\x17.frances.VerticalBorderH\x00\x12\x36\n\x11horizontal_border\x18\x02 \x01(\x0b\x32\x19.frances.HorizontalBorderH\x00\x42\x08\n\x06\x62order\"o\n\tFurniture\x12$\n\x04type\x18\x01 \x01(\x0e\x32\x16.frances.FurnitureType\x12\x12\n\noccupiable\x18\x02 \x01(\x08\x12(\n\x0b\x63oordinates\x18\x03 \x03(\x0b\x32\x13.frances.Coordinate\"\x9a\x01\n\nCrimeScene\x12\x1c\n\x05rooms\x18\x01 \x03(\x0b\x32\r.frances.Room\x12%\n\nfloor_plan\x18\x02 \x03(\x0b\x32\x11.frances.IntArray\x12 \n\x07windows\x18\x03 \x03(\x0b\x32\x0f.frances.Window\x12%\n\tfurniture\x18\x04 \x03(\x0b\x32\x12.frances.Furniture\"`\n\x06Person\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x1f\n\x06gender\x18\x03 \x01(\x0e\x32\x0f.frances.Gender\x12\x1b\n\x04role\x18\x04 \x01(\x0e\x32\r.frances.Role\"0\n\x08RoomClue\x12\x0f\n\x07room_id\x18\x01 \x01(\x05\x12\x13\n\x0bis_occupied\x18\x02 \x01(\x08\"\xd0\x02\n\nPersonClue\x12\x11\n\tperson_id\x18\x01 \x01(\x05\x12\x0e\n\x06negate\x18\x02 \x01(\x08\x12\x11\n\x07room_id\x18\x03 \x01(\x05H\x00\x12\x17\n\rbeside_window\x18\x04 \x01(\x08H\x00\x12(\n\x06\x62\x65side\x18\x05 \x01(\x0e\x32\x16.frances.FurnitureTypeH\x00\x12$\n\x02on\x18\x06 \x01(\x0e\x32\x16.frances.FurnitureTypeH\x00\x12*\n\x08same_row\x18\x07 \x01(\x0e\x32\x16.frances.FurnitureTypeH\x00\x12-\n\x0bsame_column\x18\x08 \x01(\x0e\x32\x16.frances.FurnitureTypeH\x00\x12+\n\tsame_room\x18\t \x01(\x0e\x32\x16.frances.FurnitureTypeH\x00\x12\x13\n\tin_corner\x18\n \x01(\x08H\x00\x42\x06\n\x04type\"b\n\x04\x43lue\x12&\n\troom_clue\x18\x01 \x01(\x0b\x32\x11.frances.RoomClueH\x00\x12*\n\x0bperson_clue\x18\x02 \x01(\x0b\x32\x13.frances.PersonClueH\x00\x42\x06\n\x04type\"E\n\x08Solution\x12$\n\tpositions\x18\x01 \x03(\x0b\x32\x11.frances.Position\x12\x13\n\x0bmurderer_id\x18\x02 \x01(\x05\"\xa4\x01\n\x06Puzzle\x12\x0c\n\x04name\x18\x01 \x01(\t\x12(\n\x0b\x63rime_scene\x18\x02 \x01(\x0b\x32\x13.frances.CrimeScene\x12\x1f\n\x06people\x18\x03 \x03(\x0b\x32\x0f.frances.Person\x12\x1c\n\x05\x63lues\x18\x04 \x03(\x0b\x32\r.frances.Clue\x12#\n\x08solution\x18\x05 \x01(\x0b\x32\x11.frances.Solution*M\n\rFurnitureType\x12\t\n\x05\x43HAIR\x10\x00\x12\x07\n\x03\x42\x45\x44\x10\x01\x12\n\n\x06\x43\x41RPET\x10\x02\x12\t\n\x05PLANT\x10\x03\x12\x06\n\x02TV\x10\x04\x12\t\n\x05TABLE\x10\x05*6\n\x06Gender\x12\x16\n\x12UNSPECIFIED_GENDER\x10\x00\x12\n\n\x06\x46\x45MALE\x10\x01\x12\x08\n\x04MALE\x10\x02*5\n\x04Role\x12\x14\n\x10UNSPECIFIED_ROLE\x10\x00\x12\x0b\n\x07SUSPECT\x10\x01\x12\n\n\x06VICTIM\x10\x02\x62\x06proto3'
 )
 
 _FURNITURETYPE = _descriptor.EnumDescriptor(
@@ -63,8 +63,8 @@ _FURNITURETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1476,
-  serialized_end=1553,
+  serialized_start=1523,
+  serialized_end=1600,
 )
 _sym_db.RegisterEnumDescriptor(_FURNITURETYPE)
 
@@ -94,8 +94,8 @@ _GENDER = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1555,
-  serialized_end=1609,
+  serialized_start=1602,
+  serialized_end=1656,
 )
 _sym_db.RegisterEnumDescriptor(_GENDER)
 
@@ -125,8 +125,8 @@ _ROLE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1611,
-  serialized_end=1664,
+  serialized_start=1658,
+  serialized_end=1711,
 )
 _sym_db.RegisterEnumDescriptor(_ROLE)
 
@@ -144,6 +144,38 @@ UNSPECIFIED_ROLE = 0
 SUSPECT = 1
 VICTIM = 2
 
+
+
+_INTARRAY = _descriptor.Descriptor(
+  name='IntArray',
+  full_name='frances.IntArray',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='values', full_name='frances.IntArray.values', index=0,
+      number=1, type=5, cpp_type=1, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=25,
+  serialized_end=51,
+)
 
 
 _COORDINATE = _descriptor.Descriptor(
@@ -180,8 +212,8 @@ _COORDINATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=25,
-  serialized_end=66,
+  serialized_start=53,
+  serialized_end=94,
 )
 
 
@@ -219,8 +251,8 @@ _VERTICALBORDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=68,
-  serialized_end=112,
+  serialized_start=96,
+  serialized_end=140,
 )
 
 
@@ -258,8 +290,8 @@ _HORIZONTALBORDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=114,
-  serialized_end=164,
+  serialized_start=142,
+  serialized_end=192,
 )
 
 
@@ -297,8 +329,8 @@ _POSITION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=166,
-  serialized_end=236,
+  serialized_start=194,
+  serialized_end=264,
 )
 
 
@@ -336,8 +368,8 @@ _ROOM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=238,
-  serialized_end=270,
+  serialized_start=266,
+  serialized_end=298,
 )
 
 
@@ -380,8 +412,8 @@ _WINDOW = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=272,
-  serialized_end=398,
+  serialized_start=300,
+  serialized_end=426,
 )
 
 
@@ -426,8 +458,8 @@ _FURNITURE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=400,
-  serialized_end=511,
+  serialized_start=428,
+  serialized_end=539,
 )
 
 
@@ -448,7 +480,7 @@ _CRIMESCENE = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='floor_plan', full_name='frances.CrimeScene.floor_plan', index=1,
-      number=2, type=5, cpp_type=1, label=3,
+      number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -479,8 +511,8 @@ _CRIMESCENE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=514,
-  serialized_end=649,
+  serialized_start=542,
+  serialized_end=696,
 )
 
 
@@ -532,8 +564,8 @@ _PERSON = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=651,
-  serialized_end=747,
+  serialized_start=698,
+  serialized_end=794,
 )
 
 
@@ -571,8 +603,8 @@ _ROOMCLUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=749,
-  serialized_end=797,
+  serialized_start=796,
+  serialized_end=844,
 )
 
 
@@ -671,8 +703,8 @@ _PERSONCLUE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=800,
-  serialized_end=1136,
+  serialized_start=847,
+  serialized_end=1183,
 )
 
 
@@ -715,8 +747,8 @@ _CLUE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1138,
-  serialized_end=1236,
+  serialized_start=1185,
+  serialized_end=1283,
 )
 
 
@@ -754,8 +786,8 @@ _SOLUTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1238,
-  serialized_end=1307,
+  serialized_start=1285,
+  serialized_end=1354,
 )
 
 
@@ -814,8 +846,8 @@ _PUZZLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1310,
-  serialized_end=1474,
+  serialized_start=1357,
+  serialized_end=1521,
 )
 
 _POSITION.fields_by_name['coordinate'].message_type = _COORDINATE
@@ -830,6 +862,7 @@ _WINDOW.fields_by_name['horizontal_border'].containing_oneof = _WINDOW.oneofs_by
 _FURNITURE.fields_by_name['type'].enum_type = _FURNITURETYPE
 _FURNITURE.fields_by_name['coordinates'].message_type = _COORDINATE
 _CRIMESCENE.fields_by_name['rooms'].message_type = _ROOM
+_CRIMESCENE.fields_by_name['floor_plan'].message_type = _INTARRAY
 _CRIMESCENE.fields_by_name['windows'].message_type = _WINDOW
 _CRIMESCENE.fields_by_name['furniture'].message_type = _FURNITURE
 _PERSON.fields_by_name['gender'].enum_type = _GENDER
@@ -876,6 +909,7 @@ _PUZZLE.fields_by_name['crime_scene'].message_type = _CRIMESCENE
 _PUZZLE.fields_by_name['people'].message_type = _PERSON
 _PUZZLE.fields_by_name['clues'].message_type = _CLUE
 _PUZZLE.fields_by_name['solution'].message_type = _SOLUTION
+DESCRIPTOR.message_types_by_name['IntArray'] = _INTARRAY
 DESCRIPTOR.message_types_by_name['Coordinate'] = _COORDINATE
 DESCRIPTOR.message_types_by_name['VerticalBorder'] = _VERTICALBORDER
 DESCRIPTOR.message_types_by_name['HorizontalBorder'] = _HORIZONTALBORDER
@@ -894,6 +928,13 @@ DESCRIPTOR.enum_types_by_name['FurnitureType'] = _FURNITURETYPE
 DESCRIPTOR.enum_types_by_name['Gender'] = _GENDER
 DESCRIPTOR.enum_types_by_name['Role'] = _ROLE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+IntArray = _reflection.GeneratedProtocolMessageType('IntArray', (_message.Message,), {
+  'DESCRIPTOR' : _INTARRAY,
+  '__module__' : 'puzzle_pb2'
+  # @@protoc_insertion_point(class_scope:frances.IntArray)
+  })
+_sym_db.RegisterMessage(IntArray)
 
 Coordinate = _reflection.GeneratedProtocolMessageType('Coordinate', (_message.Message,), {
   'DESCRIPTOR' : _COORDINATE,
