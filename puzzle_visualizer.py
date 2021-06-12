@@ -6,6 +6,7 @@ WallIntersection = namedtuple('WallIntersection',
                               ['up', 'down', 'left', 'right'],
                               defaults=[False, False, False, False])
 
+# https://www.unicode.org/charts/PDF/U2500.pdf
 WALL_INTERSECTION_VALUES = {
     WallIntersection(): ' ',
     WallIntersection(left=True, right=True): '\u2500',
