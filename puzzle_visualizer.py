@@ -31,11 +31,12 @@ ROW = lambda n, value: [value if c % 2 == 1 else ' ' for c in range(2 * n + 1)]
 class PuzzleVisualizer:
 
     def __init__(self, puzzle: Puzzle, w: int = 3) -> None:
-        self._puzzle = puzzle
-        self._w = w
-        self._n = len(self._puzzle.people)
         self._board = []
-        self._add_walls()
+        if puzzle.HasField('crime_scene'):
+            self._crime_scene = puzzle.crime_scene
+            self._w = w
+            self._n = len(self._crime_scene.floor_plan)
+            self._add_walls()
         self._set_visulization()
 
     @property
@@ -67,7 +68,7 @@ class PuzzleVisualizer:
         self._add_horizontal_interior_walls()
 
     def _add_vertical_interior_walls(self) -> None:
-        for r, row in enumerate(self._puzzle.crime_scene.floor_plan):
+        for r, row in enumerate(self._crime_scene.floor_plan):
             for c, left, right in zip(range(1, self._n), row.values[:-1],
                                       row.values[1:]):
                 if left != right:
@@ -75,9 +76,9 @@ class PuzzleVisualizer:
                                                       self._vertical_wall_value)
 
     def _add_horizontal_interior_walls(self) -> None:
-        for r, top_row, bottom_row in zip(
-                range(1, self._n), self._puzzle.crime_scene.floor_plan[:-1],
-                self._puzzle.crime_scene.floor_plan[1:]):
+        for r, top_row, bottom_row in zip(range(1, self._n),
+                                          self._crime_scene.floor_plan[:-1],
+                                          self._crime_scene.floor_plan[1:]):
             for c, top, bottom in zip(range(self._n), top_row.values,
                                       bottom_row.values):
                 if top != bottom:
