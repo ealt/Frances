@@ -35,14 +35,17 @@ class PuzzleVisualizer:
         self._w = w
         self._n = len(self._puzzle.people)
         self._board = []
-        self._add_exterior_walls()
-        self._add_interior_walls()
-        self._add_wall_intersections()
+        self._add_walls()
         self._set_visulization()
 
     @property
     def visualization(self) -> str:
         return self._visualization
+
+    def _add_walls(self):
+        self._add_exterior_walls()
+        self._add_interior_walls()
+        self._add_wall_intersections()
 
     def _add_exterior_walls(self) -> None:
         vertical_wall_value = '\u2502'
