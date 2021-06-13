@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from puzzle_pb2 import FurnitureType, Puzzle
+from puzzle_pb2 import Coordinate, FurnitureType, Puzzle
 
 WallIntersection = namedtuple('WallIntersection',
                               ['up', 'down', 'left', 'right'],
@@ -157,6 +157,10 @@ class PuzzleVisualizer:
                     self._horizontal_window_value)
 
     def _add_furniture(self) -> None:
+        self._add_funiture_spaces()
+        self._add_funiture_boundaries()
+
+    def _add_funiture_spaces(self) -> None:
         self._furniture_text_value = self._w * ' '
         for furniture in self._crime_scene.furniture:
             furniture_color = FURNITURE_COLORS[furniture.type]
@@ -165,6 +169,33 @@ class PuzzleVisualizer:
             for coordinate in furniture.coordinates:
                 self._set_space_value(coordinate.row, coordinate.column,
                                       furniture_value)
+
+    def _add_funiture_boundaries(self) -> None:
+        self._vertical_furniture_boundary_text_value = ' '
+        self._horizontal_furniture_boundary_text_value = self._w * ' '
+        for furniture in self._crime_scene.furniture:
+            furniture_color = FURNITURE_COLORS[furniture.type]
+            for coordinate_1, coordinate_2 in zip(furniture.coordinates[:-1],
+                                                  furniture.coordinates[1:]):
+                self._add_funiture_boundary(coordinate_1, coordinate_2,
+                                            furniture_color)
+
+    def _add_funiture_boundary(self, coordinate_1: Coordinate,
+                               coordinate_2: Coordinate, furniture_color: str):
+        row_diff = abs(coordinate_2.row - coordinate_1.row)
+        column_diff = abs(coordinate_2.column - coordinate_1.column)
+        if row_diff == 0 and column_diff == 1:
+            row = coordinate_1.row
+            right = max(coordinate_2.column, coordinate_1.column)
+            value = add_background_color(
+                self._vertical_furniture_boundary_text_value, furniture_color)
+            self._set_vertical_boundary_value(row, right, value)
+        elif row_diff == 1 and column_diff == 0:
+            bottom = max(coordinate_2.row, coordinate_1.row)
+            column = coordinate_1.column
+            value = add_background_color(
+                self._horizontal_furniture_boundary_text_value, furniture_color)
+            self._set_horizontal_boundary_value(bottom, column, value)
 
     def _set_space_value(self, row: int, column: int, value: str) -> None:
         self._board[2 * row + 1][2 * column + 1] = value
