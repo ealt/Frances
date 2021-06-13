@@ -57,8 +57,17 @@ class PuzzleSolver:
             room=get_name(self._puzzle.crime_scene.rooms, room_id))
 
     def _set_solution(self) -> None:
+        self._set_victim()
         self._set_people_coordinates()
+        self._set_murder_room()
         self._set_murderer()
+
+    def _set_victim(self) -> int:
+        for person in self._puzzle.people:
+            if person.role == Role.VICTIM:
+                self._victim_id = person.id
+        if self._victim_id is None:
+            raise AttributeError
 
     def _set_people_coordinates(self) -> None:
         for person in self._puzzle.people:
@@ -74,26 +83,18 @@ class PuzzleSolver:
                     return (row, col)
         raise AttributeError
 
+    def _set_murder_room(self):
+        victim_coordinate = self._puzzle.people[self._victim_id].coordinate
+        self._murder_room_id = self._modeler.get_room_of_coordinate(
+            victim_coordinate)
+
     def _set_murderer(self) -> None:
-        victim_id = self._get_victim_id()
-        murder_room_id = self._get_room_of_person(victim_id)
         for person in self._puzzle.people:
-            if (person.role == Role.SUSPECT and
-                    self._get_room_of_person(person.id) == murder_room_id):
+            room_id = self._modeler.get_room_of_coordinate(person.coordinate)
+            if person.role == Role.SUSPECT and room_id == self._murder_room_id:
                 person.role = Role.MURDERER
                 self._murderer_id = person.id
                 break
-
-    def _get_victim_id(self) -> int:
-        for person in self._puzzle.people:
-            if person.role == Role.VICTIM:
-                return person.id
-        raise AttributeError
-
-    def _get_room_of_person(self, person_id: int) -> int:
-        coordinate = self._puzzle.people[person_id].coordinate
-        room_id = self._modeler.get_room_of_coordinate(coordinate)
-        return room_id
 
     def _set_occupancy_repr(self) -> None:
         self._occupancy_repr = (self._person_occupancy_repr(person_id)
