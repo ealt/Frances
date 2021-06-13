@@ -49,12 +49,10 @@ class PuzzleSolver:
         return self._occupancy_repr
 
     def verdict(self) -> str:
-        victim_id = self._get_victim_id()
-        room_id = self._get_room_of_person(victim_id)
         return '{murderer} murdered {victim} in the {room}!'.format(
             murderer=get_name(self._puzzle.people, self._murderer_id),
-            victim=get_name(self._puzzle.people, victim_id),
-            room=get_name(self._puzzle.crime_scene.rooms, room_id))
+            victim=get_name(self._puzzle.people, self._victim_id),
+            room=get_name(self._puzzle.crime_scene.rooms, self._murder_room_id))
 
     def _set_solution(self) -> None:
         self._set_victim()
