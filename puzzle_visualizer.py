@@ -249,5 +249,11 @@ class PuzzleVisualizer:
         self._board[2 * bottom][2 * right] = value
 
     def _set_visulization(self):
-        self._visualization = '\n'.join([''.join(row) for row in self._board] +
-                                        [LEGEND])
+        column_labels = ' '.join(
+            [self._get_padded_value(str(c)) for c in range(self._n)])
+        board = [
+            f'{r // 2} ' + ''.join(row) if r % 2 == 1 else '  ' + ''.join(row)
+            for r, row in enumerate(self._board)
+        ]
+        self._visualization = '\n'.join(['   ' + column_labels] + board +
+                                        ['   ' + LEGEND])
