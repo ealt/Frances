@@ -60,6 +60,11 @@ FURNITURE_COLORS = {
     FurnitureType.TABLE: 'yellow',
 }
 
+LEGEND = ' '.join([
+    add_background_color(FurnitureType.Name(type).capitalize(), color)
+    for type, color in FURNITURE_COLORS.items()
+])
+
 
 class PuzzleVisualizer:
 
@@ -244,4 +249,5 @@ class PuzzleVisualizer:
         self._board[2 * bottom][2 * right] = value
 
     def _set_visulization(self):
-        self._visualization = '\n'.join([''.join(row) for row in self._board])
+        self._visualization = '\n'.join([''.join(row) for row in self._board] +
+                                        [LEGEND])
