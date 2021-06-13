@@ -1,3 +1,5 @@
+import re
+
 from collections import namedtuple
 
 from puzzle_pb2 import Coordinate, FurnitureType, Puzzle
@@ -65,9 +67,11 @@ class PuzzleVisualizer:
         self._board = []
         if puzzle.HasField('crime_scene'):
             self._crime_scene = puzzle.crime_scene
+            self._people = puzzle.people
             self._w = w
             self._n = len(self._crime_scene.floor_plan)
             self._add_crime_scene()
+            self._add_people()
         self._set_visulization()
 
     @property
@@ -199,6 +203,24 @@ class PuzzleVisualizer:
             value = add_background_color(
                 self._horizontal_furniture_boundary_text_value, furniture_color)
             self._set_horizontal_boundary_value(bottom, column, value)
+
+    def _add_people(self) -> None:
+        for person in self._people:
+            person_initial = person.name[0]
+            person_value = self._get_padded_value(person_initial)
+            space_value = self._get_space_value(person.coordinate.row,
+                                                person.coordinate.column)
+            value = re.sub(f'\ {{{self._w}}}', person_value, space_value)
+            self._set_space_value(person.coordinate.row,
+                                  person.coordinate.column, value)
+
+    def _get_padded_value(self, value: str) -> str:
+        left_pad = ' ' * ((self._w - len(value)) // 2)
+        right_pad = ' ' * (self._w - len(value) - len(left_pad))
+        return left_pad + value + right_pad
+
+    def _get_space_value(self, row: int, column: int) -> str:
+        return self._board[2 * row + 1][2 * column + 1]
 
     def _set_space_value(self, row: int, column: int, value: str) -> None:
         self._board[2 * row + 1][2 * column + 1] = value
