@@ -67,14 +67,17 @@ class PuzzleVisualizer:
             self._crime_scene = puzzle.crime_scene
             self._w = w
             self._n = len(self._crime_scene.floor_plan)
-            self._add_walls()
-            self._add_windows()
-            self._add_furniture()
+            self._add_crime_scene()
         self._set_visulization()
 
     @property
     def visualization(self) -> str:
         return self._visualization
+
+    def _add_crime_scene(self):
+        self._add_walls()
+        self._add_windows()
+        self._add_furniture()
 
     def _add_walls(self):
         self._vertical_wall_value = WALL_INTERSECTION_VALUES[WallIntersection(
