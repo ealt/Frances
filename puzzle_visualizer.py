@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from puzzle_pb2 import Puzzle
+from puzzle_pb2 import FurnitureType, Puzzle
 
 WallIntersection = namedtuple('WallIntersection',
                               ['up', 'down', 'left', 'right'],
@@ -28,6 +28,36 @@ WALL_INTERSECTION_VALUES = {
 
 ROW = lambda n, value: [value if c % 2 == 1 else ' ' for c in range(2 * n + 1)]
 
+BACKGROUND_COLOR_IDS = {
+    'black': 40,
+    'red': 41,
+    'green': 42,
+    'yellow': 43,
+    'blue': 44,
+    'magenta': 45,
+    'cyan': 46,
+    'grey': 47,
+}
+
+
+# https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+def add_background_color(text, color):
+    if color in BACKGROUND_COLOR_IDS.keys():
+        background_color_id = BACKGROUND_COLOR_IDS[color]
+        return f'\x1b[{background_color_id}m{text}\x1b[0m'
+    else:
+        return text
+
+
+FURNITURE_COLORS = {
+    FurnitureType.CHAIR: 'red',
+    FurnitureType.BED: 'magenta',
+    FurnitureType.CARPET: 'blue',
+    FurnitureType.PLANT: 'green',
+    FurnitureType.TV: 'grey',
+    FurnitureType.TABLE: 'yellow',
+}
+
 
 class PuzzleVisualizer:
 
@@ -39,6 +69,7 @@ class PuzzleVisualizer:
             self._n = len(self._crime_scene.floor_plan)
             self._add_walls()
             self._add_windows()
+            self._add_furniture()
         self._set_visulization()
 
     @property
@@ -124,6 +155,19 @@ class PuzzleVisualizer:
                     window.horizontal_border.bottom,
                     window.horizontal_border.column,
                     self._horizontal_window_value)
+
+    def _add_furniture(self) -> None:
+        self._furniture_text_value = self._w * ' '
+        for furniture in self._crime_scene.furniture:
+            furniture_color = FURNITURE_COLORS[furniture.type]
+            furniture_value = add_background_color(self._furniture_text_value,
+                                                   furniture_color)
+            for coordinate in furniture.coordinates:
+                self._set_space_value(coordinate.row, coordinate.column,
+                                      furniture_value)
+
+    def _set_space_value(self, row: int, column: int, value: str) -> None:
+        self._board[2 * row + 1][2 * column + 1] = value
 
     def _get_vertical_boundary_value(self, row: int, right: int) -> str:
         return self._board[2 * row + 1][2 * right]
