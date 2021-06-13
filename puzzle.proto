@@ -21,6 +21,7 @@ enum Role {
     UNSPECIFIED_ROLE = 0;
     SUSPECT = 1;
     VICTIM = 2;
+    MURDERER = 3;
 }
 
 message IntArray {
@@ -40,11 +41,6 @@ message VerticalBorder {
 message HorizontalBorder {
     int32 column = 1;
     int32 bottom = 2;
-}
-
-message Position {
-    int32 person_id = 1;
-    Coordinate coordinate = 2;
 }
 
 message Room {
@@ -77,6 +73,7 @@ message Person {
     string name = 2;
     Gender gender = 3;
     Role role = 4;
+    Coordinate coordinate = 5;
 }
 
 message RoomClue {
@@ -106,15 +103,9 @@ message Clue {
     }
 }
 
-message Solution {
-    repeated Position positions = 1;
-    int32 murderer_id = 2;
-}
-
 message Puzzle {
     string name = 1;
     CrimeScene crime_scene = 2;
     repeated Person people = 3;
     repeated Clue clues = 4;
-    Solution solution = 5;
 }

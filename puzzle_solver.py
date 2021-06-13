@@ -1,7 +1,7 @@
 from ortools.sat.python.cp_model import CpSolver, CpSolverSolutionCallback, OPTIMAL
 
 from puzzle_modeler import PuzzleModeler
-from puzzle_pb2 import Puzzle, Role, Solution
+from puzzle_pb2 import Puzzle, Role
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import Tuple
 
@@ -45,35 +45,28 @@ class PuzzleSolver:
                 self._callback.solution_count)
 
     @property
-    def solution(self) -> Solution:
-        return self._puzzle.solution
-
-    @property
     def occupancy_repr(self) -> Tuple[str]:
         return self._occupancy_repr
 
     def verdict(self) -> str:
-        murderer_id = self._puzzle.solution.murderer_id
         victim_id = self._get_victim_id()
         room_id = self._get_room_of_person(victim_id)
         return '{murderer} murdered {victim} in the {room}!'.format(
-            murderer=get_name(self._puzzle.people, murderer_id),
+            murderer=get_name(self._puzzle.people, self._murderer_id),
             victim=get_name(self._puzzle.people, victim_id),
             room=get_name(self._puzzle.crime_scene.rooms, room_id))
 
     def _set_solution(self) -> None:
-        self._set_positions()
+        self._set_people_coordinates()
         self._set_murderer()
 
-    def _set_positions(self) -> None:
-        del self._puzzle.solution.positions[:]
-        for person_id in range(self._n):
-            row, column = self._get_position(person_id)
-            position = self._puzzle.solution.positions.add(person_id=person_id)
-            position.coordinate.row = row
-            position.coordinate.column = column
+    def _set_people_coordinates(self) -> None:
+        for person in self._puzzle.people:
+            row, column = self._get_person_coordinates(person.id)
+            person.coordinate.row = row
+            person.coordinate.column = column
 
-    def _get_position(self, person_id: int) -> Tuple[int, int]:
+    def _get_person_coordinates(self, person_id: int) -> Tuple[int, int]:
         for row in range(self._n):
             for col in range(self._n):
                 if self._solver.Value(
@@ -87,7 +80,8 @@ class PuzzleSolver:
         for person in self._puzzle.people:
             if (person.role == Role.SUSPECT and
                     self._get_room_of_person(person.id) == murder_room_id):
-                self._puzzle.solution.murderer_id = person.id
+                person.role = Role.MURDERER
+                self._murderer_id = person.id
                 break
 
     def _get_victim_id(self) -> int:
@@ -97,7 +91,7 @@ class PuzzleSolver:
         raise AttributeError
 
     def _get_room_of_person(self, person_id: int) -> int:
-        coordinate = self._puzzle.solution.positions[person_id].coordinate
+        coordinate = self._puzzle.people[person_id].coordinate
         room_id = self._modeler.get_room_of_coordinate(coordinate)
         return room_id
 
