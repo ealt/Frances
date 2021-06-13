@@ -38,6 +38,7 @@ class PuzzleVisualizer:
             self._w = w
             self._n = len(self._crime_scene.floor_plan)
             self._add_walls()
+            self._add_windows()
         self._set_visulization()
 
     @property
@@ -109,6 +110,20 @@ class PuzzleVisualizer:
                                 down=down_wall,
                                 left=left_wall,
                                 right=right_wall)
+
+    def _add_windows(self) -> None:
+        self._vertical_window_value = '\u2551'
+        self._horizontal_window_value = self._w * '\u2550'
+        for window in self._crime_scene.windows:
+            if window.HasField('vertical_border'):
+                self._set_vertical_boundary_value(window.vertical_border.row,
+                                                  window.vertical_border.right,
+                                                  self._vertical_window_value)
+            if window.HasField('horizontal_border'):
+                self._set_horizontal_boundary_value(
+                    window.horizontal_border.bottom,
+                    window.horizontal_border.column,
+                    self._horizontal_window_value)
 
     def _get_vertical_boundary_value(self, row: int, right: int) -> str:
         return self._board[2 * row + 1][2 * right]
