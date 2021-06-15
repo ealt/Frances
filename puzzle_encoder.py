@@ -1,7 +1,7 @@
 from collections import namedtuple
 import re
 
-from puzzle_pb2 import Clue, Coordinate, FurnitureType, Gender, IntArray, Role, Puzzle
+from puzzle_pb2 import Clue, Coordinate, FurnitureType, Gender, IntArray, Role, Puzzle, WindowType
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import List, Tuple
 
@@ -63,14 +63,16 @@ class PuzzleEncoder:
             self._puzzle.crime_scene.floor_plan.append(row)
 
     def add_vertical_window(self, row: int, right: int) -> None:
-        window = self._puzzle.crime_scene.windows.add()
-        window.vertical_border.row = row
-        window.vertical_border.right = right
+        window = self._puzzle.crime_scene.windows.add(
+            type=WindowType.VERTICAL_WINDOW)
+        window.coordinate.row = row
+        window.coordinate.column = right
 
     def add_horizontal_window(self, bottom: int, column: int) -> None:
-        window = self._puzzle.crime_scene.windows.add()
-        window.horizontal_border.column = column
-        window.horizontal_border.bottom = bottom
+        window = self._puzzle.crime_scene.windows.add(
+            type=WindowType.HORIZONTAL_WINDOW)
+        window.coordinate.column = column
+        window.coordinate.row = bottom
 
     def add_furniture(self, name: str, coordinates: List[Tuple[int,
                                                                int]]) -> None:

@@ -2,6 +2,11 @@ syntax = "proto3";
 
 package frances;
 
+enum WindowType {
+    VERTICAL_WINDOW = 0;
+    HORIZONTAL_WINDOW = 1;
+}
+
 enum FurnitureType {
     CHAIR = 0;
     BED = 1;
@@ -33,26 +38,14 @@ message Coordinate {
     int32 column = 2;
 }
 
-message VerticalBorder {
-    int32 row = 1;
-    int32 right = 2;
-}
-
-message HorizontalBorder {
-    int32 column = 1;
-    int32 bottom = 2;
-}
-
 message Room {
     int32 id = 1;
     string name = 2;
 }
 
 message Window {
-    oneof border {
-        VerticalBorder vertical_border = 1;
-        HorizontalBorder horizontal_border = 2;
-    }
+    WindowType type = 1;
+    Coordinate coordinate = 2;
 }
 
 message Furniture {

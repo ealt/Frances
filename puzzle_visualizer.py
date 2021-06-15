@@ -2,7 +2,7 @@ import re
 
 from collections import namedtuple
 
-from puzzle_pb2 import Coordinate, FurnitureType, Puzzle
+from puzzle_pb2 import Coordinate, FurnitureType, Puzzle, WindowType
 
 WallIntersection = namedtuple('WallIntersection',
                               ['up', 'down', 'left', 'right'],
@@ -158,14 +158,13 @@ class PuzzleVisualizer:
         self._vertical_window_value = '\u2551'
         self._horizontal_window_value = self._w * '\u2550'
         for window in self._crime_scene.windows:
-            if window.HasField('vertical_border'):
-                self._set_vertical_boundary_value(window.vertical_border.row,
-                                                  window.vertical_border.right,
+            if window.type == WindowType.VERTICAL_WINDOW:
+                self._set_vertical_boundary_value(window.coordinate.row,
+                                                  window.coordinate.column,
                                                   self._vertical_window_value)
-            if window.HasField('horizontal_border'):
+            elif window.type == WindowType.HORIZONTAL_WINDOW:
                 self._set_horizontal_boundary_value(
-                    window.horizontal_border.bottom,
-                    window.horizontal_border.column,
+                    window.coordinate.row, window.coordinate.column,
                     self._horizontal_window_value)
 
     def _add_furniture(self) -> None:

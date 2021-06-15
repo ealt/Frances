@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from itertools import chain, product, repeat
 from ortools.sat.python.cp_model import CpModel, IntVar
 
-from puzzle_pb2 import Clue, Coordinate, HorizontalBorder, PersonClue, Puzzle, RoomClue, VerticalBorder
+from puzzle_pb2 import Clue, Coordinate, PersonClue, Puzzle, RoomClue, WindowType
 from typing import Callable, List, Optional, Set, Tuple, Union
 
 OCCUPIED = lambda total_occupancy: total_occupancy >= 1
@@ -91,36 +91,35 @@ class PuzzleModeler:
 
     def _add_windows(self) -> None:
         for window in self._puzzle.crime_scene.windows:
-            if window.HasField('vertical_border'):
-                self._add_vertical_window(window.vertical_border)
-            if window.HasField('horizontal_border'):
-                self._add_horizontal_window(window.horizontal_border)
+            if window.type == WindowType.VERTICAL_WINDOW:
+                self._add_vertical_window(window.coordinate)
+            elif window.type == WindowType.HORIZONTAL_WINDOW:
+                self._add_horizontal_window(window.coordinate)
 
-    def _add_vertical_window(self, vertical_border: VerticalBorder) -> None:
-        row = vertical_border.row
+    def _add_vertical_window(self, coordinate: Coordinate) -> None:
+        row = coordinate.row
         self._rowwise_furniture[row].add('window')
-        if vertical_border.right > 0:
-            column = vertical_border.right - 1
+        if coordinate.column > 0:
+            column = coordinate.column - 1
             room_id = self._get_room_id(row, column)
             self._roomwise_furniture[room_id].add('window')
             self._spaces[row][column].beside.add('window')
-        if vertical_border.right < self._n:
-            column = vertical_border.right
+        if coordinate.column < self._n:
+            column = coordinate.column
             room_id = self._get_room_id(row, column)
             self._roomwise_furniture[room_id].add('window')
             self._spaces[row][column].beside.add('window')
 
-    def _add_horizontal_window(self,
-                               horizontal_border: HorizontalBorder) -> None:
-        column = horizontal_border.column
+    def _add_horizontal_window(self, coordinate: Coordinate) -> None:
+        column = coordinate.column
         self._columwise_furniture[column].add('window')
-        if horizontal_border.bottom > 0:
-            row = horizontal_border.bottom - 1
+        if coordinate.row > 0:
+            row = coordinate.row - 1
             room_id = self._get_room_id(row, column)
             self._roomwise_furniture[room_id].add('window')
             self._spaces[row][column].beside.add('window')
-        if horizontal_border.bottom < self._n:
-            row = horizontal_border.bottom
+        if coordinate.row < self._n:
+            row = coordinate.row
             room_id = self._get_room_id(row, column)
             self._roomwise_furniture[room_id].add('window')
             self._spaces[row][column].beside.add('window')
