@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package frances;
 
-enum CrimeSceneFeature {
+enum CrimeSceneFeatureType {
     WALL = 0;
     CORNER = 1;
     WINDOW = 2;
@@ -47,7 +47,7 @@ message Window {
 }
 
 message Furniture {
-    CrimeSceneFeature type = 1;
+    CrimeSceneFeatureType type = 1;
     bool occupiable = 2;
     repeated Coordinate coordinates = 3;
 }
@@ -77,11 +77,11 @@ message PersonClue {
     bool negate = 2;
     oneof type {
         int32 room_id = 3;
-        CrimeSceneFeature beside = 5;
-        CrimeSceneFeature on = 6;
-        CrimeSceneFeature same_row = 7;
-        CrimeSceneFeature same_column = 8;
-        CrimeSceneFeature same_room = 9;
+        CrimeSceneFeatureType beside = 5;
+        CrimeSceneFeatureType on = 6;
+        CrimeSceneFeatureType same_row = 7;
+        CrimeSceneFeatureType same_column = 8;
+        CrimeSceneFeatureType same_room = 9;
     }
 }
 

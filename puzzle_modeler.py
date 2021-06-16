@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from itertools import chain, product, repeat
 from ortools.sat.python.cp_model import CpModel, IntVar
 
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, PersonClue, Puzzle, RoomClue
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, PersonClue, Puzzle, RoomClue
 from typing import Callable, List, Optional, Set, Tuple
 
 OCCUPIED = lambda total_occupancy: total_occupancy >= 1
@@ -72,9 +72,9 @@ class PuzzleModeler:
                 neighbor_room_ids = self._get_neighbor_room_ids(r, c)
                 N, S, W, E = tuple(map(is_different_room, neighbor_room_ids))
                 if N or S or E or W:
-                    space.beside.add(CrimeSceneFeature.WALL)
+                    space.beside.add(CrimeSceneFeatureType.WALL)
                     if (N or S) and (E or W):
-                        space.beside.add(CrimeSceneFeature.CORNER)
+                        space.beside.add(CrimeSceneFeatureType.CORNER)
 
     def _get_neighbor_room_ids(self, r, c):
         north_room_id = self._spaces[r - 1][c].room_id if r > 0 else -1
@@ -93,31 +93,31 @@ class PuzzleModeler:
 
     def _add_vertical_window(self, coordinate: Coordinate) -> None:
         row = coordinate.row
-        self._rowwise_furniture[row].add(CrimeSceneFeature.WINDOW)
+        self._rowwise_furniture[row].add(CrimeSceneFeatureType.WINDOW)
         if coordinate.column > 0:
             column = coordinate.column - 1
             room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add(CrimeSceneFeature.WINDOW)
-            self._spaces[row][column].beside.add(CrimeSceneFeature.WINDOW)
+            self._roomwise_furniture[room_id].add(CrimeSceneFeatureType.WINDOW)
+            self._spaces[row][column].beside.add(CrimeSceneFeatureType.WINDOW)
         if coordinate.column < self._n:
             column = coordinate.column
             room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add(CrimeSceneFeature.WINDOW)
-            self._spaces[row][column].beside.add(CrimeSceneFeature.WINDOW)
+            self._roomwise_furniture[room_id].add(CrimeSceneFeatureType.WINDOW)
+            self._spaces[row][column].beside.add(CrimeSceneFeatureType.WINDOW)
 
     def _add_horizontal_window(self, coordinate: Coordinate) -> None:
         column = coordinate.column
-        self._columwise_furniture[column].add(CrimeSceneFeature.WINDOW)
+        self._columwise_furniture[column].add(CrimeSceneFeatureType.WINDOW)
         if coordinate.row > 0:
             row = coordinate.row - 1
             room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add(CrimeSceneFeature.WINDOW)
-            self._spaces[row][column].beside.add(CrimeSceneFeature.WINDOW)
+            self._roomwise_furniture[room_id].add(CrimeSceneFeatureType.WINDOW)
+            self._spaces[row][column].beside.add(CrimeSceneFeatureType.WINDOW)
         if coordinate.row < self._n:
             row = coordinate.row
             room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add(CrimeSceneFeature.WINDOW)
-            self._spaces[row][column].beside.add(CrimeSceneFeature.WINDOW)
+            self._roomwise_furniture[room_id].add(CrimeSceneFeatureType.WINDOW)
+            self._spaces[row][column].beside.add(CrimeSceneFeatureType.WINDOW)
 
     def _add_furniture(self) -> None:
         self._blocked_coordinates = []

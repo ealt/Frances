@@ -1,7 +1,7 @@
 from collections import namedtuple
 import re
 
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, Gender, IntArray, Role, Puzzle
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, Gender, IntArray, Role, Puzzle
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import List, Tuple
 
@@ -13,15 +13,15 @@ GENDER_DICT = {
 FeatureData = namedtuple('FeatureData', ['name', 'type', 'occupiable'])
 
 FEATURE_DATA_DICT = {
-    'wall': FeatureData('wall', CrimeSceneFeature.WALL, False),
-    'corner': FeatureData('corner', CrimeSceneFeature.CORNER, False),
-    'window': FeatureData('window', CrimeSceneFeature.WINDOW, False),
-    'chair': FeatureData('chair', CrimeSceneFeature.CHAIR, True),
-    'bed': FeatureData('bed', CrimeSceneFeature.BED, True),
-    'carpet': FeatureData('carpet', CrimeSceneFeature.CARPET, True),
-    'plant': FeatureData('plant', CrimeSceneFeature.PLANT, False),
-    'tv': FeatureData('tv', CrimeSceneFeature.TV, False),
-    'table': FeatureData('table', CrimeSceneFeature.TABLE, False),
+    'wall': FeatureData('wall', CrimeSceneFeatureType.WALL, False),
+    'corner': FeatureData('corner', CrimeSceneFeatureType.CORNER, False),
+    'window': FeatureData('window', CrimeSceneFeatureType.WINDOW, False),
+    'chair': FeatureData('chair', CrimeSceneFeatureType.CHAIR, True),
+    'bed': FeatureData('bed', CrimeSceneFeatureType.BED, True),
+    'carpet': FeatureData('carpet', CrimeSceneFeatureType.CARPET, True),
+    'plant': FeatureData('plant', CrimeSceneFeatureType.PLANT, False),
+    'tv': FeatureData('tv', CrimeSceneFeatureType.TV, False),
+    'table': FeatureData('table', CrimeSceneFeatureType.TABLE, False),
 }
 
 ParsedPersonClue = namedtuple('ParsedPersonClue',

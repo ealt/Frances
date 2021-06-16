@@ -2,7 +2,7 @@ import re
 
 from collections import namedtuple
 
-from puzzle_pb2 import Coordinate, CrimeSceneFeature, Puzzle
+from puzzle_pb2 import Coordinate, CrimeSceneFeatureType, Puzzle
 
 WallIntersection = namedtuple('WallIntersection',
                               ['up', 'down', 'left', 'right'],
@@ -52,16 +52,16 @@ def add_background_color(text, color):
 
 
 FURNITURE_COLORS = {
-    CrimeSceneFeature.CHAIR: 'red',
-    CrimeSceneFeature.BED: 'magenta',
-    CrimeSceneFeature.CARPET: 'blue',
-    CrimeSceneFeature.PLANT: 'green',
-    CrimeSceneFeature.TV: 'grey',
-    CrimeSceneFeature.TABLE: 'yellow',
+    CrimeSceneFeatureType.CHAIR: 'red',
+    CrimeSceneFeatureType.BED: 'magenta',
+    CrimeSceneFeatureType.CARPET: 'blue',
+    CrimeSceneFeatureType.PLANT: 'green',
+    CrimeSceneFeatureType.TV: 'grey',
+    CrimeSceneFeatureType.TABLE: 'yellow',
 }
 
 LEGEND = ' '.join([
-    add_background_color(CrimeSceneFeature.Name(type).capitalize(), color)
+    add_background_color(CrimeSceneFeatureType.Name(type).capitalize(), color)
     for type, color in FURNITURE_COLORS.items()
 ])
 
