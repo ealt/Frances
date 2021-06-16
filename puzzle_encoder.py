@@ -1,7 +1,7 @@
 from collections import namedtuple
 import re
 
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, CrimeSceneFeature, Gender, IntArray, Role, Puzzle
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, Gender, IntArray, Role, Puzzle
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import List, Tuple
 
