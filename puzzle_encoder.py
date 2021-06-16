@@ -1,7 +1,7 @@
 from collections import namedtuple
 import re
 
-from puzzle_pb2 import Clue, Coordinate, FurnitureType, Gender, IntArray, Role, Puzzle, WindowType
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, CrimeSceneFeature, Gender, IntArray, Role, Puzzle
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import List, Tuple
 
@@ -10,15 +10,18 @@ GENDER_DICT = {
     'male': Gender.MALE,
 }
 
-FurnitureData = namedtuple('FurnitureData', ['name', 'type', 'occupiable'])
+FeatureData = namedtuple('FeatureData', ['name', 'type', 'occupiable'])
 
-FURNITURE_DATA_DICT = {
-    'chair': FurnitureData('chair', FurnitureType.CHAIR, True),
-    'bed': FurnitureData('bed', FurnitureType.BED, True),
-    'carpet': FurnitureData('carpet', FurnitureType.CARPET, True),
-    'plant': FurnitureData('plant', FurnitureType.PLANT, False),
-    'tv': FurnitureData('tv', FurnitureType.TV, False),
-    'table': FurnitureData('table', FurnitureType.TABLE, False)
+FEATURE_DATA_DICT = {
+    'wall': FeatureData('wall', CrimeSceneFeature.WALL, False),
+    'corner': FeatureData('corner', CrimeSceneFeature.CORNER, False),
+    'window': FeatureData('window', CrimeSceneFeature.WINDOW, False),
+    'chair': FeatureData('chair', CrimeSceneFeature.CHAIR, True),
+    'bed': FeatureData('bed', CrimeSceneFeature.BED, True),
+    'carpet': FeatureData('carpet', CrimeSceneFeature.CARPET, True),
+    'plant': FeatureData('plant', CrimeSceneFeature.PLANT, False),
+    'tv': FeatureData('tv', CrimeSceneFeature.TV, False),
+    'table': FeatureData('table', CrimeSceneFeature.TABLE, False),
 }
 
 ParsedPersonClue = namedtuple('ParsedPersonClue',
@@ -63,20 +66,18 @@ class PuzzleEncoder:
             self._puzzle.crime_scene.floor_plan.append(row)
 
     def add_vertical_window(self, row: int, right: int) -> None:
-        window = self._puzzle.crime_scene.windows.add(
-            type=WindowType.VERTICAL_WINDOW)
+        window = self._puzzle.crime_scene.windows.add(vertical=True)
         window.coordinate.row = row
         window.coordinate.column = right
 
     def add_horizontal_window(self, bottom: int, column: int) -> None:
-        window = self._puzzle.crime_scene.windows.add(
-            type=WindowType.HORIZONTAL_WINDOW)
+        window = self._puzzle.crime_scene.windows.add(vertical=False)
         window.coordinate.column = column
         window.coordinate.row = bottom
 
     def add_furniture(self, name: str, coordinates: List[Tuple[int,
                                                                int]]) -> None:
-        furniture_data = FURNITURE_DATA_DICT[name.lower()]
+        furniture_data = FEATURE_DATA_DICT[name.lower()]
         furniture = self._puzzle.crime_scene.furniture.add(
             type=furniture_data.type, occupiable=furniture_data.occupiable)
         furniture.coordinates.extend(
@@ -132,7 +133,7 @@ class PuzzleEncoder:
     def _generate_person_clue_pattern(self) -> str:
         return PERSON_CLUE_PATTERN.format(
             people=stringify(self._puzzle.people),
-            furniture=stringify(FURNITURE_DATA_DICT.values()),
+            furniture=stringify(FEATURE_DATA_DICT.values()),
             rooms=stringify(self._puzzle.crime_scene.rooms))
 
     def _add_exclusive_person_clue(
@@ -153,25 +154,23 @@ class PuzzleEncoder:
     def _add_prepositional_phrase(self, clue: Clue,
                                   parsed_person_clue: ParsedPersonClue) -> None:
         if parsed_person_clue.preposition == 'on':
-            clue.person_clue.on = FURNITURE_DATA_DICT[
+            clue.person_clue.on = FEATURE_DATA_DICT[
                 parsed_person_clue.object].type
         elif parsed_person_clue.preposition in ('beside', 'next to'):
-            if parsed_person_clue.object == 'window':
-                clue.person_clue.beside_window = True
-            elif parsed_person_clue.object in FURNITURE_DATA_DICT.keys():
-                object_type = FURNITURE_DATA_DICT[
-                    parsed_person_clue.object].type
+            if parsed_person_clue.object in FEATURE_DATA_DICT.keys():
+                object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
                 clue.person_clue.beside = object_type
         elif parsed_person_clue.preposition == 'in the same row as':
-            object_type = FURNITURE_DATA_DICT[parsed_person_clue.object].type
+            object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
             clue.person_clue.same_row = object_type
         elif parsed_person_clue.preposition == 'in the same column as':
-            object_type = FURNITURE_DATA_DICT[parsed_person_clue.object].type
+            object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
             clue.person_clue.same_column = object_type
         elif parsed_person_clue.preposition == 'in the same room as':
-            object_type = FURNITURE_DATA_DICT[parsed_person_clue.object].type
+            object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
             clue.person_clue.same_room = object_type
         elif parsed_person_clue.preposition == 'in the corner of':
-            clue.person_clue.in_corner = True
+            corner = FEATURE_DATA_DICT['corner'].type
+            clue.person_clue.beside = corner
         elif parsed_person_clue.preposition == 'in':
             clue.person_clue.room_id = self._room_ids[parsed_person_clue.object]

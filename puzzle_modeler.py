@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 from itertools import chain, product, repeat
 from ortools.sat.python.cp_model import CpModel, IntVar
 
-from puzzle_pb2 import Clue, Coordinate, PersonClue, Puzzle, RoomClue, WindowType
-from typing import Callable, List, Optional, Set, Tuple, Union
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, PersonClue, Puzzle, RoomClue
+from typing import Callable, List, Optional, Set, Tuple
 
 OCCUPIED = lambda total_occupancy: total_occupancy >= 1
 UNOCCUPIED = lambda total_occupancy: total_occupancy == 0
@@ -14,8 +14,8 @@ UNIQUELY_OCCUPIED = lambda total_occupancy: total_occupancy == 1
 class Space:
 
     room_id: int
-    on: Optional[Union[int, str]] = None
-    beside: Set[Union[int, str]] = field(default_factory=set)
+    on: Optional[int] = None
+    beside: Set[int] = field(default_factory=set)
 
 
 class PuzzleModeler:
@@ -72,9 +72,9 @@ class PuzzleModeler:
                 neighbor_room_ids = self._get_neighbor_room_ids(r, c)
                 N, S, W, E = tuple(map(is_different_room, neighbor_room_ids))
                 if N or S or E or W:
-                    space.beside.add('wall')
+                    space.beside.add(CrimeSceneFeature.WALL)
                     if (N or S) and (E or W):
-                        space.beside.add('corner')
+                        space.beside.add(CrimeSceneFeature.CORNER)
 
     def _get_neighbor_room_ids(self, r, c):
         north_room_id = self._spaces[r - 1][c].room_id if r > 0 else -1
@@ -86,38 +86,38 @@ class PuzzleModeler:
 
     def _add_windows(self) -> None:
         for window in self._puzzle.crime_scene.windows:
-            if window.type == WindowType.VERTICAL_WINDOW:
+            if window.vertical:
                 self._add_vertical_window(window.coordinate)
-            elif window.type == WindowType.HORIZONTAL_WINDOW:
+            else:
                 self._add_horizontal_window(window.coordinate)
 
     def _add_vertical_window(self, coordinate: Coordinate) -> None:
         row = coordinate.row
-        self._rowwise_furniture[row].add('window')
+        self._rowwise_furniture[row].add(CrimeSceneFeature.WINDOW)
         if coordinate.column > 0:
             column = coordinate.column - 1
             room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add('window')
-            self._spaces[row][column].beside.add('window')
+            self._roomwise_furniture[room_id].add(CrimeSceneFeature.WINDOW)
+            self._spaces[row][column].beside.add(CrimeSceneFeature.WINDOW)
         if coordinate.column < self._n:
             column = coordinate.column
             room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add('window')
-            self._spaces[row][column].beside.add('window')
+            self._roomwise_furniture[room_id].add(CrimeSceneFeature.WINDOW)
+            self._spaces[row][column].beside.add(CrimeSceneFeature.WINDOW)
 
     def _add_horizontal_window(self, coordinate: Coordinate) -> None:
         column = coordinate.column
-        self._columwise_furniture[column].add('window')
+        self._columwise_furniture[column].add(CrimeSceneFeature.WINDOW)
         if coordinate.row > 0:
             row = coordinate.row - 1
             room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add('window')
-            self._spaces[row][column].beside.add('window')
+            self._roomwise_furniture[room_id].add(CrimeSceneFeature.WINDOW)
+            self._spaces[row][column].beside.add(CrimeSceneFeature.WINDOW)
         if coordinate.row < self._n:
             row = coordinate.row
             room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add('window')
-            self._spaces[row][column].beside.add('window')
+            self._roomwise_furniture[room_id].add(CrimeSceneFeature.WINDOW)
+            self._spaces[row][column].beside.add(CrimeSceneFeature.WINDOW)
 
     def _add_furniture(self) -> None:
         self._blocked_coordinates = []
@@ -252,12 +252,8 @@ class PuzzleModeler:
             return coordinates
 
     def _evaluate_space_for_clue(self, space: Space, clue: Clue) -> bool:
-        if clue.HasField('beside_window'):
-            return clue.beside_window == ('window' in space.beside)
-        elif clue.HasField('beside'):
+        if clue.HasField('beside'):
             return clue.beside in space.beside
         elif clue.HasField('on'):
             return clue.on == space.on
-        elif clue.HasField('in_corner'):
-            return clue.in_corner == ('corner' in space.beside)
         raise AttributeError

@@ -2,7 +2,7 @@ import re
 
 from collections import namedtuple
 
-from puzzle_pb2 import Coordinate, FurnitureType, Puzzle, WindowType
+from puzzle_pb2 import Coordinate, CrimeSceneFeature, Puzzle
 
 WallIntersection = namedtuple('WallIntersection',
                               ['up', 'down', 'left', 'right'],
@@ -52,16 +52,16 @@ def add_background_color(text, color):
 
 
 FURNITURE_COLORS = {
-    FurnitureType.CHAIR: 'red',
-    FurnitureType.BED: 'magenta',
-    FurnitureType.CARPET: 'blue',
-    FurnitureType.PLANT: 'green',
-    FurnitureType.TV: 'grey',
-    FurnitureType.TABLE: 'yellow',
+    CrimeSceneFeature.CHAIR: 'red',
+    CrimeSceneFeature.BED: 'magenta',
+    CrimeSceneFeature.CARPET: 'blue',
+    CrimeSceneFeature.PLANT: 'green',
+    CrimeSceneFeature.TV: 'grey',
+    CrimeSceneFeature.TABLE: 'yellow',
 }
 
 LEGEND = ' '.join([
-    add_background_color(FurnitureType.Name(type).capitalize(), color)
+    add_background_color(CrimeSceneFeature.Name(type).capitalize(), color)
     for type, color in FURNITURE_COLORS.items()
 ])
 
@@ -158,11 +158,11 @@ class PuzzleVisualizer:
         self._vertical_window_value = '\u2551'
         self._horizontal_window_value = self._w * '\u2550'
         for window in self._crime_scene.windows:
-            if window.type == WindowType.VERTICAL_WINDOW:
+            if window.vertical:
                 self._set_vertical_boundary_value(window.coordinate.row,
                                                   window.coordinate.column,
                                                   self._vertical_window_value)
-            elif window.type == WindowType.HORIZONTAL_WINDOW:
+            else:
                 self._set_horizontal_boundary_value(
                     window.coordinate.row, window.coordinate.column,
                     self._horizontal_window_value)

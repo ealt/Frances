@@ -2,18 +2,16 @@ syntax = "proto3";
 
 package frances;
 
-enum WindowType {
-    VERTICAL_WINDOW = 0;
-    HORIZONTAL_WINDOW = 1;
-}
-
-enum FurnitureType {
-    CHAIR = 0;
-    BED = 1;
-    CARPET = 2;
-    PLANT = 3;
-    TV = 4;
-    TABLE = 5;
+enum CrimeSceneFeature {
+    WALL = 0;
+    CORNER = 1;
+    WINDOW = 2;
+    CHAIR = 3;
+    BED = 4;
+    CARPET = 5;
+    PLANT = 6;
+    TV = 7;
+    TABLE = 8;
 }
 
 enum Gender {
@@ -44,12 +42,12 @@ message Room {
 }
 
 message Window {
-    WindowType type = 1;
+    bool vertical = 1;
     Coordinate coordinate = 2;
 }
 
 message Furniture {
-    FurnitureType type = 1;
+    CrimeSceneFeature type = 1;
     bool occupiable = 2;
     repeated Coordinate coordinates = 3;
 }
@@ -79,13 +77,11 @@ message PersonClue {
     bool negate = 2;
     oneof type {
         int32 room_id = 3;
-        bool beside_window = 4;
-        FurnitureType beside = 5;
-        FurnitureType on = 6;
-        FurnitureType same_row = 7;
-        FurnitureType same_column = 8;
-        FurnitureType same_room = 9;
-        bool in_corner = 10;
+        CrimeSceneFeature beside = 5;
+        CrimeSceneFeature on = 6;
+        CrimeSceneFeature same_row = 7;
+        CrimeSceneFeature same_column = 8;
+        CrimeSceneFeature same_room = 9;
     }
 }
 
