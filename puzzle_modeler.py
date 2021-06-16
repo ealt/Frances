@@ -9,8 +9,6 @@ OCCUPIED = lambda total_occupancy: total_occupancy >= 1
 UNOCCUPIED = lambda total_occupancy: total_occupancy == 0
 UNIQUELY_OCCUPIED = lambda total_occupancy: total_occupancy == 1
 
-CORNER = set(['vertical_wall', 'horizontal_wall'])
-
 
 @dataclass
 class Space:
@@ -42,7 +40,7 @@ class PuzzleModeler:
     def _init_board(self):
         self._get_room_coordinates()
         self._init_spaces()
-        self._add_walls()
+        self._add_walls_and_corners()
         self._add_windows()
         self._add_furniture()
 
@@ -67,27 +65,24 @@ class PuzzleModeler:
     def _get_room_id(self, row: int, column: int) -> int:
         return self._puzzle.crime_scene.floor_plan[row].values[column]
 
-    def _add_walls(self) -> None:
-        self._add_vertical_walls()
-        self._add_horizontal_walls()
+    def _add_walls_and_corners(self) -> None:
+        for r, row in enumerate(self._spaces):
+            for c, space in enumerate(row):
+                is_different_room = lambda room_id: room_id != space.room_id
+                neighbor_room_ids = self._get_neighbor_room_ids(r, c)
+                N, S, W, E = tuple(map(is_different_room, neighbor_room_ids))
+                if N or S or E or W:
+                    space.beside.add('wall')
+                    if (N or S) and (E or W):
+                        space.beside.add('corner')
 
-    def _add_vertical_walls(self) -> None:
-        for spaces_row in self._spaces:
-            spaces_row[0].beside.add('vertical_wall')
-            spaces_row[-1].beside.add('vertical_wall')
-            for left, right in zip(spaces_row, spaces_row[1:]):
-                if left.room_id != right.room_id:
-                    left.beside.add('vertical_wall')
-                    right.beside.add('vertical_wall')
-
-    def _add_horizontal_walls(self) -> None:
-        for space in chain(self._spaces[0], self._spaces[-1]):
-            space.beside.add('horizontal_wall')
-        for row in range(1, self._n):
-            for top, bottom in zip(self._spaces[row - 1], self._spaces[row]):
-                if top.room_id != bottom.room_id:
-                    top.beside.add('horizontal_wall')
-                    bottom.beside.add('horizontal_wall')
+    def _get_neighbor_room_ids(self, r, c):
+        north_room_id = self._spaces[r - 1][c].room_id if r > 0 else -1
+        south_room_id = self._spaces[r +
+                                     1][c].room_id if r < self._n - 1 else -1
+        west_room_id = self._spaces[r][c - 1].room_id if c > 0 else -1
+        east_room_id = self._spaces[r][c + 1].room_id if c < self._n - 1 else -1
+        return (north_room_id, south_room_id, west_room_id, east_room_id)
 
     def _add_windows(self) -> None:
         for window in self._puzzle.crime_scene.windows:
@@ -264,5 +259,5 @@ class PuzzleModeler:
         elif clue.HasField('on'):
             return clue.on == space.on
         elif clue.HasField('in_corner'):
-            return clue.in_corner == space.beside.issuperset(CORNER)
+            return clue.in_corner == ('corner' in space.beside)
         raise AttributeError
