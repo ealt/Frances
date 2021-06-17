@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from itertools import chain, product, repeat
 from ortools.sat.python.cp_model import CpModel, IntVar
 
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, PersonClue, Puzzle, RoomClue
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, CrimeSceneFeatureType, PersonClue, PositionType, Puzzle, RoomClue
 from typing import Callable, List, Optional, Set, Tuple
 
 OCCUPIED = lambda total_occupancy: total_occupancy >= 1
@@ -41,8 +41,7 @@ class PuzzleModeler:
         self._get_room_coordinates()
         self._init_spaces()
         self._add_walls_and_corners()
-        self._add_windows()
-        self._add_furniture()
+        self._add_features()
 
     def _get_room_coordinates(self) -> None:
         self._room_coordinates = [
@@ -84,57 +83,64 @@ class PuzzleModeler:
         east_room_id = self._spaces[r][c + 1].room_id if c < self._n - 1 else -1
         return (north_room_id, south_room_id, west_room_id, east_room_id)
 
-    def _add_windows(self) -> None:
-        for window in self._puzzle.crime_scene.windows:
-            if window.vertical:
-                self._add_vertical_window(window.coordinate)
-            else:
-                self._add_horizontal_window(window.coordinate)
-
-    def _add_vertical_window(self, coordinate: Coordinate) -> None:
-        row = coordinate.row
-        self._rowwise_furniture[row].add(CrimeSceneFeatureType.WINDOW)
-        if coordinate.column > 0:
-            column = coordinate.column - 1
-            room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add(CrimeSceneFeatureType.WINDOW)
-            self._spaces[row][column].beside.add(CrimeSceneFeatureType.WINDOW)
-        if coordinate.column < self._n:
-            column = coordinate.column
-            room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add(CrimeSceneFeatureType.WINDOW)
-            self._spaces[row][column].beside.add(CrimeSceneFeatureType.WINDOW)
-
-    def _add_horizontal_window(self, coordinate: Coordinate) -> None:
-        column = coordinate.column
-        self._columwise_furniture[column].add(CrimeSceneFeatureType.WINDOW)
-        if coordinate.row > 0:
-            row = coordinate.row - 1
-            room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add(CrimeSceneFeatureType.WINDOW)
-            self._spaces[row][column].beside.add(CrimeSceneFeatureType.WINDOW)
-        if coordinate.row < self._n:
+    def _add_vertical_feature(self, feature: CrimeSceneFeature) -> None:
+        for coordinate in feature.coordinates:
             row = coordinate.row
-            room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add(CrimeSceneFeatureType.WINDOW)
-            self._spaces[row][column].beside.add(CrimeSceneFeatureType.WINDOW)
-
-    def _add_furniture(self) -> None:
-        self._blocked_coordinates = []
-        for furniture in self._puzzle.crime_scene.furniture:
-            coordinates = [(coordinate.row, coordinate.column)
-                           for coordinate in furniture.coordinates]
-            for row, column in coordinates:
-                self._spaces[row][column].on = furniture.type
-                self._rowwise_furniture[row].add(furniture.type)
-                self._columwise_furniture[column].add(furniture.type)
+            self._rowwise_furniture[row].add(feature.type)
+            if coordinate.column > 0:
+                column = coordinate.column - 1
                 room_id = self._get_room_id(row, column)
-                self._roomwise_furniture[room_id].add(furniture.type)
-                for n_row, n_col in self._get_neighbors(row, column):
-                    if (n_row, n_col) not in coordinates:
-                        self._spaces[n_row][n_col].beside.add(furniture.type)
-            if not furniture.occupiable:
-                self._blocked_coordinates.extend(coordinates)
+                self._roomwise_furniture[room_id].add(feature.type)
+                self._spaces[row][column].beside.add(feature.type)
+            if coordinate.column < self._n:
+                column = coordinate.column
+                room_id = self._get_room_id(row, column)
+                self._roomwise_furniture[room_id].add(feature.type)
+                self._spaces[row][column].beside.add(feature.type)
+
+    def _add_horizontal_feature(self, feature: CrimeSceneFeature) -> None:
+        for coordinate in feature.coordinates:
+            column = coordinate.column
+            self._columwise_furniture[column].add(feature.type)
+            if coordinate.row > 0:
+                row = coordinate.row - 1
+                room_id = self._get_room_id(row, column)
+                self._roomwise_furniture[room_id].add(feature.type)
+                self._spaces[row][column].beside.add(feature.type)
+            if coordinate.row < self._n:
+                row = coordinate.row
+                room_id = self._get_room_id(row, column)
+                self._roomwise_furniture[room_id].add(feature.type)
+                self._spaces[row][column].beside.add(feature.type)
+
+    def _add_features(self) -> None:
+        self._blocked_coordinates = []
+        for feature in self._puzzle.crime_scene.features:
+            if feature.position_type == PositionType.OCCUPIABLE_SPACE:
+                self._add_space_feature(feature)
+            elif feature.position_type == PositionType.BLOCKED_SPACE:
+                self._add_space_feature(feature)
+                self._blocked_coordinates.extend([
+                    (coordinate.row, coordinate.column)
+                    for coordinate in feature.coordinates
+                ])
+            elif feature.position_type == PositionType.VERTICAL_BOUNDARY:
+                self._add_vertical_feature(feature)
+            elif feature.position_type == PositionType.HORIZONTAL_BOUNDARY:
+                self._add_horizontal_feature(feature)
+
+    def _add_space_feature(self, feature: CrimeSceneFeature) -> None:
+        coordinates = [(coordinate.row, coordinate.column)
+                       for coordinate in feature.coordinates]
+        for row, column in coordinates:
+            self._spaces[row][column].on = feature.type
+            self._rowwise_furniture[row].add(feature.type)
+            self._columwise_furniture[column].add(feature.type)
+            room_id = self._get_room_id(row, column)
+            self._roomwise_furniture[room_id].add(feature.type)
+            for n_row, n_col in self._get_neighbors(row, column):
+                if (n_row, n_col) not in coordinates:
+                    self._spaces[n_row][n_col].beside.add(feature.type)
 
     def _get_neighbors(self, row: int, column: int) -> List[Tuple[int, int]]:
         room_id = self._get_room_id(row, column)

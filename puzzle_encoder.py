@@ -1,7 +1,7 @@
 from collections import namedtuple
 import re
 
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, Gender, IntArray, Role, Puzzle
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, Gender, IntArray, PositionType, Role, Puzzle
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import List, Tuple
 
@@ -10,18 +10,32 @@ GENDER_DICT = {
     'male': Gender.MALE,
 }
 
-FeatureData = namedtuple('FeatureData', ['name', 'type', 'occupiable'])
+FeatureData = namedtuple('FeatureData', ['name', 'type', 'position_type'])
 
 FEATURE_DATA_DICT = {
-    'wall': FeatureData('wall', CrimeSceneFeatureType.WALL, False),
-    'corner': FeatureData('corner', CrimeSceneFeatureType.CORNER, False),
-    'window': FeatureData('window', CrimeSceneFeatureType.WINDOW, False),
-    'chair': FeatureData('chair', CrimeSceneFeatureType.CHAIR, True),
-    'bed': FeatureData('bed', CrimeSceneFeatureType.BED, True),
-    'carpet': FeatureData('carpet', CrimeSceneFeatureType.CARPET, True),
-    'plant': FeatureData('plant', CrimeSceneFeatureType.PLANT, False),
-    'tv': FeatureData('tv', CrimeSceneFeatureType.TV, False),
-    'table': FeatureData('table', CrimeSceneFeatureType.TABLE, False),
+    'wall':
+        FeatureData('wall', CrimeSceneFeatureType.WALL, None),
+    'corner':
+        FeatureData('corner', CrimeSceneFeatureType.CORNER, None),
+    'window':
+        FeatureData('window', CrimeSceneFeatureType.WINDOW, None),
+    'chair':
+        FeatureData('chair', CrimeSceneFeatureType.CHAIR,
+                    PositionType.OCCUPIABLE_SPACE),
+    'bed':
+        FeatureData('bed', CrimeSceneFeatureType.BED,
+                    PositionType.OCCUPIABLE_SPACE),
+    'carpet':
+        FeatureData('carpet', CrimeSceneFeatureType.CARPET,
+                    PositionType.OCCUPIABLE_SPACE),
+    'plant':
+        FeatureData('plant', CrimeSceneFeatureType.PLANT,
+                    PositionType.BLOCKED_SPACE),
+    'tv':
+        FeatureData('tv', CrimeSceneFeatureType.TV, PositionType.BLOCKED_SPACE),
+    'table':
+        FeatureData('table', CrimeSceneFeatureType.TABLE,
+                    PositionType.BLOCKED_SPACE),
 }
 
 ParsedPersonClue = namedtuple('ParsedPersonClue',
@@ -66,20 +80,23 @@ class PuzzleEncoder:
             self._puzzle.crime_scene.floor_plan.append(row)
 
     def add_vertical_window(self, row: int, right: int) -> None:
-        window = self._puzzle.crime_scene.windows.add(vertical=True)
-        window.coordinate.row = row
-        window.coordinate.column = right
+        window = self._puzzle.crime_scene.features.add(
+            type=CrimeSceneFeatureType.WINDOW,
+            position_type=PositionType.VERTICAL_BOUNDARY)
+        window.coordinates.append(Coordinate(row=row, column=right))
 
     def add_horizontal_window(self, bottom: int, column: int) -> None:
-        window = self._puzzle.crime_scene.windows.add(vertical=False)
-        window.coordinate.column = column
-        window.coordinate.row = bottom
+        window = self._puzzle.crime_scene.features.add(
+            type=CrimeSceneFeatureType.WINDOW,
+            position_type=PositionType.HORIZONTAL_BOUNDARY)
+        window.coordinates.append(Coordinate(row=bottom, column=column))
 
     def add_furniture(self, name: str, coordinates: List[Tuple[int,
                                                                int]]) -> None:
         furniture_data = FEATURE_DATA_DICT[name.lower()]
-        furniture = self._puzzle.crime_scene.furniture.add(
-            type=furniture_data.type, occupiable=furniture_data.occupiable)
+        furniture = self._puzzle.crime_scene.features.add(
+            type=furniture_data.type,
+            position_type=furniture_data.position_type)
         furniture.coordinates.extend(
             [Coordinate(row=row, column=column) for row, column in coordinates])
 

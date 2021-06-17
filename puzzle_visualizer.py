@@ -2,7 +2,7 @@ import re
 
 from collections import namedtuple
 
-from puzzle_pb2 import Coordinate, CrimeSceneFeatureType, Puzzle
+from puzzle_pb2 import Coordinate, CrimeSceneFeatureType, PositionType, Puzzle
 
 WallIntersection = namedtuple('WallIntersection',
                               ['up', 'down', 'left', 'right'],
@@ -157,15 +157,18 @@ class PuzzleVisualizer:
     def _add_windows(self) -> None:
         self._vertical_window_value = '\u2551'
         self._horizontal_window_value = self._w * '\u2550'
-        for window in self._crime_scene.windows:
-            if window.vertical:
-                self._set_vertical_boundary_value(window.coordinate.row,
-                                                  window.coordinate.column,
-                                                  self._vertical_window_value)
-            else:
-                self._set_horizontal_boundary_value(
-                    window.coordinate.row, window.coordinate.column,
-                    self._horizontal_window_value)
+        for feature in self._crime_scene.features:
+            if feature.type == CrimeSceneFeatureType.WINDOW:
+                if feature.position_type == PositionType.VERTICAL_BOUNDARY:
+                    for coordinate in feature.coordinates:
+                        self._set_vertical_boundary_value(
+                            coordinate.row, coordinate.column,
+                            self._vertical_window_value)
+                elif feature.position_type == PositionType.HORIZONTAL_BOUNDARY:
+                    for coordinate in feature.coordinates:
+                        self._set_horizontal_boundary_value(
+                            coordinate.row, coordinate.column,
+                            self._horizontal_window_value)
 
     def _add_furniture(self) -> None:
         self._add_funiture_spaces()
@@ -173,23 +176,25 @@ class PuzzleVisualizer:
 
     def _add_funiture_spaces(self) -> None:
         self._furniture_text_value = self._w * ' '
-        for furniture in self._crime_scene.furniture:
-            furniture_color = FURNITURE_COLORS[furniture.type]
-            furniture_value = add_background_color(self._furniture_text_value,
-                                                   furniture_color)
-            for coordinate in furniture.coordinates:
-                self._set_space_value(coordinate.row, coordinate.column,
-                                      furniture_value)
+        for feature in self._crime_scene.features:
+            if feature.type in FURNITURE_COLORS:
+                furniture_color = FURNITURE_COLORS[feature.type]
+                furniture_value = add_background_color(
+                    self._furniture_text_value, furniture_color)
+                for coordinate in feature.coordinates:
+                    self._set_space_value(coordinate.row, coordinate.column,
+                                          furniture_value)
 
     def _add_funiture_boundaries(self) -> None:
         self._vertical_furniture_boundary_text_value = ' '
         self._horizontal_furniture_boundary_text_value = self._w * ' '
-        for furniture in self._crime_scene.furniture:
-            furniture_color = FURNITURE_COLORS[furniture.type]
-            for coordinate_1, coordinate_2 in zip(furniture.coordinates[:-1],
-                                                  furniture.coordinates[1:]):
-                self._add_funiture_boundary(coordinate_1, coordinate_2,
-                                            furniture_color)
+        for feature in self._crime_scene.features:
+            if feature.type in FURNITURE_COLORS:
+                furniture_color = FURNITURE_COLORS[feature.type]
+                for coordinate_1, coordinate_2 in zip(feature.coordinates[:-1],
+                                                      feature.coordinates[1:]):
+                    self._add_funiture_boundary(coordinate_1, coordinate_2,
+                                                furniture_color)
 
     def _add_funiture_boundary(self, coordinate_1: Coordinate,
                                coordinate_2: Coordinate, furniture_color: str):

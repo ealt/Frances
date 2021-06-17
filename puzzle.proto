@@ -14,6 +14,13 @@ enum CrimeSceneFeatureType {
     TABLE = 8;
 }
 
+enum PositionType {
+    OCCUPIABLE_SPACE = 0;
+    BLOCKED_SPACE = 1;
+    VERTICAL_BOUNDARY = 2;
+    HORIZONTAL_BOUNDARY = 3;
+}
+
 enum Gender {
     UNSPECIFIED_GENDER = 0;
     FEMALE = 1;
@@ -41,22 +48,16 @@ message Room {
     string name = 2;
 }
 
-message Window {
-    bool vertical = 1;
-    Coordinate coordinate = 2;
-}
-
-message Furniture {
+message CrimeSceneFeature {
     CrimeSceneFeatureType type = 1;
-    bool occupiable = 2;
+    PositionType position_type = 2;
     repeated Coordinate coordinates = 3;
 }
 
 message CrimeScene {
     repeated Room rooms = 1;
     repeated IntArray floor_plan = 2;
-    repeated Window windows = 3;
-    repeated Furniture furniture = 4;
+    repeated CrimeSceneFeature features = 3;
 }
 
 message Person {
