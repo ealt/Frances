@@ -78,11 +78,11 @@ message PersonClue {
     bool negate = 2;
     oneof type {
         int32 room_id = 3;
-        CrimeSceneFeatureType beside = 5;
-        CrimeSceneFeatureType on = 6;
-        CrimeSceneFeatureType same_row = 7;
-        CrimeSceneFeatureType same_column = 8;
-        CrimeSceneFeatureType same_room = 9;
+        CrimeSceneFeatureType beside = 4;
+        CrimeSceneFeatureType on = 5;
+        CrimeSceneFeatureType same_row = 6;
+        CrimeSceneFeatureType same_column = 7;
+        CrimeSceneFeatureType same_room = 8;
     }
 }
 
