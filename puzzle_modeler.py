@@ -83,36 +83,6 @@ class PuzzleModeler:
         east_room_id = self._spaces[r][c + 1].room_id if c < self._n - 1 else -1
         return (north_room_id, south_room_id, west_room_id, east_room_id)
 
-    def _add_vertical_feature(self, feature: CrimeSceneFeature) -> None:
-        for coordinate in feature.coordinates:
-            row = coordinate.row
-            self._rowwise_furniture[row].add(feature.type)
-            if coordinate.column > 0:
-                column = coordinate.column - 1
-                room_id = self._get_room_id(row, column)
-                self._roomwise_furniture[room_id].add(feature.type)
-                self._spaces[row][column].beside.add(feature.type)
-            if coordinate.column < self._n:
-                column = coordinate.column
-                room_id = self._get_room_id(row, column)
-                self._roomwise_furniture[room_id].add(feature.type)
-                self._spaces[row][column].beside.add(feature.type)
-
-    def _add_horizontal_feature(self, feature: CrimeSceneFeature) -> None:
-        for coordinate in feature.coordinates:
-            column = coordinate.column
-            self._columwise_furniture[column].add(feature.type)
-            if coordinate.row > 0:
-                row = coordinate.row - 1
-                room_id = self._get_room_id(row, column)
-                self._roomwise_furniture[room_id].add(feature.type)
-                self._spaces[row][column].beside.add(feature.type)
-            if coordinate.row < self._n:
-                row = coordinate.row
-                room_id = self._get_room_id(row, column)
-                self._roomwise_furniture[room_id].add(feature.type)
-                self._spaces[row][column].beside.add(feature.type)
-
     def _add_features(self) -> None:
         self._blocked_coordinates = []
         for feature in self._puzzle.crime_scene.features:
@@ -155,6 +125,36 @@ class PuzzleModeler:
                                                       column + 1) == room_id:
             neighbors.append((row, column + 1))
         return neighbors
+
+    def _add_vertical_feature(self, feature: CrimeSceneFeature) -> None:
+        for coordinate in feature.coordinates:
+            row = coordinate.row
+            self._rowwise_furniture[row].add(feature.type)
+            if coordinate.column > 0:
+                column = coordinate.column - 1
+                room_id = self._get_room_id(row, column)
+                self._roomwise_furniture[room_id].add(feature.type)
+                self._spaces[row][column].beside.add(feature.type)
+            if coordinate.column < self._n:
+                column = coordinate.column
+                room_id = self._get_room_id(row, column)
+                self._roomwise_furniture[room_id].add(feature.type)
+                self._spaces[row][column].beside.add(feature.type)
+
+    def _add_horizontal_feature(self, feature: CrimeSceneFeature) -> None:
+        for coordinate in feature.coordinates:
+            column = coordinate.column
+            self._columwise_furniture[column].add(feature.type)
+            if coordinate.row > 0:
+                row = coordinate.row - 1
+                room_id = self._get_room_id(row, column)
+                self._roomwise_furniture[room_id].add(feature.type)
+                self._spaces[row][column].beside.add(feature.type)
+            if coordinate.row < self._n:
+                row = coordinate.row
+                room_id = self._get_room_id(row, column)
+                self._roomwise_furniture[room_id].add(feature.type)
+                self._spaces[row][column].beside.add(feature.type)
 
     def _create_model(self) -> None:
         self._model = CpModel()
