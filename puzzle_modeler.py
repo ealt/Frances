@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from itertools import chain, product, repeat
 from ortools.sat.python.cp_model import CpModel, IntVar
 
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, CrimeSceneFeatureType, PersonClue, PositionType, Puzzle, RoomClue
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, CrimeSceneFeatureType, Gender, PersonClue, PositionType, Puzzle, RoomClue, Role, SubjectFilter
 from typing import Callable, List, Optional, Set, Tuple
 
 OCCUPIED = lambda total_occupancy: total_occupancy >= 1
@@ -225,7 +225,7 @@ class PuzzleModeler:
             self._add_constraint(OCCUPIED, people_ids, space_indexes)
 
     def _set_person_clue(self, person_clue: PersonClue) -> None:
-        people_ids = [person_clue.person_id]
+        people_ids = self._get_subject_ids(person_clue)
         if person_clue.HasField('same_row'):
             for row, furnuture in enumerate(self._rowwise_furniture):
                 if person_clue.same_row not in furnuture:
@@ -245,6 +245,36 @@ class PuzzleModeler:
             constraint_function = UNOCCUPIED if person_clue.negate else UNIQUELY_OCCUPIED
             space_indexes = self._get_person_clue_coordinates(person_clue)
             self._add_constraint(constraint_function, people_ids, space_indexes)
+
+    def _get_subject_ids(self, person_clue: PersonClue) -> List[int]:
+        subject_ids = set()
+        for subject_filter in person_clue.subject_filters:
+            filtered_subject_ids = self._get_filtered_subject_ids(
+                subject_filter)
+            subject_ids.update(filtered_subject_ids)
+        return sorted(list(subject_ids))
+
+    def _get_filtered_subject_ids(self,
+                                  subject_filter: SubjectFilter) -> List[int]:
+        if subject_filter.person_id == -1:
+            person_id_filter = lambda person: True
+        else:
+            person_id_filter = lambda person: person.id == subject_filter.person_id
+        if subject_filter.role == Role.UNSPECIFIED_ROLE:
+            role_filter = lambda person: True
+        else:
+            role_filter = lambda person: person.role == subject_filter.role
+        if subject_filter.gender == Gender.UNSPECIFIED_GENDER:
+            gender_filter = lambda person: True
+        else:
+            gender_filter = lambda person: person.gender == subject_filter.gender
+        passes_filters = lambda person: person_id_filter(
+            person) and role_filter(person) and gender_filter(person)
+        return [
+            person.id
+            for person in self._puzzle.people
+            if passes_filters(person) != subject_filter.negate
+        ]
 
     def _get_person_clue_coordinates(
             self, person_clue: PersonClue) -> List[Tuple[int, int]]:

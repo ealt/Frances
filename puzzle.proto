@@ -73,8 +73,15 @@ message RoomClue {
     bool is_occupied = 2;
 }
 
-message PersonClue {
+message SubjectFilter {
     int32 person_id = 1;
+    Role role = 2;
+    Gender gender = 3;
+    bool negate = 4;
+}
+
+message PersonClue {
+    repeated SubjectFilter subject_filters = 1;
     bool negate = 2;
     oneof type {
         int32 room_id = 3;

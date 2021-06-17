@@ -155,17 +155,20 @@ class PuzzleEncoder:
 
     def _add_exclusive_person_clue(
             self, parsed_person_clue: ParsedPersonClue) -> None:
-        for person in self._puzzle.people:
-            clue = self._puzzle.clues.add()
-            clue.person_clue.person_id = person.id
-            self._add_prepositional_phrase(clue, parsed_person_clue)
-            clue.person_clue.negate = person.name.lower(
-            ) != parsed_person_clue.subject
+        person_id = self._people_ids[parsed_person_clue.subject]
+        subject_clue = self._puzzle.clues.add()
+        subject_clue.person_clue.subject_filters.add(person_id=person_id)
+        self._add_prepositional_phrase(subject_clue, parsed_person_clue)
+        others_clue = self._puzzle.clues.add()
+        others_clue.person_clue.subject_filters.add(person_id=person_id,
+                                                    negate=True)
+        others_clue.person_clue.negate = True
+        self._add_prepositional_phrase(others_clue, parsed_person_clue)
 
     def _add_person_clue(self, parsed_person_clue: ParsedPersonClue) -> None:
+        person_id = self._people_ids[parsed_person_clue.subject]
         clue = self._puzzle.clues.add()
-        clue.person_clue.person_id = self._people_ids[
-            parsed_person_clue.subject]
+        clue.person_clue.subject_filters.add(person_id=person_id)
         self._add_prepositional_phrase(clue, parsed_person_clue)
 
     def _add_prepositional_phrase(self, clue: Clue,
