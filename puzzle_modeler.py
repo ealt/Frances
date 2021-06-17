@@ -108,23 +108,24 @@ class PuzzleModeler:
             self._columwise_furniture[column].add(feature.type)
             room_id = self._get_room_id(row, column)
             self._roomwise_furniture[room_id].add(feature.type)
-            for n_row, n_col in self._get_neighbors(row, column):
+            for n_row, n_col in self._get_neighbor_coordinates(row, column):
                 if (n_row, n_col) not in coordinates:
                     self._spaces[n_row][n_col].beside.add(feature.type)
 
-    def _get_neighbors(self, row: int, column: int) -> List[Tuple[int, int]]:
+    def _get_neighbor_coordinates(self, row: int,
+                                  column: int) -> List[Tuple[int, int]]:
         room_id = self._get_room_id(row, column)
-        neighbors = []
+        neighbor_coordinates = []
         if row > 0 and self._get_room_id(row - 1, column) == room_id:
-            neighbors.append((row - 1, column))
+            neighbor_coordinates.append((row - 1, column))
         if column > 0 and self._get_room_id(row, column - 1) == room_id:
-            neighbors.append((row, column - 1))
+            neighbor_coordinates.append((row, column - 1))
         if row < self._n - 1 and self._get_room_id(row + 1, column) == room_id:
-            neighbors.append((row + 1, column))
+            neighbor_coordinates.append((row + 1, column))
         if column < self._n - 1 and self._get_room_id(row,
                                                       column + 1) == room_id:
-            neighbors.append((row, column + 1))
-        return neighbors
+            neighbor_coordinates.append((row, column + 1))
+        return neighbor_coordinates
 
     def _add_vertical_feature(self, feature: CrimeSceneFeature) -> None:
         for coordinate in feature.coordinates:
