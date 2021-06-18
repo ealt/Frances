@@ -2,12 +2,11 @@ from dataclasses import dataclass, field
 from itertools import chain, product, repeat
 from ortools.sat.python.cp_model import CpModel, IntVar
 
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, CrimeSceneFeatureType, Gender, PersonClue, PositionType, Puzzle, RoomClue, Role, SubjectFilter
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, CrimeSceneFeatureType, Gender, PositionType, Puzzle, Role, SubjectFilter
 from typing import Callable, List, Optional, Set, Tuple
 
-OCCUPIED = lambda total_occupancy: total_occupancy >= 1
-UNOCCUPIED = lambda total_occupancy: total_occupancy == 0
-UNIQUELY_OCCUPIED = lambda total_occupancy: total_occupancy == 1
+EXACT_COUNT = lambda count: lambda total_occupancy: total_occupancy == count
+MIN_COUNT = lambda count: lambda total_occupancy: total_occupancy >= count
 
 
 @dataclass
@@ -159,8 +158,7 @@ class PuzzleModeler:
 
     def _create_model(self) -> None:
         self._model = CpModel()
-        unavailable = set(self._blocked_coordinates +
-                          self._get_unoccupied_room_coordinates())
+        unavailable = set(self._blocked_coordinates)
         self._occupancies = [[[
             self._model.NewConstant(0) if (row, col) in unavailable else
             self._model.NewBoolVar(f'({person_id}, {row}, {col})')
@@ -174,14 +172,6 @@ class PuzzleModeler:
             zip(range(self._n), repeat(col, self._n)))
         self._set_uniqueness_constraints()
         self._set_clues()
-
-    def _get_unoccupied_room_coordinates(self) -> List[Tuple[int, int]]:
-        unoccupied_room_coordinates = []
-        for clue in self._puzzle.clues:
-            if clue.HasField('room_clue') and not clue.room_clue.is_occupied:
-                unoccupied_room_coordinates.extend(
-                    self._get_coordinates_of_room(clue.room_clue.room_id))
-        return unoccupied_room_coordinates
 
     def _get_coordinates_of_room(self, room_id: int) -> List[Tuple[int, int]]:
         return self._room_coordinates[room_id]
@@ -201,54 +191,50 @@ class PuzzleModeler:
         for person_id in range(self._n):
             people_ids = [person_id]
             space_indexes = list(product(range(self._n), repeat=2))
-            self._add_constraint(UNIQUELY_OCCUPIED, people_ids, space_indexes)
+            self._add_constraint(EXACT_COUNT(1), people_ids, space_indexes)
         for row in range(self._n):
             people_ids = list(range(self._n))
             space_indexes = self._row_indexes(row)
-            self._add_constraint(UNIQUELY_OCCUPIED, people_ids, space_indexes)
+            self._add_constraint(EXACT_COUNT(1), people_ids, space_indexes)
         for col in range(self._n):
             people_ids = list(range(self._n))
             space_indexes = self._col_indexes(col)
-            self._add_constraint(UNIQUELY_OCCUPIED, people_ids, space_indexes)
+            self._add_constraint(EXACT_COUNT(1), people_ids, space_indexes)
 
     def _set_clues(self) -> None:
         for clue in self._puzzle.clues:
-            if clue.HasField('room_clue'):
-                self._set_room_clue(clue.room_clue)
-            elif clue.HasField('person_clue'):
-                self._set_person_clue(clue.person_clue)
+            self._set_clue(clue)
 
-    def _set_room_clue(self, room_clue: RoomClue) -> None:
-        if room_clue.is_occupied:
-            people_ids = list(range(self._n))
-            space_indexes = self._get_coordinates_of_room(room_clue.room_id)
-            self._add_constraint(OCCUPIED, people_ids, space_indexes)
-
-    def _set_person_clue(self, person_clue: PersonClue) -> None:
-        people_ids = self._get_subject_ids(person_clue)
-        if person_clue.HasField('same_row'):
+    def _set_clue(self, clue: Clue) -> None:
+        people_ids = self._get_subject_ids(clue)
+        if clue.HasField('same_row'):
             for row, furnuture in enumerate(self._rowwise_furniture):
-                if person_clue.same_row not in furnuture:
+                if clue.same_row not in furnuture:
                     space_indexes = self._row_indexes(row)
-                    self._add_constraint(UNOCCUPIED, people_ids, space_indexes)
-        elif person_clue.HasField('same_column'):
+                    self._add_constraint(EXACT_COUNT(0), people_ids,
+                                         space_indexes)
+        elif clue.HasField('same_column'):
             for column, furnuture in enumerate(self._columnwise_furniture):
-                if person_clue.same_column not in furnuture:
+                if clue.same_column not in furnuture:
                     space_indexes = self._col_indexes(column)
-                    self._add_constraint(UNOCCUPIED, people_ids, space_indexes)
-        elif person_clue.HasField('same_room'):
+                    self._add_constraint(EXACT_COUNT(0), people_ids,
+                                         space_indexes)
+        elif clue.HasField('same_room'):
             for room_id, furnuture in enumerate(self._roomwise_furniture):
-                if person_clue.same_room not in furnuture:
+                if clue.same_room not in furnuture:
                     space_indexes = self._room_coordinates[room_id]
-                    self._add_constraint(UNOCCUPIED, people_ids, space_indexes)
+                    self._add_constraint(EXACT_COUNT(0), people_ids,
+                                         space_indexes)
         else:
-            constraint_function = UNOCCUPIED if person_clue.negate else UNIQUELY_OCCUPIED
-            space_indexes = self._get_person_clue_coordinates(person_clue)
+            constraint_function = EXACT_COUNT(
+                clue.exact_count) if clue.HasField(
+                    'exact_count') else MIN_COUNT(clue.min_count)
+            space_indexes = self._get_person_clue_coordinates(clue)
             self._add_constraint(constraint_function, people_ids, space_indexes)
 
-    def _get_subject_ids(self, person_clue: PersonClue) -> List[int]:
+    def _get_subject_ids(self, clue: Clue) -> List[int]:
         subject_ids = set()
-        for subject_filter in person_clue.subject_filters:
+        for subject_filter in clue.subject_filters:
             filtered_subject_ids = self._get_filtered_subject_ids(
                 subject_filter)
             subject_ids.update(filtered_subject_ids)
@@ -276,15 +262,14 @@ class PuzzleModeler:
             if passes_filters(person) != subject_filter.negate
         ]
 
-    def _get_person_clue_coordinates(
-            self, person_clue: PersonClue) -> List[Tuple[int, int]]:
-        if person_clue.HasField('room_id'):
-            return self._get_coordinates_of_room(person_clue.room_id)
+    def _get_person_clue_coordinates(self, clue: Clue) -> List[Tuple[int, int]]:
+        if clue.HasField('room_id'):
+            return self._get_coordinates_of_room(clue.room_id)
         else:
             coordinates = []
             for row, row_spaces in enumerate(self._spaces):
                 for column, space in enumerate(row_spaces):
-                    if self._evaluate_space_for_clue(space, person_clue):
+                    if self._evaluate_space_for_clue(space, clue):
                         coordinates.append((row, column))
             return coordinates
 

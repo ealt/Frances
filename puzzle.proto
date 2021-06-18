@@ -68,11 +68,6 @@ message Person {
     Coordinate coordinate = 5;
 }
 
-message RoomClue {
-    int32 room_id = 1;
-    bool is_occupied = 2;
-}
-
 message SubjectFilter {
     int32 person_id = 1;
     Role role = 2;
@@ -80,23 +75,19 @@ message SubjectFilter {
     bool negate = 4;
 }
 
-message PersonClue {
-    repeated SubjectFilter subject_filters = 1;
-    bool negate = 2;
-    oneof type {
-        int32 room_id = 3;
-        CrimeSceneFeatureType beside = 4;
-        CrimeSceneFeatureType on = 5;
-        CrimeSceneFeatureType same_row = 6;
-        CrimeSceneFeatureType same_column = 7;
-        CrimeSceneFeatureType same_room = 8;
-    }
-}
-
 message Clue {
+    repeated SubjectFilter subject_filters = 1;
     oneof type {
-        RoomClue room_clue = 1;
-        PersonClue person_clue = 2;
+        int32 room_id = 2;
+        CrimeSceneFeatureType beside = 3;
+        CrimeSceneFeatureType on = 4;
+        CrimeSceneFeatureType same_row = 5;
+        CrimeSceneFeatureType same_column = 6;
+        CrimeSceneFeatureType same_room = 7;
+    }
+    oneof count {
+        int32 exact_count = 8;
+        int32 min_count = 9;
     }
 }
 

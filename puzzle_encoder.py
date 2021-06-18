@@ -136,8 +136,9 @@ class PuzzleEncoder:
     def _add_no_empty_room(self) -> None:
         for room in self._puzzle.crime_scene.rooms:
             clue = self._puzzle.clues.add()
-            clue.room_clue.room_id = room.id
-            clue.room_clue.is_occupied = True
+            clue.subject_filters.add(person_id=-1)
+            clue.room_id = room.id
+            clue.min_count = 1
 
     def _parse_person_clue(self, raw_clue: str) -> ParsedPersonClue:
         person_clue_pattern = self._generate_person_clue_pattern()
@@ -157,40 +158,40 @@ class PuzzleEncoder:
             self, parsed_person_clue: ParsedPersonClue) -> None:
         person_id = self._people_ids[parsed_person_clue.subject]
         subject_clue = self._puzzle.clues.add()
-        subject_clue.person_clue.subject_filters.add(person_id=person_id)
+        subject_clue.subject_filters.add(person_id=person_id)
+        subject_clue.exact_count = 1
         self._add_prepositional_phrase(subject_clue, parsed_person_clue)
         others_clue = self._puzzle.clues.add()
-        others_clue.person_clue.subject_filters.add(person_id=person_id,
-                                                    negate=True)
-        others_clue.person_clue.negate = True
+        others_clue.subject_filters.add(person_id=person_id, negate=True)
+        others_clue.exact_count = 0
         self._add_prepositional_phrase(others_clue, parsed_person_clue)
 
     def _add_person_clue(self, parsed_person_clue: ParsedPersonClue) -> None:
         person_id = self._people_ids[parsed_person_clue.subject]
         clue = self._puzzle.clues.add()
-        clue.person_clue.subject_filters.add(person_id=person_id)
+        clue.subject_filters.add(person_id=person_id)
+        clue.exact_count = 1
         self._add_prepositional_phrase(clue, parsed_person_clue)
 
     def _add_prepositional_phrase(self, clue: Clue,
                                   parsed_person_clue: ParsedPersonClue) -> None:
         if parsed_person_clue.preposition == 'on':
-            clue.person_clue.on = FEATURE_DATA_DICT[
-                parsed_person_clue.object].type
+            clue.on = FEATURE_DATA_DICT[parsed_person_clue.object].type
         elif parsed_person_clue.preposition in ('beside', 'next to'):
             if parsed_person_clue.object in FEATURE_DATA_DICT.keys():
                 object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-                clue.person_clue.beside = object_type
+                clue.beside = object_type
         elif parsed_person_clue.preposition == 'in the same row as':
             object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-            clue.person_clue.same_row = object_type
+            clue.same_row = object_type
         elif parsed_person_clue.preposition == 'in the same column as':
             object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-            clue.person_clue.same_column = object_type
+            clue.same_column = object_type
         elif parsed_person_clue.preposition == 'in the same room as':
             object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-            clue.person_clue.same_room = object_type
+            clue.same_room = object_type
         elif parsed_person_clue.preposition == 'in the corner of':
             corner = FEATURE_DATA_DICT['corner'].type
-            clue.person_clue.beside = corner
+            clue.beside = corner
         elif parsed_person_clue.preposition == 'in':
-            clue.person_clue.room_id = self._room_ids[parsed_person_clue.object]
+            clue.room_id = self._room_ids[parsed_person_clue.object]
