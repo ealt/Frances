@@ -1,3 +1,5 @@
+import logging
+
 from dataclasses import dataclass, field
 from itertools import product, repeat
 from ortools.sat.python.cp_model import CpModel, IntVar
@@ -16,11 +18,21 @@ class Space:
     on: Optional[int] = None
     beside: Set[int] = field(default_factory=set)
 
+    def __repr__(self) -> str:
+        on = CrimeSceneFeatureType.Name(
+            self.on).capitalize() if self.on is not None else 'None'
+        beside = '[' + ', '.join([
+            CrimeSceneFeatureType.Name(feature).capitalize()
+            for feature in self.beside
+        ]) + ']'
+        return f'{{room_id: {self.room_id}, on: {on}, beside: {beside}}}'
+
 
 class PuzzleModeler:
 
-    def __init__(self, puzzle: Puzzle) -> None:
+    def __init__(self, puzzle: Puzzle, debug: bool = False) -> None:
         self._puzzle = puzzle
+        self._debug = debug
         self._n = len(self._puzzle.people)
         self._init_board()
         self._create_model()
@@ -41,6 +53,8 @@ class PuzzleModeler:
         self._init_spaces()
         self._add_walls_and_corners()
         self._add_features()
+        if self._debug:
+            self._log_board_debug()
 
     def _get_room_coordinates(self) -> None:
         self._room_coordinates = [
@@ -156,6 +170,35 @@ class PuzzleModeler:
                 self._roomwise_furniture[room_id].add(feature.type)
                 self._spaces[row][column].beside.add(feature.type)
 
+    def _log_board_debug(self) -> None:
+        logging.debug('spaces: {\n' + '\n'.join([
+            '\n'.join([
+                f'\t({r}, {c}): ' + repr(space) + ','
+                for c, space in enumerate(row)
+            ])
+            for r, row in enumerate(self._spaces)
+        ]) + '\n}')
+        logging.debug('Roomwise features: ' + self._feature_sets_repr(
+            self._roomwise_furniture, ['Unspecified'] +
+            [room.name for room in self._puzzle.crime_scene.rooms]))
+        logging.debug('Rowwise features: ' +
+                      self._feature_sets_repr(self._rowwise_furniture))
+        logging.debug('Columnwise features: ' +
+                      self._feature_sets_repr(self._columwise_furniture))
+
+    def _feature_sets_repr(self,
+                           features_sets: List[Set[int]],
+                           labels: Optional[List[str]] = None) -> str:
+        if labels is None:
+            labels = range(len(features_sets))
+        return '{\n' + '\n'.join([
+            f'\t{label}: [' + ', '.join([
+                CrimeSceneFeatureType.Name(feature).capitalize()
+                for feature in features
+            ]) + '],'
+            for label, features in zip(labels, features_sets)
+        ]) + '\n}'
+
     def _create_model(self) -> None:
         self._model = CpModel()
         unavailable = set(self._blocked_coordinates)
@@ -179,6 +222,9 @@ class PuzzleModeler:
     def _add_constraint(self, constraint_function: Callable[[int], bool],
                         people_ids: List[int],
                         space_indexes: List[Tuple[int, int]]) -> None:
+        if self._debug:
+            logging.debug('Constraint:\n' + self._constraint_repr(
+                constraint_function, people_ids, space_indexes))
         self._model.Add(
             constraint_function(
                 sum([
@@ -186,6 +232,22 @@ class PuzzleModeler:
                     for person_id in people_ids
                     for row, col in space_indexes
                 ])))
+
+    def _constraint_repr(self, constraint_function: Callable[[int], bool],
+                         people_ids: List[int],
+                         space_indexes: List[Tuple[int, int]]) -> str:
+        for i in range(self._n + 1):
+            if constraint_function(i):
+                if constraint_function(i + 1):
+                    constraint_repr = f'MIN_COUNT({i})'
+                else:
+                    constraint_repr = f'EXACT_COUNT({i})'
+                break
+        people_repr = '[' + ', '.join(
+            [str(person_id) for person_id in people_ids]) + ']'
+        spaces_repr = '[' + ', '.join([f'({r}, {c})' for r, c in space_indexes
+                                      ]) + ']'
+        return f'constraint: {constraint_repr}\npeople: {people_repr}\nspaces: {spaces_repr}'
 
     def _set_uniqueness_constraints(self) -> None:
         for person_id in range(1, self._n + 1):

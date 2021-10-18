@@ -28,10 +28,10 @@ class SolutionCounter(CpSolverSolutionCallback):
 
 class PuzzleSolver:
 
-    def __init__(self, puzzle: Puzzle) -> None:
+    def __init__(self, puzzle: Puzzle, debug: bool = False) -> None:
         self._puzzle = puzzle
         self._n = len(self._puzzle.people)
-        self._modeler = PuzzleModeler(puzzle)
+        self._modeler = PuzzleModeler(puzzle, debug)
 
     def solve(self) -> Tuple[str, int]:
         self._solver = CpSolver()
