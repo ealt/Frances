@@ -47,7 +47,7 @@ PERSON_CLUE_PATTERN = (
     '(that was )?(standing |sitting )?'
     '(?P<preposition>on|beside|next to|in'
     '( the (same (row|column|room) as|corner of))?) (a |the )?'
-    '(?P<object>{furniture}|window|{rooms}|room)\.?$')
+    '(?P<object>{feature}|window|{rooms}|room)\.?$')
 
 
 def stringify(messages: RepeatedCompositeContainer) -> str:
@@ -91,13 +91,12 @@ class PuzzleEncoder:
             position_type=PositionType.HORIZONTAL_BOUNDARY)
         window.coordinates.append(Coordinate(row=bottom, column=column))
 
-    def add_furniture(self, name: str, coordinates: List[Tuple[int,
-                                                               int]]) -> None:
-        furniture_data = FEATURE_DATA_DICT[name.lower()]
-        furniture = self._puzzle.crime_scene.features.add(
-            type=furniture_data.type,
-            position_type=furniture_data.position_type)
-        furniture.coordinates.extend(
+    def add_feature(self, name: str, coordinates: List[Tuple[int,
+                                                             int]]) -> None:
+        feature_data = FEATURE_DATA_DICT[name.lower()]
+        feature = self._puzzle.crime_scene.features.add(
+            type=feature_data.type, position_type=feature_data.position_type)
+        feature.coordinates.extend(
             [Coordinate(row=row, column=column) for row, column in coordinates])
 
     def set_people(self, suspects: List[Tuple[str, str]],
@@ -151,7 +150,7 @@ class PuzzleEncoder:
     def _generate_person_clue_pattern(self) -> str:
         return PERSON_CLUE_PATTERN.format(
             people=stringify(self._puzzle.people),
-            furniture=stringify(FEATURE_DATA_DICT.values()),
+            feature=stringify(FEATURE_DATA_DICT.values()),
             rooms=stringify(self._puzzle.crime_scene.rooms))
 
     def _add_exclusive_person_clue(

@@ -68,11 +68,11 @@ class PuzzleModeler:
         self._spaces = [[
             Space(self._get_room_id(row, column)) for column in range(self._n)
         ] for row in range(self._n)]
-        self._roomwise_furniture = [
+        self._roomwise_features = [
             set() for _ in range(len(self._puzzle.crime_scene.rooms) + 1)
         ]
-        self._rowwise_furniture = [set() for _ in range(self._n)]
-        self._columwise_furniture = [set() for _ in range(self._n)]
+        self._rowwise_features = [set() for _ in range(self._n)]
+        self._columwise_features = [set() for _ in range(self._n)]
 
     def _get_room_id(self, row: int, column: int) -> int:
         return self._puzzle.crime_scene.floor_plan[row].values[column]
@@ -117,10 +117,10 @@ class PuzzleModeler:
                        for coordinate in feature.coordinates]
         for row, column in coordinates:
             self._spaces[row][column].on = feature.type
-            self._rowwise_furniture[row].add(feature.type)
-            self._columwise_furniture[column].add(feature.type)
+            self._rowwise_features[row].add(feature.type)
+            self._columwise_features[column].add(feature.type)
             room_id = self._get_room_id(row, column)
-            self._roomwise_furniture[room_id].add(feature.type)
+            self._roomwise_features[room_id].add(feature.type)
             for n_row, n_col in self._get_neighbor_coordinates(row, column):
                 if (n_row, n_col) not in coordinates:
                     self._spaces[n_row][n_col].beside.add(feature.type)
@@ -143,31 +143,31 @@ class PuzzleModeler:
     def _add_vertical_feature(self, feature: CrimeSceneFeature) -> None:
         for coordinate in feature.coordinates:
             row = coordinate.row
-            self._rowwise_furniture[row].add(feature.type)
+            self._rowwise_features[row].add(feature.type)
             if coordinate.column > 0:
                 column = coordinate.column - 1
                 room_id = self._get_room_id(row, column)
-                self._roomwise_furniture[room_id].add(feature.type)
+                self._roomwise_features[room_id].add(feature.type)
                 self._spaces[row][column].beside.add(feature.type)
             if coordinate.column < self._n:
                 column = coordinate.column
                 room_id = self._get_room_id(row, column)
-                self._roomwise_furniture[room_id].add(feature.type)
+                self._roomwise_features[room_id].add(feature.type)
                 self._spaces[row][column].beside.add(feature.type)
 
     def _add_horizontal_feature(self, feature: CrimeSceneFeature) -> None:
         for coordinate in feature.coordinates:
             column = coordinate.column
-            self._columwise_furniture[column].add(feature.type)
+            self._columwise_features[column].add(feature.type)
             if coordinate.row > 0:
                 row = coordinate.row - 1
                 room_id = self._get_room_id(row, column)
-                self._roomwise_furniture[room_id].add(feature.type)
+                self._roomwise_features[room_id].add(feature.type)
                 self._spaces[row][column].beside.add(feature.type)
             if coordinate.row < self._n:
                 row = coordinate.row
                 room_id = self._get_room_id(row, column)
-                self._roomwise_furniture[room_id].add(feature.type)
+                self._roomwise_features[room_id].add(feature.type)
                 self._spaces[row][column].beside.add(feature.type)
 
     def _log_board_debug(self) -> None:
@@ -179,12 +179,12 @@ class PuzzleModeler:
             for r, row in enumerate(self._spaces)
         ]) + '\n}')
         logging.debug('Roomwise features: ' + self._feature_sets_repr(
-            self._roomwise_furniture, ['Unspecified'] +
+            self._roomwise_features, ['Unspecified'] +
             [room.name for room in self._puzzle.crime_scene.rooms]))
         logging.debug('Rowwise features: ' +
-                      self._feature_sets_repr(self._rowwise_furniture))
+                      self._feature_sets_repr(self._rowwise_features))
         logging.debug('Columnwise features: ' +
-                      self._feature_sets_repr(self._columwise_furniture))
+                      self._feature_sets_repr(self._columwise_features))
 
     def _feature_sets_repr(self,
                            features_sets: List[Set[int]],
@@ -270,19 +270,19 @@ class PuzzleModeler:
     def _set_clue(self, clue: Clue) -> None:
         people_ids = self._get_subject_ids(clue)
         if clue.HasField('same_row'):
-            for row, furnuture in enumerate(self._rowwise_furniture):
+            for row, furnuture in enumerate(self._rowwise_features):
                 if clue.same_row not in furnuture:
                     space_indexes = self._row_indexes(row)
                     self._add_constraint(EXACT_COUNT(0), people_ids,
                                          space_indexes)
         elif clue.HasField('same_column'):
-            for column, furnuture in enumerate(self._columnwise_furniture):
+            for column, furnuture in enumerate(self._columnwise_features):
                 if clue.same_column not in furnuture:
                     space_indexes = self._col_indexes(column)
                     self._add_constraint(EXACT_COUNT(0), people_ids,
                                          space_indexes)
         elif clue.HasField('same_room'):
-            for room_id, furnuture in enumerate(self._roomwise_furniture):
+            for room_id, furnuture in enumerate(self._roomwise_features):
                 if clue.same_room not in furnuture:
                     space_indexes = self._room_coordinates[room_id]
                     self._add_constraint(EXACT_COUNT(0), people_ids,
