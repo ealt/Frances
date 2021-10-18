@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from itertools import chain, product, repeat
+from itertools import product, repeat
 from ortools.sat.python.cp_model import CpModel, IntVar
 
 from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, CrimeSceneFeatureType, Gender, PositionType, Puzzle, Role, SubjectFilter
