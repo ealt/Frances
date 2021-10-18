@@ -65,11 +65,11 @@ class PuzzleEncoder:
 
     def set_rooms(self, room_names: List[str]) -> None:
         del self._puzzle.crime_scene.rooms[:]
-        for room_id, room_name in enumerate(room_names):
+        for room_id, room_name in enumerate(room_names, start=1):
             _ = self._puzzle.crime_scene.rooms.add(id=room_id, name=room_name)
         self._room_ids = {
             room_name.lower(): room_id
-            for room_id, room_name in enumerate(room_names)
+            for room_id, room_name in enumerate(room_names, start=1)
         }
 
     def set_floor_plan(self, floor_plan: List[List[int]]) -> None:
@@ -103,7 +103,7 @@ class PuzzleEncoder:
     def set_people(self, suspects: List[Tuple[str, str]],
                    victim: Tuple[str, str]) -> None:
         del self._puzzle.people[:]
-        for suspect_id, suspect in enumerate(suspects):
+        for suspect_id, suspect in enumerate(suspects, start=1):
             suspect_name, suspect_gender = suspect
             _ = self._puzzle.people.add(id=suspect_id,
                                         name=suspect_name,
@@ -112,7 +112,7 @@ class PuzzleEncoder:
                                             Gender.UNSPECIFIED_GENDER),
                                         role=Role.SUSPECT)
         victim_name, victim_gender = victim
-        _ = self._puzzle.people.add(id=len(suspects),
+        _ = self._puzzle.people.add(id=len(suspects) + 1,
                                     name=victim_name,
                                     gender=GENDER_DICT.get(
                                         victim_gender.lower(),
@@ -120,7 +120,7 @@ class PuzzleEncoder:
                                     role=Role.VICTIM)
         self._people_ids = {
             person[0].lower(): person_id
-            for person_id, person in enumerate(suspects + [victim])
+            for person_id, person in enumerate(suspects + [victim], start=1)
         }
 
     def add_clue(self, raw_clue: str) -> None:
@@ -136,7 +136,7 @@ class PuzzleEncoder:
     def _add_no_empty_room(self) -> None:
         for room in self._puzzle.crime_scene.rooms:
             clue = self._puzzle.clues.add()
-            clue.subject_filters.add(person_id=-1)
+            clue.subject_filters.add()
             clue.room_id = room.id
             clue.min_count = 1
 

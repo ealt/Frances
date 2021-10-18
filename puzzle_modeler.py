@@ -44,7 +44,7 @@ class PuzzleModeler:
 
     def _get_room_coordinates(self) -> None:
         self._room_coordinates = [
-            [] for _ in range(len(self._puzzle.crime_scene.rooms))
+            [] for _ in range(len(self._puzzle.crime_scene.rooms) + 1)
         ]
         for r, row in enumerate(self._puzzle.crime_scene.floor_plan):
             for c, room_id in enumerate(row.values):
@@ -55,7 +55,7 @@ class PuzzleModeler:
             Space(self._get_room_id(row, column)) for column in range(self._n)
         ] for row in range(self._n)]
         self._roomwise_furniture = [
-            set() for _ in range(len(self._puzzle.crime_scene.rooms))
+            set() for _ in range(len(self._puzzle.crime_scene.rooms) + 1)
         ]
         self._rowwise_furniture = [set() for _ in range(self._n)]
         self._columwise_furniture = [set() for _ in range(self._n)]
@@ -165,7 +165,7 @@ class PuzzleModeler:
             for col in range(self._n)
         ]
                               for row in range(self._n)]
-                             for person_id in range(self._n)]
+                             for person_id in range(1, self._n + 1)]
         self._row_indexes = lambda row: list(
             zip(repeat(row, self._n), range(self._n)))
         self._col_indexes = lambda col: list(
@@ -182,22 +182,22 @@ class PuzzleModeler:
         self._model.Add(
             constraint_function(
                 sum([
-                    self._occupancies[person_id][row][col]
+                    self._occupancies[person_id - 1][row][col]
                     for person_id in people_ids
                     for row, col in space_indexes
                 ])))
 
     def _set_uniqueness_constraints(self) -> None:
-        for person_id in range(self._n):
+        for person_id in range(1, self._n + 1):
             people_ids = [person_id]
             space_indexes = list(product(range(self._n), repeat=2))
             self._add_constraint(EXACT_COUNT(1), people_ids, space_indexes)
         for row in range(self._n):
-            people_ids = list(range(self._n))
+            people_ids = list(range(1, self._n + 1))
             space_indexes = self._row_indexes(row)
             self._add_constraint(EXACT_COUNT(1), people_ids, space_indexes)
         for col in range(self._n):
-            people_ids = list(range(self._n))
+            people_ids = list(range(1, self._n + 1))
             space_indexes = self._col_indexes(col)
             self._add_constraint(EXACT_COUNT(1), people_ids, space_indexes)
 
@@ -242,7 +242,7 @@ class PuzzleModeler:
 
     def _get_filtered_subject_ids(self,
                                   subject_filter: SubjectFilter) -> List[int]:
-        if subject_filter.person_id == -1:
+        if subject_filter.person_id == 0:
             person_id_filter = lambda person: True
         else:
             person_id_filter = lambda person: person.id == subject_filter.person_id

@@ -76,13 +76,13 @@ class PuzzleSolver:
     def _get_person_coordinates(self, person_id: int) -> Tuple[int, int]:
         for row in range(self._n):
             for col in range(self._n):
-                if self._solver.Value(
-                        self._modeler.occupancies[person_id][row][col]):
+                if self._solver.Value(self._modeler.occupancies[person_id -
+                                                                1][row][col]):
                     return (row, col)
         raise AttributeError
 
     def _set_murder_room(self):
-        victim_coordinate = self._puzzle.people[self._victim_id].coordinate
+        victim_coordinate = self._puzzle.people[self._victim_id - 1].coordinate
         self._murder_room_id = self._modeler.get_room_of_coordinate(
             victim_coordinate)
 
@@ -96,7 +96,7 @@ class PuzzleSolver:
 
     def _set_occupancy_repr(self) -> None:
         self._occupancy_repr = (self._person_occupancy_repr(person_id)
-                                for person_id in range(self._n))
+                                for person_id in range(1, self._n + 1))
 
     def _person_occupancy_repr(self, person_id: int) -> str:
         col_labels = '   ' + ' '.join([str(col) for col in range(self._n)])
@@ -104,9 +104,9 @@ class PuzzleSolver:
         lower_border = '  \u2514' + '\u2500' * (self._n * 2 - 1) + '\u2518'
         rows = [
             f'{row} \u2502' + ' '.join([
-                get_name(self._puzzle.people, person_id)[0]
-                if self._solver.Value(self._modeler.occupancies[person_id][row]
-                                      [col]) == 1 else ' '
+                get_name(self._puzzle.people, person_id)[0] if self._solver.
+                Value(self._modeler.occupancies[person_id -
+                                                1][row][col]) == 1 else ' '
                 for col in range(self._n)
             ]) + '\u2502'
             for row in range(self._n)
