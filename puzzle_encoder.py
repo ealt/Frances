@@ -22,7 +22,6 @@ ROLE_DICT = {
 
 
 def update_subject_filter(filter: SubjectFilter, key: str) -> None:
-    print(key, end=' ')
     if key in ROLE_DICT:
         filter.role = ROLE_DICT[key]
     if key in GENDER_DICT:
