@@ -1,14 +1,33 @@
 from collections import namedtuple
 import re
 
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, Gender, IntArray, PositionType, Role, Puzzle
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, Gender, IntArray, PositionType, Role, Puzzle, SubjectFilter
 from google.protobuf.pyext._message import RepeatedCompositeContainer
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 GENDER_DICT = {
     'female': Gender.FEMALE,
+    'woman': Gender.FEMALE,
+    'women': Gender.FEMALE,
     'male': Gender.MALE,
+    'man': Gender.MALE,
+    'men': Gender.MALE,
 }
+
+ROLE_DICT = {
+    'suspect': Role.SUSPECT,
+    'victim': Role.VICTIM,
+    'murderer': Role.MURDERER,
+}
+
+
+def update_subject_filter(filter: SubjectFilter, key: str) -> None:
+    print(key, end=' ')
+    if key in ROLE_DICT:
+        filter.role = ROLE_DICT[key]
+    if key in GENDER_DICT:
+        filter.gender = GENDER_DICT[key]
+
 
 FeatureData = namedtuple('FeatureData', ['name', 'type', 'position_type'])
 
@@ -38,8 +57,11 @@ FEATURE_DATA_DICT = {
                     PositionType.BLOCKED_SPACE),
 }
 
-ParsedPersonClue = namedtuple('ParsedPersonClue',
-                              ['subject', 'exclusive', 'preposition', 'object'])
+ParsedPersonClue = namedtuple(
+    'ParsedPersonClue',
+    ['subject', 'exclusive', 'preposition', 'object', 'subj_phrase'])
+
+PasrsedSubjPhrase = namedtuple('PasrsedSubjPhrase', ['number', 'filter'])
 
 PERSON_CLUE_PATTERN = (
     '^(?P<subject>{people}) (is |was )?'
@@ -47,11 +69,45 @@ PERSON_CLUE_PATTERN = (
     '(that was )?(standing |sitting )?'
     '(?P<preposition>on|beside|next to|in'
     '( the (same (row|column|room) as|corner of))?) (a |the )?'
-    '(?P<object>{feature}|window|{rooms}|room)\.?$')
+    '(?P<object>{feature}|window|{rooms}|room)'
+    '(?P<subj_phrase> with (?P<subj_num>a|an|another|{numbers}) (other )?'
+    '((?P<subj_adj>suspect) )?'
+    '(?P<subj_noun>man|men|woman|women|person|people|suspect|suspects))?\.?$')
 
 
 def stringify(messages: RepeatedCompositeContainer) -> str:
     return '|'.join([message.name.lower() for message in messages])
+
+
+NUMBERS_NAMES = {
+    0: 'zero',
+    1: 'one',
+    2: 'two',
+    3: 'three',
+    4: 'four',
+    5: 'five',
+    6: 'six',
+    7: 'seven',
+    8: 'eight',
+    9: 'nine',
+}
+
+NUMBER_VALUES = {name: value for value, name in NUMBERS_NAMES.items()}
+NUMBER_VALUES['a'] = 1
+NUMBER_VALUES['an'] = 1
+NUMBER_VALUES['another'] = 1
+
+
+def get_number_value(name: str) -> Optional[int]:
+    if name.isdigit():
+        return int(name)
+    if name in NUMBER_VALUES:
+        return NUMBER_VALUES[name]
+    return None
+
+
+def stringify_numbers(n: int = 9) -> str:
+    return '|'.join([str(i) + '|' + NUMBERS_NAMES[i] for i in range(n + 1)])
 
 
 class PuzzleEncoder:
@@ -142,16 +198,31 @@ class PuzzleEncoder:
     def _parse_person_clue(self, raw_clue: str) -> ParsedPersonClue:
         person_clue_pattern = self._generate_person_clue_pattern()
         match = re.match(person_clue_pattern, raw_clue, re.IGNORECASE)
+        parsed_subj_phrase = None if match.group(
+            'subj_phrase') is None else self._parse_subj_phrase(match)
         return ParsedPersonClue(subject=match.group('subject').lower(),
                                 exclusive=match.group('exclusive') != None,
                                 preposition=match.group('preposition').lower(),
-                                object=match.group('object').lower())
+                                object=match.group('object').lower(),
+                                subj_phrase=parsed_subj_phrase)
 
     def _generate_person_clue_pattern(self) -> str:
+        n = len(self._puzzle.people)
         return PERSON_CLUE_PATTERN.format(
             people=stringify(self._puzzle.people),
             feature=stringify(FEATURE_DATA_DICT.values()),
-            rooms=stringify(self._puzzle.crime_scene.rooms))
+            rooms=stringify(self._puzzle.crime_scene.rooms),
+            numbers=stringify_numbers(n))
+
+    def _parse_subj_phrase(self, match) -> PasrsedSubjPhrase:
+        number = get_number_value(match.group('subj_num'))
+        filter = SubjectFilter()
+        update_subject_filter(filter, match.group('subj_adj'))
+        subj_noun = match.group('subj_noun')
+        if subj_noun[-1] == 's':
+            subj_noun = subj_noun[:-1]
+        update_subject_filter(filter, subj_noun)
+        return PasrsedSubjPhrase(number=number, filter=filter)
 
     def _add_exclusive_person_clue(
             self, parsed_person_clue: ParsedPersonClue) -> None:
@@ -169,7 +240,14 @@ class PuzzleEncoder:
         person_id = self._people_ids[parsed_person_clue.subject]
         clue = self._puzzle.clues.add()
         clue.subject_filters.add(person_id=person_id)
-        clue.exact_count = 1
+        if parsed_person_clue.subj_phrase is None:
+            clue.exact_count = 1
+        else:
+            clue.subject_filters.append(parsed_person_clue.subj_phrase.filter)
+            if parsed_person_clue.subj_phrase.number is None:
+                clue.min_count = 1
+            else:
+                clue.exact_count = 1 + parsed_person_clue.subj_phrase.number
         self._add_prepositional_phrase(clue, parsed_person_clue)
 
     def _add_prepositional_phrase(self, clue: Clue,
