@@ -1,7 +1,7 @@
 from collections import namedtuple
 import re
 
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, Gender, IntArray, PositionType, Role, Puzzle, SubjectFilter
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, Gender, IntArray, PositionType, Role, Puzzle, SubjectSelector
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import List, Optional, Tuple
 
@@ -21,11 +21,11 @@ ROLE_DICT = {
 }
 
 
-def update_subject_filter(filter: SubjectFilter, key: str) -> None:
+def update_subject_selector(selector: SubjectSelector, key: str) -> None:
     if key in ROLE_DICT:
-        filter.role = ROLE_DICT[key]
+        selector.role = ROLE_DICT[key]
     if key in GENDER_DICT:
-        filter.gender = GENDER_DICT[key]
+        selector.gender = GENDER_DICT[key]
 
 
 FeatureData = namedtuple('FeatureData', ['name', 'type', 'position_type'])
@@ -60,7 +60,7 @@ ParsedPersonClue = namedtuple(
     'ParsedPersonClue',
     ['subject', 'exclusive', 'preposition', 'object', 'subj_phrase'])
 
-PasrsedSubjPhrase = namedtuple('PasrsedSubjPhrase', ['number', 'filter'])
+PasrsedSubjPhrase = namedtuple('PasrsedSubjPhrase', ['number', 'selector'])
 
 PERSON_CLUE_PATTERN = (
     '^(?P<subject>{people}) (is |was )?'
@@ -190,7 +190,7 @@ class PuzzleEncoder:
     def _add_no_empty_room(self) -> None:
         for room in self._puzzle.crime_scene.rooms:
             clue = self._puzzle.clues.add()
-            clue.subject_filters.add()
+            clue.subject_selectors.add()
             clue.room_id = room.id
             clue.min_count = 1
 
@@ -215,34 +215,35 @@ class PuzzleEncoder:
 
     def _parse_subj_phrase(self, match) -> PasrsedSubjPhrase:
         number = get_number_value(match.group('subj_num'))
-        filter = SubjectFilter()
-        update_subject_filter(filter, match.group('subj_adj'))
+        selector = SubjectSelector()
+        update_subject_selector(selector, match.group('subj_adj'))
         subj_noun = match.group('subj_noun')
         if subj_noun[-1] == 's':
             subj_noun = subj_noun[:-1]
-        update_subject_filter(filter, subj_noun)
-        return PasrsedSubjPhrase(number=number, filter=filter)
+        update_subject_selector(selector, subj_noun)
+        return PasrsedSubjPhrase(number=number, selector=selector)
 
     def _add_exclusive_person_clue(
             self, parsed_person_clue: ParsedPersonClue) -> None:
         person_id = self._people_ids[parsed_person_clue.subject]
         subject_clue = self._puzzle.clues.add()
-        subject_clue.subject_filters.add(person_id=person_id)
+        subject_clue.subject_selectors.add(person_id=person_id)
         subject_clue.exact_count = 1
         self._add_prepositional_phrase(subject_clue, parsed_person_clue)
         others_clue = self._puzzle.clues.add()
-        others_clue.subject_filters.add(person_id=person_id, negate=True)
+        others_clue.subject_selectors.add(person_id=person_id, negate=True)
         others_clue.exact_count = 0
         self._add_prepositional_phrase(others_clue, parsed_person_clue)
 
     def _add_person_clue(self, parsed_person_clue: ParsedPersonClue) -> None:
         person_id = self._people_ids[parsed_person_clue.subject]
         clue = self._puzzle.clues.add()
-        clue.subject_filters.add(person_id=person_id)
+        clue.subject_selectors.add(person_id=person_id)
         if parsed_person_clue.subj_phrase is None:
             clue.exact_count = 1
         else:
-            clue.subject_filters.append(parsed_person_clue.subj_phrase.filter)
+            clue.subject_selectors.append(
+                parsed_person_clue.subj_phrase.selector)
             if parsed_person_clue.subj_phrase.number is None:
                 clue.min_count = 1
             else:

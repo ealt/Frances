@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0cpuzzle.proto\x12\x07\x66rances\"\x1a\n\x08IntArray\x12\x0e\n\x06values\x18\x01 \x03(\x05\")\n\nCoordinate\x12\x0b\n\x03row\x18\x01 \x01(\x05\x12\x0e\n\x06\x63olumn\x18\x02 \x01(\x05\" \n\x04Room\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"\x99\x01\n\x11\x43rimeSceneFeature\x12,\n\x04type\x18\x01 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureType\x12,\n\rposition_type\x18\x02 \x01(\x0e\x32\x15.frances.PositionType\x12(\n\x0b\x63oordinates\x18\x03 \x03(\x0b\x32\x13.frances.Coordinate\"\x7f\n\nCrimeScene\x12\x1c\n\x05rooms\x18\x01 \x03(\x0b\x32\r.frances.Room\x12%\n\nfloor_plan\x18\x02 \x03(\x0b\x32\x11.frances.IntArray\x12,\n\x08\x66\x65\x61tures\x18\x03 \x03(\x0b\x32\x1a.frances.CrimeSceneFeature\"\x89\x01\n\x06Person\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x1f\n\x06gender\x18\x03 \x01(\x0e\x32\x0f.frances.Gender\x12\x1b\n\x04role\x18\x04 \x01(\x0e\x32\r.frances.Role\x12\'\n\ncoordinate\x18\x05 \x01(\x0b\x32\x13.frances.Coordinate\"p\n\rSubjectFilter\x12\x11\n\tperson_id\x18\x01 \x01(\x05\x12\x1b\n\x04role\x18\x02 \x01(\x0e\x32\r.frances.Role\x12\x1f\n\x06gender\x18\x03 \x01(\x0e\x32\x0f.frances.Gender\x12\x0e\n\x06negate\x18\x04 \x01(\x08\"\x87\x03\n\x04\x43lue\x12/\n\x0fsubject_filters\x18\x01 \x03(\x0b\x32\x16.frances.SubjectFilter\x12\x11\n\x07room_id\x18\x02 \x01(\x05H\x00\x12\x30\n\x06\x62\x65side\x18\x03 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureTypeH\x00\x12,\n\x02on\x18\x04 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureTypeH\x00\x12\x32\n\x08same_row\x18\x05 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureTypeH\x00\x12\x35\n\x0bsame_column\x18\x06 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureTypeH\x00\x12\x33\n\tsame_room\x18\x07 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureTypeH\x00\x12\x15\n\x0b\x65xact_count\x18\x08 \x01(\x05H\x01\x12\x13\n\tmin_count\x18\t \x01(\x05H\x01\x42\x06\n\x04typeB\x07\n\x05\x63ount\"\x7f\n\x06Puzzle\x12\x0c\n\x04name\x18\x01 \x01(\t\x12(\n\x0b\x63rime_scene\x18\x02 \x01(\x0b\x32\x13.frances.CrimeScene\x12\x1f\n\x06people\x18\x03 \x03(\x0b\x32\x0f.frances.Person\x12\x1c\n\x05\x63lues\x18\x04 \x03(\x0b\x32\r.frances.Clue*w\n\x15\x43rimeSceneFeatureType\x12\x08\n\x04WALL\x10\x00\x12\n\n\x06\x43ORNER\x10\x01\x12\n\n\x06WINDOW\x10\x02\x12\t\n\x05\x43HAIR\x10\x03\x12\x07\n\x03\x42\x45\x44\x10\x04\x12\n\n\x06\x43\x41RPET\x10\x05\x12\t\n\x05PLANT\x10\x06\x12\x06\n\x02TV\x10\x07\x12\t\n\x05TABLE\x10\x08*g\n\x0cPositionType\x12\x14\n\x10OCCUPIABLE_SPACE\x10\x00\x12\x11\n\rBLOCKED_SPACE\x10\x01\x12\x15\n\x11VERTICAL_BOUNDARY\x10\x02\x12\x17\n\x13HORIZONTAL_BOUNDARY\x10\x03*6\n\x06Gender\x12\x16\n\x12UNSPECIFIED_GENDER\x10\x00\x12\n\n\x06\x46\x45MALE\x10\x01\x12\x08\n\x04MALE\x10\x02*C\n\x04Role\x12\x14\n\x10UNSPECIFIED_ROLE\x10\x00\x12\x0b\n\x07SUSPECT\x10\x01\x12\n\n\x06VICTIM\x10\x02\x12\x0c\n\x08MURDERER\x10\x03\x62\x06proto3'
+  serialized_pb=b'\n\x0cpuzzle.proto\x12\x07\x66rances\"\x1a\n\x08IntArray\x12\x0e\n\x06values\x18\x01 \x03(\x05\")\n\nCoordinate\x12\x0b\n\x03row\x18\x01 \x01(\x05\x12\x0e\n\x06\x63olumn\x18\x02 \x01(\x05\" \n\x04Room\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"\x99\x01\n\x11\x43rimeSceneFeature\x12,\n\x04type\x18\x01 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureType\x12,\n\rposition_type\x18\x02 \x01(\x0e\x32\x15.frances.PositionType\x12(\n\x0b\x63oordinates\x18\x03 \x03(\x0b\x32\x13.frances.Coordinate\"\x7f\n\nCrimeScene\x12\x1c\n\x05rooms\x18\x01 \x03(\x0b\x32\r.frances.Room\x12%\n\nfloor_plan\x18\x02 \x03(\x0b\x32\x11.frances.IntArray\x12,\n\x08\x66\x65\x61tures\x18\x03 \x03(\x0b\x32\x1a.frances.CrimeSceneFeature\"\x89\x01\n\x06Person\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x1f\n\x06gender\x18\x03 \x01(\x0e\x32\x0f.frances.Gender\x12\x1b\n\x04role\x18\x04 \x01(\x0e\x32\r.frances.Role\x12\'\n\ncoordinate\x18\x05 \x01(\x0b\x32\x13.frances.Coordinate\"r\n\x0fSubjectSelector\x12\x11\n\tperson_id\x18\x01 \x01(\x05\x12\x1b\n\x04role\x18\x02 \x01(\x0e\x32\r.frances.Role\x12\x1f\n\x06gender\x18\x03 \x01(\x0e\x32\x0f.frances.Gender\x12\x0e\n\x06negate\x18\x04 \x01(\x08\"\x8b\x03\n\x04\x43lue\x12\x33\n\x11subject_selectors\x18\x01 \x03(\x0b\x32\x18.frances.SubjectSelector\x12\x11\n\x07room_id\x18\x02 \x01(\x05H\x00\x12\x30\n\x06\x62\x65side\x18\x03 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureTypeH\x00\x12,\n\x02on\x18\x04 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureTypeH\x00\x12\x32\n\x08same_row\x18\x05 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureTypeH\x00\x12\x35\n\x0bsame_column\x18\x06 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureTypeH\x00\x12\x33\n\tsame_room\x18\x07 \x01(\x0e\x32\x1e.frances.CrimeSceneFeatureTypeH\x00\x12\x15\n\x0b\x65xact_count\x18\x08 \x01(\x05H\x01\x12\x13\n\tmin_count\x18\t \x01(\x05H\x01\x42\x06\n\x04typeB\x07\n\x05\x63ount\"\x7f\n\x06Puzzle\x12\x0c\n\x04name\x18\x01 \x01(\t\x12(\n\x0b\x63rime_scene\x18\x02 \x01(\x0b\x32\x13.frances.CrimeScene\x12\x1f\n\x06people\x18\x03 \x03(\x0b\x32\x0f.frances.Person\x12\x1c\n\x05\x63lues\x18\x04 \x03(\x0b\x32\r.frances.Clue*w\n\x15\x43rimeSceneFeatureType\x12\x08\n\x04WALL\x10\x00\x12\n\n\x06\x43ORNER\x10\x01\x12\n\n\x06WINDOW\x10\x02\x12\t\n\x05\x43HAIR\x10\x03\x12\x07\n\x03\x42\x45\x44\x10\x04\x12\n\n\x06\x43\x41RPET\x10\x05\x12\t\n\x05PLANT\x10\x06\x12\x06\n\x02TV\x10\x07\x12\t\n\x05TABLE\x10\x08*g\n\x0cPositionType\x12\x14\n\x10OCCUPIABLE_SPACE\x10\x00\x12\x11\n\rBLOCKED_SPACE\x10\x01\x12\x15\n\x11VERTICAL_BOUNDARY\x10\x02\x12\x17\n\x13HORIZONTAL_BOUNDARY\x10\x03*6\n\x06Gender\x12\x16\n\x12UNSPECIFIED_GENDER\x10\x00\x12\n\n\x06\x46\x45MALE\x10\x01\x12\x08\n\x04MALE\x10\x02*C\n\x04Role\x12\x14\n\x10UNSPECIFIED_ROLE\x10\x00\x12\x0b\n\x07SUSPECT\x10\x01\x12\n\n\x06VICTIM\x10\x02\x12\x0c\n\x08MURDERER\x10\x03\x62\x06proto3'
 )
 
 _CRIMESCENEFEATURETYPE = _descriptor.EnumDescriptor(
@@ -78,8 +78,8 @@ _CRIMESCENEFEATURETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1192,
-  serialized_end=1311,
+  serialized_start=1198,
+  serialized_end=1317,
 )
 _sym_db.RegisterEnumDescriptor(_CRIMESCENEFEATURETYPE)
 
@@ -114,8 +114,8 @@ _POSITIONTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1313,
-  serialized_end=1416,
+  serialized_start=1319,
+  serialized_end=1422,
 )
 _sym_db.RegisterEnumDescriptor(_POSITIONTYPE)
 
@@ -145,8 +145,8 @@ _GENDER = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1418,
-  serialized_end=1472,
+  serialized_start=1424,
+  serialized_end=1478,
 )
 _sym_db.RegisterEnumDescriptor(_GENDER)
 
@@ -181,8 +181,8 @@ _ROLE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1474,
-  serialized_end=1541,
+  serialized_start=1480,
+  serialized_end=1547,
 )
 _sym_db.RegisterEnumDescriptor(_ROLE)
 
@@ -472,37 +472,37 @@ _PERSON = _descriptor.Descriptor(
 )
 
 
-_SUBJECTFILTER = _descriptor.Descriptor(
-  name='SubjectFilter',
-  full_name='frances.SubjectFilter',
+_SUBJECTSELECTOR = _descriptor.Descriptor(
+  name='SubjectSelector',
+  full_name='frances.SubjectSelector',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='person_id', full_name='frances.SubjectFilter.person_id', index=0,
+      name='person_id', full_name='frances.SubjectSelector.person_id', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='role', full_name='frances.SubjectFilter.role', index=1,
+      name='role', full_name='frances.SubjectSelector.role', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='gender', full_name='frances.SubjectFilter.gender', index=2,
+      name='gender', full_name='frances.SubjectSelector.gender', index=2,
       number=3, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='negate', full_name='frances.SubjectFilter.negate', index=3,
+      name='negate', full_name='frances.SubjectSelector.negate', index=3,
       number=4, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -521,7 +521,7 @@ _SUBJECTFILTER = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=555,
-  serialized_end=667,
+  serialized_end=669,
 )
 
 
@@ -534,7 +534,7 @@ _CLUE = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='subject_filters', full_name='frances.Clue.subject_filters', index=0,
+      name='subject_selectors', full_name='frances.Clue.subject_selectors', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -618,8 +618,8 @@ _CLUE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=670,
-  serialized_end=1061,
+  serialized_start=672,
+  serialized_end=1067,
 )
 
 
@@ -671,8 +671,8 @@ _PUZZLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1063,
-  serialized_end=1190,
+  serialized_start=1069,
+  serialized_end=1196,
 )
 
 _CRIMESCENEFEATURE.fields_by_name['type'].enum_type = _CRIMESCENEFEATURETYPE
@@ -684,9 +684,9 @@ _CRIMESCENE.fields_by_name['features'].message_type = _CRIMESCENEFEATURE
 _PERSON.fields_by_name['gender'].enum_type = _GENDER
 _PERSON.fields_by_name['role'].enum_type = _ROLE
 _PERSON.fields_by_name['coordinate'].message_type = _COORDINATE
-_SUBJECTFILTER.fields_by_name['role'].enum_type = _ROLE
-_SUBJECTFILTER.fields_by_name['gender'].enum_type = _GENDER
-_CLUE.fields_by_name['subject_filters'].message_type = _SUBJECTFILTER
+_SUBJECTSELECTOR.fields_by_name['role'].enum_type = _ROLE
+_SUBJECTSELECTOR.fields_by_name['gender'].enum_type = _GENDER
+_CLUE.fields_by_name['subject_selectors'].message_type = _SUBJECTSELECTOR
 _CLUE.fields_by_name['beside'].enum_type = _CRIMESCENEFEATURETYPE
 _CLUE.fields_by_name['on'].enum_type = _CRIMESCENEFEATURETYPE
 _CLUE.fields_by_name['same_row'].enum_type = _CRIMESCENEFEATURETYPE
@@ -725,7 +725,7 @@ DESCRIPTOR.message_types_by_name['Room'] = _ROOM
 DESCRIPTOR.message_types_by_name['CrimeSceneFeature'] = _CRIMESCENEFEATURE
 DESCRIPTOR.message_types_by_name['CrimeScene'] = _CRIMESCENE
 DESCRIPTOR.message_types_by_name['Person'] = _PERSON
-DESCRIPTOR.message_types_by_name['SubjectFilter'] = _SUBJECTFILTER
+DESCRIPTOR.message_types_by_name['SubjectSelector'] = _SUBJECTSELECTOR
 DESCRIPTOR.message_types_by_name['Clue'] = _CLUE
 DESCRIPTOR.message_types_by_name['Puzzle'] = _PUZZLE
 DESCRIPTOR.enum_types_by_name['CrimeSceneFeatureType'] = _CRIMESCENEFEATURETYPE
@@ -776,12 +776,12 @@ Person = _reflection.GeneratedProtocolMessageType('Person', (_message.Message,),
   })
 _sym_db.RegisterMessage(Person)
 
-SubjectFilter = _reflection.GeneratedProtocolMessageType('SubjectFilter', (_message.Message,), {
-  'DESCRIPTOR' : _SUBJECTFILTER,
+SubjectSelector = _reflection.GeneratedProtocolMessageType('SubjectSelector', (_message.Message,), {
+  'DESCRIPTOR' : _SUBJECTSELECTOR,
   '__module__' : 'puzzle_pb2'
-  # @@protoc_insertion_point(class_scope:frances.SubjectFilter)
+  # @@protoc_insertion_point(class_scope:frances.SubjectSelector)
   })
-_sym_db.RegisterMessage(SubjectFilter)
+_sym_db.RegisterMessage(SubjectSelector)
 
 Clue = _reflection.GeneratedProtocolMessageType('Clue', (_message.Message,), {
   'DESCRIPTOR' : _CLUE,

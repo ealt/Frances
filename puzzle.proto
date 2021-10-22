@@ -68,7 +68,7 @@ message Person {
     Coordinate coordinate = 5;
 }
 
-message SubjectFilter {
+message SubjectSelector {
     int32 person_id = 1;
     Role role = 2;
     Gender gender = 3;
@@ -76,7 +76,7 @@ message SubjectFilter {
 }
 
 message Clue {
-    repeated SubjectFilter subject_filters = 1;
+    repeated SubjectSelector subject_selectors = 1;
     oneof type {
         int32 room_id = 2;
         CrimeSceneFeatureType beside = 3;
