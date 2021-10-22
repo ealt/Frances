@@ -268,31 +268,22 @@ class PuzzleModeler:
             self._set_clue(clue)
 
     def _set_clue(self, clue: Clue) -> None:
+        constraint_function = self._get_constraint_function(clue)
         people_ids = self._get_subject_ids(clue)
-        if clue.HasField('same_row'):
-            for row, furnuture in enumerate(self._rowwise_features):
-                if clue.same_row not in furnuture:
-                    space_indexes = self._row_indexes(row)
-                    self._add_constraint(EXACT_COUNT(0), people_ids,
-                                         space_indexes)
-        elif clue.HasField('same_column'):
-            for column, furnuture in enumerate(self._columnwise_features):
-                if clue.same_column not in furnuture:
-                    space_indexes = self._col_indexes(column)
-                    self._add_constraint(EXACT_COUNT(0), people_ids,
-                                         space_indexes)
-        elif clue.HasField('same_room'):
-            for room_id, furnuture in enumerate(self._roomwise_features):
-                if clue.same_room not in furnuture:
-                    space_indexes = self._room_coordinates[room_id]
-                    self._add_constraint(EXACT_COUNT(0), people_ids,
-                                         space_indexes)
-        else:
-            constraint_function = EXACT_COUNT(
-                clue.exact_count) if clue.HasField(
-                    'exact_count') else MIN_COUNT(clue.min_count)
-            space_indexes = self._get_person_clue_coordinates(clue)
+        space_indexes = self._get_space_indexes(clue)
+        if people_ids and space_indexes:
             self._add_constraint(constraint_function, people_ids, space_indexes)
+
+    def _get_constraint_function(self, clue: Clue) -> Callable[[int], bool]:
+        if clue.HasField('same_row'):
+            return EXACT_COUNT(0)
+        if clue.HasField('same_column'):
+            return EXACT_COUNT(0)
+        if clue.HasField('same_room'):
+            return EXACT_COUNT(0)
+        if clue.HasField('exact_count'):
+            return EXACT_COUNT(clue.exact_count)
+        return MIN_COUNT(clue.min_count)
 
     def _get_subject_ids(self, clue: Clue) -> List[int]:
         subject_ids = set()
@@ -301,6 +292,25 @@ class PuzzleModeler:
                 subject_selector)
             subject_ids.update(selected_subject_ids)
         return sorted(list(subject_ids))
+
+    def _get_space_indexes(self, clue: Clue) -> List[Tuple[int, int]]:
+        space_indexes = []
+        if clue.HasField('same_row'):
+            for row, furnuture in enumerate(self._rowwise_features):
+                if clue.same_row not in furnuture:
+                    space_indexes.extend(self._row_indexes(row))
+            return space_indexes
+        if clue.HasField('same_column'):
+            for column, furnuture in enumerate(self._columnwise_features):
+                if clue.same_column not in furnuture:
+                    space_indexes.extend(self._col_indexes(column))
+            return space_indexes
+        if clue.HasField('same_room'):
+            for room_id, furnuture in enumerate(self._roomwise_features):
+                if clue.same_room not in furnuture:
+                    space_indexes.extend(self._room_coordinates[room_id])
+            return space_indexes
+        return self._get_person_clue_coordinates(clue)
 
     def _get_selected_subject_ids(
             self, subject_selector: SubjectSelector) -> List[int]:
