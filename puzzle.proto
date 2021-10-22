@@ -34,6 +34,15 @@ enum Role {
     MURDERER = 3;
 }
 
+enum Preposition {
+    IN = 0;                // room_id
+    ON = 1;                // feature (occupiable)
+    BESIDE = 2;            // feature
+    IN_SAME_ROOM_AS = 3;   // feature
+    IN_SAME_ROW_AS = 4;    // feature
+    IN_SAME_COLUMN_AS = 5; // feature
+}
+
 message IntArray {
     repeated int32 values = 1;
 }
@@ -75,19 +84,21 @@ message SubjectSelector {
     bool negate = 4;
 }
 
+message PositionSelector {
+    Preposition preposition = 1;
+    oneof object {
+        int32 room_id = 2;
+        CrimeSceneFeatureType feature = 3;
+    }
+    bool negate = 4;
+}
+
 message Clue {
     repeated SubjectSelector subject_selectors = 1;
-    oneof type {
-        int32 room_id = 2;
-        CrimeSceneFeatureType beside = 3;
-        CrimeSceneFeatureType on = 4;
-        CrimeSceneFeatureType same_row = 5;
-        CrimeSceneFeatureType same_column = 6;
-        CrimeSceneFeatureType same_room = 7;
-    }
+    repeated PositionSelector position_selectors = 2;
     oneof count {
-        int32 exact_count = 8;
-        int32 min_count = 9;
+        int32 exact_count = 3;
+        int32 min_count = 4;
     }
 }
 

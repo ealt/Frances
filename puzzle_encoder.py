@@ -1,7 +1,7 @@
 from collections import namedtuple
 import re
 
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, Gender, IntArray, PositionType, Role, Puzzle, SubjectSelector
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, Gender, IntArray, PositionType, Preposition, Role, Puzzle, SubjectSelector
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 from typing import List, Optional, Tuple
 
@@ -191,7 +191,8 @@ class PuzzleEncoder:
         for room in self._puzzle.crime_scene.rooms:
             clue = self._puzzle.clues.add()
             clue.subject_selectors.add()
-            clue.room_id = room.id
+            clue.position_selectors.add(preposition=Preposition.IN,
+                                        room_id=room.id)
             clue.min_count = 1
 
     def _parse_person_clue(self, raw_clue: str) -> ParsedPersonClue:
@@ -253,22 +254,31 @@ class PuzzleEncoder:
     def _add_prepositional_phrase(self, clue: Clue,
                                   parsed_person_clue: ParsedPersonClue) -> None:
         if parsed_person_clue.preposition == 'on':
-            clue.on = FEATURE_DATA_DICT[parsed_person_clue.object].type
+            clue.position_selectors.add(
+                preposition=Preposition.ON,
+                feature=FEATURE_DATA_DICT[parsed_person_clue.object].type)
         elif parsed_person_clue.preposition in ('beside', 'next to'):
             if parsed_person_clue.object in FEATURE_DATA_DICT.keys():
                 object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-                clue.beside = object_type
+                clue.position_selectors.add(preposition=Preposition.BESIDE,
+                                            feature=object_type)
         elif parsed_person_clue.preposition == 'in the same row as':
             object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-            clue.same_row = object_type
+            clue.position_selectors.add(preposition=Preposition.IN_SAME_ROW_AS,
+                                        feature=object_type)
         elif parsed_person_clue.preposition == 'in the same column as':
             object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-            clue.same_column = object_type
+            clue.position_selectors.add(
+                preposition=Preposition.IN_SAME_COLUMN_AS, feature=object_type)
         elif parsed_person_clue.preposition == 'in the same room as':
             object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-            clue.same_room = object_type
+            clue.position_selectors.add(preposition=Preposition.IN_SAME_ROOM_AS,
+                                        feature=object_type)
         elif parsed_person_clue.preposition == 'in the corner of':
             corner = FEATURE_DATA_DICT['corner'].type
-            clue.beside = corner
+            clue.position_selectors.add(preposition=Preposition.BESIDE,
+                                        feature=corner)
         elif parsed_person_clue.preposition == 'in':
-            clue.room_id = self._room_ids[parsed_person_clue.object]
+            clue.position_selectors.add(
+                preposition=Preposition.IN,
+                room_id=self._room_ids[parsed_person_clue.object])

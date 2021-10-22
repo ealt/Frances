@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from itertools import product, repeat
 from ortools.sat.python.cp_model import CpModel, IntVar
 
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, CrimeSceneFeatureType, Gender, PositionType, Puzzle, Role, SubjectSelector
+from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeature, CrimeSceneFeatureType, Gender, PositionSelector, PositionType, Preposition, Puzzle, Role, SubjectSelector
 from typing import Callable, List, Optional, Set, Tuple
 
 EXACT_COUNT = lambda count: lambda total_occupancy: total_occupancy == count
@@ -275,12 +275,6 @@ class PuzzleModeler:
             self._add_constraint(constraint_function, people_ids, space_indexes)
 
     def _get_constraint_function(self, clue: Clue) -> Callable[[int], bool]:
-        if clue.HasField('same_row'):
-            return EXACT_COUNT(0)
-        if clue.HasField('same_column'):
-            return EXACT_COUNT(0)
-        if clue.HasField('same_room'):
-            return EXACT_COUNT(0)
         if clue.HasField('exact_count'):
             return EXACT_COUNT(clue.exact_count)
         return MIN_COUNT(clue.min_count)
@@ -294,23 +288,27 @@ class PuzzleModeler:
         return sorted(list(subject_ids))
 
     def _get_space_indexes(self, clue: Clue) -> List[Tuple[int, int]]:
-        space_indexes = []
-        if clue.HasField('same_row'):
-            for row, furnuture in enumerate(self._rowwise_features):
-                if clue.same_row not in furnuture:
-                    space_indexes.extend(self._row_indexes(row))
-            return space_indexes
-        if clue.HasField('same_column'):
-            for column, furnuture in enumerate(self._columnwise_features):
-                if clue.same_column not in furnuture:
-                    space_indexes.extend(self._col_indexes(column))
-            return space_indexes
-        if clue.HasField('same_room'):
-            for room_id, furnuture in enumerate(self._roomwise_features):
-                if clue.same_room not in furnuture:
-                    space_indexes.extend(self._room_coordinates[room_id])
-            return space_indexes
-        return self._get_person_clue_coordinates(clue)
+        space_indexes = set()
+        for position_selector in clue.position_selectors:
+            if position_selector.preposition == Preposition.IN_SAME_ROW_AS:
+                for row, furnuture in enumerate(self._rowwise_features):
+                    if (position_selector.feature
+                            in furnuture) != position_selector.negate:
+                        space_indexes.update(self._row_indexes(row))
+            elif position_selector.preposition == Preposition.IN_SAME_COLUMN_AS:
+                for column, furnuture in enumerate(self._columnwise_features):
+                    if (position_selector.feature
+                            in furnuture) != position_selector.negate:
+                        space_indexes.update(self._col_indexes(column))
+            elif position_selector.preposition == Preposition.IN_SAME_ROOM_AS:
+                for room_id, furnuture in enumerate(self._roomwise_features):
+                    if (position_selector.feature
+                            in furnuture) != position_selector.negate:
+                        space_indexes.update(self._room_coordinates[room_id])
+            else:
+                space_indexes.update(
+                    self._get_person_clue_coordinates(position_selector))
+        return sorted(list(space_indexes))
 
     def _get_selected_subject_ids(
             self, subject_selector: SubjectSelector) -> List[int]:
@@ -334,20 +332,32 @@ class PuzzleModeler:
             if passes_filters(person) != subject_selector.negate
         ]
 
-    def _get_person_clue_coordinates(self, clue: Clue) -> List[Tuple[int, int]]:
-        if clue.HasField('room_id'):
-            return self._get_coordinates_of_room(clue.room_id)
+    def _get_person_clue_coordinates(
+            self, position_selector: PositionSelector) -> List[Tuple[int, int]]:
+        if position_selector.preposition == Preposition.IN:
+            if position_selector.negate:
+                coordinates = []
+                for room_id, room_coordinates in enumerate(
+                        self._room_coordinates):
+                    if position_selector.room_id != room_id:
+                        coordinates.extend(room_coordinates)
+                return sorted(coordinates)
+            else:
+                return self._get_coordinates_of_room(position_selector.room_id)
         else:
             coordinates = []
             for row, row_spaces in enumerate(self._spaces):
                 for column, space in enumerate(row_spaces):
-                    if self._evaluate_space_for_clue(space, clue):
+                    if self._evaluate_space_for_clue(space, position_selector):
                         coordinates.append((row, column))
             return coordinates
 
-    def _evaluate_space_for_clue(self, space: Space, clue: Clue) -> bool:
-        if clue.HasField('beside'):
-            return clue.beside in space.beside
-        elif clue.HasField('on'):
-            return clue.on == space.on
+    def _evaluate_space_for_clue(self, space: Space,
+                                 position_selector: PositionSelector) -> bool:
+        if position_selector.preposition == Preposition.BESIDE:
+            return (position_selector.feature
+                    in space.beside) != position_selector.negate
+        elif position_selector.preposition == Preposition.ON:
+            return (position_selector.feature
+                    == space.on) != position_selector.negate
         raise AttributeError
