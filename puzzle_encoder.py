@@ -1,49 +1,18 @@
-from collections import namedtuple
-import re
-
-from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, Gender, IntArray, PositionType, Preposition, Role, Puzzle, SubjectSelector
-from puzzle_utils import GENDER_DICT, ROLE_DICT, FEATURE_DATA_DICT, NUMBERS_NAMES, get_number_value
-from google.protobuf.pyext._message import RepeatedCompositeContainer
+from puzzle_clue_encoder import PuzzleClueEncoder
+from puzzle_clue_regex_encoder import PuzzleClueRegexEncoder
+from puzzle_pb2 import Coordinate, CrimeSceneFeatureType, Gender, IntArray, PositionType, Role, Puzzle
+from puzzle_utils import FEATURE_DATA_DICT, GENDER_DICT
 from typing import List, Tuple
-
-
-def update_subject_selector(selector: SubjectSelector, key: str) -> None:
-    if key in ROLE_DICT:
-        selector.role = ROLE_DICT[key]
-    if key in GENDER_DICT:
-        selector.gender = GENDER_DICT[key]
-
-
-ParsedPersonClue = namedtuple(
-    'ParsedPersonClue',
-    ['subject', 'exclusive', 'preposition', 'object', 'subj_phrase'])
-
-PasrsedSubjPhrase = namedtuple('PasrsedSubjPhrase', ['number', 'selector'])
-
-PERSON_CLUE_PATTERN = (
-    '^(?P<subject>{people}) (is |was )?'
-    '(?P<exclusive>the only person (in the house )?|alone )?'
-    '(that was )?(standing |sitting )?'
-    '(?P<preposition>on|beside|next to|in'
-    '( the (same (row|column|room) as|corner of))?) (a |the )?'
-    '(?P<object>{feature}|window|{rooms}|room)'
-    '(?P<subj_phrase> with (?P<subj_num>a|an|another|{numbers}) (other )?'
-    '((?P<subj_adj>suspect) )?'
-    '(?P<subj_noun>man|men|woman|women|person|people|suspect|suspects))?\.?$')
-
-
-def stringify(messages: RepeatedCompositeContainer) -> str:
-    return '|'.join([message.name.lower() for message in messages])
-
-
-def stringify_numbers(n: int = 9) -> str:
-    return '|'.join([str(i) + '|' + NUMBERS_NAMES[i] for i in range(n + 1)])
 
 
 class PuzzleEncoder:
 
-    def __init__(self, name: str = '') -> None:
+    def __init__(self,
+                 name: str = '',
+                 clue_encoder: PuzzleClueEncoder = PuzzleClueRegexEncoder,
+                 **kwargs) -> None:
         self._puzzle = Puzzle(name=name)
+        self._clue_encoder = clue_encoder()
 
     @property
     def puzzle(self) -> Puzzle:
@@ -109,107 +78,9 @@ class PuzzleEncoder:
         }
 
     def add_clue(self, raw_clue: str) -> None:
-        if re.match('^There was no empty room\.?$', raw_clue, re.IGNORECASE):
-            self._add_no_empty_room()
-        else:
-            parsed_person_clue = self._parse_person_clue(raw_clue)
-            if parsed_person_clue.exclusive:
-                self._add_exclusive_person_clue(parsed_person_clue)
-            else:
-                self._add_person_clue(parsed_person_clue)
-
-    def _add_no_empty_room(self) -> None:
-        for room in self._puzzle.crime_scene.rooms:
-            clue = self._puzzle.clues.add()
-            clue.subject_selectors.add()
-            clue.position_selectors.add(preposition=Preposition.IN,
-                                        room_id=room.id)
-            clue.min_count = 1
-
-    def _parse_person_clue(self, raw_clue: str) -> ParsedPersonClue:
-        person_clue_pattern = self._generate_person_clue_pattern()
-        match = re.match(person_clue_pattern, raw_clue, re.IGNORECASE)
-        parsed_subj_phrase = None if match.group(
-            'subj_phrase') is None else self._parse_subj_phrase(match)
-        return ParsedPersonClue(subject=match.group('subject').lower(),
-                                exclusive=match.group('exclusive') != None,
-                                preposition=match.group('preposition').lower(),
-                                object=match.group('object').lower(),
-                                subj_phrase=parsed_subj_phrase)
-
-    def _generate_person_clue_pattern(self) -> str:
-        n = len(self._puzzle.people)
-        return PERSON_CLUE_PATTERN.format(
-            people=stringify(self._puzzle.people),
-            feature=stringify(FEATURE_DATA_DICT.values()),
-            rooms=stringify(self._puzzle.crime_scene.rooms),
-            numbers=stringify_numbers(n))
-
-    def _parse_subj_phrase(self, match) -> PasrsedSubjPhrase:
-        number = get_number_value(match.group('subj_num'))
-        selector = SubjectSelector()
-        update_subject_selector(selector, match.group('subj_adj'))
-        subj_noun = match.group('subj_noun')
-        if subj_noun[-1] == 's':
-            subj_noun = subj_noun[:-1]
-        update_subject_selector(selector, subj_noun)
-        return PasrsedSubjPhrase(number=number, selector=selector)
-
-    def _add_exclusive_person_clue(
-            self, parsed_person_clue: ParsedPersonClue) -> None:
-        person_id = self._people_ids[parsed_person_clue.subject]
-        subject_clue = self._puzzle.clues.add()
-        subject_clue.subject_selectors.add(person_id=person_id)
-        subject_clue.exact_count = 1
-        self._add_prepositional_phrase(subject_clue, parsed_person_clue)
-        others_clue = self._puzzle.clues.add()
-        others_clue.subject_selectors.add(person_id=person_id, negate=True)
-        others_clue.exact_count = 0
-        self._add_prepositional_phrase(others_clue, parsed_person_clue)
-
-    def _add_person_clue(self, parsed_person_clue: ParsedPersonClue) -> None:
-        person_id = self._people_ids[parsed_person_clue.subject]
-        clue = self._puzzle.clues.add()
-        clue.subject_selectors.add(person_id=person_id)
-        if parsed_person_clue.subj_phrase is None:
-            clue.exact_count = 1
-        else:
-            clue.subject_selectors.append(
-                parsed_person_clue.subj_phrase.selector)
-            if parsed_person_clue.subj_phrase.number is None:
-                clue.min_count = 1
-            else:
-                clue.exact_count = 1 + parsed_person_clue.subj_phrase.number
-        self._add_prepositional_phrase(clue, parsed_person_clue)
-
-    def _add_prepositional_phrase(self, clue: Clue,
-                                  parsed_person_clue: ParsedPersonClue) -> None:
-        if parsed_person_clue.preposition == 'on':
-            clue.position_selectors.add(
-                preposition=Preposition.ON,
-                feature=FEATURE_DATA_DICT[parsed_person_clue.object].type)
-        elif parsed_person_clue.preposition in ('beside', 'next to'):
-            if parsed_person_clue.object in FEATURE_DATA_DICT.keys():
-                object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-                clue.position_selectors.add(preposition=Preposition.BESIDE,
-                                            feature=object_type)
-        elif parsed_person_clue.preposition == 'in the same row as':
-            object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-            clue.position_selectors.add(preposition=Preposition.IN_SAME_ROW_AS,
-                                        feature=object_type)
-        elif parsed_person_clue.preposition == 'in the same column as':
-            object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-            clue.position_selectors.add(
-                preposition=Preposition.IN_SAME_COLUMN_AS, feature=object_type)
-        elif parsed_person_clue.preposition == 'in the same room as':
-            object_type = FEATURE_DATA_DICT[parsed_person_clue.object].type
-            clue.position_selectors.add(preposition=Preposition.IN_SAME_ROOM_AS,
-                                        feature=object_type)
-        elif parsed_person_clue.preposition == 'in the corner of':
-            corner = FEATURE_DATA_DICT['corner'].type
-            clue.position_selectors.add(preposition=Preposition.BESIDE,
-                                        feature=corner)
-        elif parsed_person_clue.preposition == 'in':
-            clue.position_selectors.add(
-                preposition=Preposition.IN,
-                room_id=self._room_ids[parsed_person_clue.object])
+        clues = self._clue_encoder.encode_clue(
+            raw_clue,
+            self._room_ids,
+            self._people_ids,
+        )
+        self._puzzle.clues.extend(clues)
