@@ -2,23 +2,9 @@ from collections import namedtuple
 import re
 
 from puzzle_pb2 import Clue, Coordinate, CrimeSceneFeatureType, Gender, IntArray, PositionType, Preposition, Role, Puzzle, SubjectSelector
+from puzzle_utils import GENDER_DICT, ROLE_DICT, FEATURE_DATA_DICT, NUMBERS_NAMES, get_number_value
 from google.protobuf.pyext._message import RepeatedCompositeContainer
-from typing import List, Optional, Tuple
-
-GENDER_DICT = {
-    'female': Gender.FEMALE,
-    'woman': Gender.FEMALE,
-    'women': Gender.FEMALE,
-    'male': Gender.MALE,
-    'man': Gender.MALE,
-    'men': Gender.MALE,
-}
-
-ROLE_DICT = {
-    'suspect': Role.SUSPECT,
-    'victim': Role.VICTIM,
-    'murderer': Role.MURDERER,
-}
+from typing import List, Tuple
 
 
 def update_subject_selector(selector: SubjectSelector, key: str) -> None:
@@ -27,34 +13,6 @@ def update_subject_selector(selector: SubjectSelector, key: str) -> None:
     if key in GENDER_DICT:
         selector.gender = GENDER_DICT[key]
 
-
-FeatureData = namedtuple('FeatureData', ['name', 'type', 'position_type'])
-
-FEATURE_DATA_DICT = {
-    'wall':
-        FeatureData('wall', CrimeSceneFeatureType.WALL, None),
-    'corner':
-        FeatureData('corner', CrimeSceneFeatureType.CORNER, None),
-    'window':
-        FeatureData('window', CrimeSceneFeatureType.WINDOW, None),
-    'chair':
-        FeatureData('chair', CrimeSceneFeatureType.CHAIR,
-                    PositionType.OCCUPIABLE_SPACE),
-    'bed':
-        FeatureData('bed', CrimeSceneFeatureType.BED,
-                    PositionType.OCCUPIABLE_SPACE),
-    'carpet':
-        FeatureData('carpet', CrimeSceneFeatureType.CARPET,
-                    PositionType.OCCUPIABLE_SPACE),
-    'plant':
-        FeatureData('plant', CrimeSceneFeatureType.PLANT,
-                    PositionType.BLOCKED_SPACE),
-    'tv':
-        FeatureData('tv', CrimeSceneFeatureType.TV, PositionType.BLOCKED_SPACE),
-    'table':
-        FeatureData('table', CrimeSceneFeatureType.TABLE,
-                    PositionType.BLOCKED_SPACE),
-}
 
 ParsedPersonClue = namedtuple(
     'ParsedPersonClue',
@@ -76,33 +34,6 @@ PERSON_CLUE_PATTERN = (
 
 def stringify(messages: RepeatedCompositeContainer) -> str:
     return '|'.join([message.name.lower() for message in messages])
-
-
-NUMBERS_NAMES = {
-    0: 'zero',
-    1: 'one',
-    2: 'two',
-    3: 'three',
-    4: 'four',
-    5: 'five',
-    6: 'six',
-    7: 'seven',
-    8: 'eight',
-    9: 'nine',
-}
-
-NUMBER_VALUES = {name: value for value, name in NUMBERS_NAMES.items()}
-NUMBER_VALUES['a'] = 1
-NUMBER_VALUES['an'] = 1
-NUMBER_VALUES['another'] = 1
-
-
-def get_number_value(name: str) -> Optional[int]:
-    if name.isdigit():
-        return int(name)
-    if name in NUMBER_VALUES:
-        return NUMBER_VALUES[name]
-    return None
 
 
 def stringify_numbers(n: int = 9) -> str:
